@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="00.MainFrm">
+      <UniqueIdentifier>{3dbfe24f-ba15-4cfa-a443-0a4b22811d46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Default">
+      <UniqueIdentifier>{6561b1d3-5d7e-4664-825b-96cc79517804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98.Document">
+      <UniqueIdentifier>{47ea9e0d-12ca-49a0-becc-37387952d222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View">
+      <UniqueIdentifier>{711d9d67-89fb-49c5-b13d-8e956a61db54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form">
+      <UniqueIdentifier>{fc7b54e2-b131-4a98-b778-29e3de589b4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\02.Effect Tool">
+      <UniqueIdentifier>{ccc5ed6f-5cd2-4085-a5ca-549f237f95a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\01.Mesh Tool">
+      <UniqueIdentifier>{8842a849-b189-4455-b451-25299e36a7fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\03.Animation Tool">
+      <UniqueIdentifier>{ea5663c2-5d32-4912-bb6f-d118d6557bd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\00.Map Tool">
+      <UniqueIdentifier>{d10ccf2c-f969-45c6-9b3d-bbed577221b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Camera">
+      <UniqueIdentifier>{1b42d810-1eb7-41ec-9def-7490f1acbaed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\01.Mesh Tool\00.StaticMesh">
+      <UniqueIdentifier>{587f8758-bc8f-4bc8-bbd8-03797695d171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\01.Mesh Tool\01. NaviMesh">
+      <UniqueIdentifier>{aef84797-15d9-4100-9561-53589cfaf6c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\01.Mesh Tool\02.NaviTri">
+      <UniqueIdentifier>{38d908b0-4800-4c19-a24d-c0fd535b8d17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\01.Terrain">
+      <UniqueIdentifier>{249b7f28-2bd6-408d-83e5-1fe082469400}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MainFrm.h">
+      <Filter>00.MainFrm</Filter>
+    </ClInclude>
+    <ClInclude Include="3DToolView.h">
+      <Filter>01.View</Filter>
+    </ClInclude>
+    <ClInclude Include="3DToolDoc.h">
+      <Filter>98.Document</Filter>
+    </ClInclude>
+    <ClInclude Include="3DTool.h">
+      <Filter>99.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>99.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>99.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>99.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Form.h">
+      <Filter>01.View\00.Form</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshTool.h">
+      <Filter>01.View\00.Form\01.Mesh Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>99.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="MapTool.h">
+      <Filter>01.View\00.Form\00.Map Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolCam.h">
+      <Filter>97.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshObj.h">
+      <Filter>01.View\00.Form\01.Mesh Tool\00.StaticMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviMesh.h">
+      <Filter>01.View\00.Form\01.Mesh Tool\01. NaviMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviTri.h">
+      <Filter>01.View\00.Form\01.Mesh Tool\02.NaviTri</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>01.View\01.Terrain</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>00.MainFrm</Filter>
+    </ClCompile>
+    <ClCompile Include="3DToolView.cpp">
+      <Filter>01.View</Filter>
+    </ClCompile>
+    <ClCompile Include="3DToolDoc.cpp">
+      <Filter>98.Document</Filter>
+    </ClCompile>
+    <ClCompile Include="3DTool.cpp">
+      <Filter>99.Default</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>99.Default</Filter>
+    </ClCompile>
+    <ClCompile Include="Form.cpp">
+      <Filter>01.View\00.Form</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshTool.cpp">
+      <Filter>01.View\00.Form\01.Mesh Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="MapTool.cpp">
+      <Filter>01.View\00.Form\00.Map Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolCam.cpp">
+      <Filter>97.Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshObj.cpp">
+      <Filter>01.View\00.Form\01.Mesh Tool\00.StaticMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NaviMesh.cpp">
+      <Filter>01.View\00.Form\01.Mesh Tool\01. NaviMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NaviTri.cpp">
+      <Filter>01.View\00.Form\01.Mesh Tool\02.NaviTri</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>01.View\01.Terrain</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\3DTool.ico">
+      <Filter>99.Default</Filter>
+    </Image>
+    <Image Include="res\3DToolDoc.ico">
+      <Filter>99.Default</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>99.Default</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="3DTool.rc">
+      <Filter>99.Default</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\My3DTool.rc2">
+      <Filter>99.Default</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>99.Default</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
