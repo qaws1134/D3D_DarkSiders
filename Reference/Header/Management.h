@@ -14,6 +14,7 @@ private:
 	virtual ~CManagement(void);
 public:
 	CComponent*		Get_Component(const _tchar* pLayerTag, const _tchar* pObjTag, const _tchar* pComponentTag, COMPONENTID eID);
+	CGameObject*	Get_GameObject(const _tchar* pLayerTag, const _tchar* pObjTag);
 
 public:
 	HRESULT			Set_Scene(CScene* pScene);

@@ -437,6 +437,15 @@ BEGIN_MESSAGE_MAP(CMeshTool, CDialog)
 	ON_EN_CHANGE(IDC_EDIT7, &CMeshTool::OnEnChangePositionY)
 	ON_EN_CHANGE(IDC_EDIT10, &CMeshTool::OnEnChangePositionZ)
 	ON_NOTIFY(NM_CLICK, IDC_TREE1, &CMeshTool::OnNMClickStaticList)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN2, &CMeshTool::OnDeltaposSpinScaleX)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN3, &CMeshTool::OnDeltaposSpinScaleY)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN4, &CMeshTool::OnDeltaposSpinScaleZ)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN5, &CMeshTool::OnDeltaposSpinRotationX)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN6, &CMeshTool::OnDeltaposSpinRotationY)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN7, &CMeshTool::OnDeltaposSpinRotationZ)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN8, &CMeshTool::OnDeltaposSpinPositionX)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN9, &CMeshTool::OnDeltaposSpinPositionY)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN10, &CMeshTool::OnDeltaposSpinPositionZ)
 END_MESSAGE_MAP()
 
 
@@ -450,13 +459,13 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 		return;
 
 	Set_TimeDelta(L"Timer_DeltaTime");
-	_float fDeltaTime = Get_TimeDelta(L"Timer_DeltaTime");
+	m_fDeltaTime = Get_TimeDelta(L"Timer_DeltaTime");
 
 	for (auto iter : m_mapStaticMesh)
 	{
 		for (auto map_iter : iter.second)
 		{
-			map_iter.second->Update_Object(fDeltaTime);
+			map_iter.second->Update_Object(m_fDeltaTime);
 		}
 	}
 
@@ -465,20 +474,20 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 	{
 		for (auto map_iter : iter.second)
 		{
-			map_iter.second->Update_Object(fDeltaTime);
+			map_iter.second->Update_Object(m_fDeltaTime);
 		}
 	}
 
 
 
 	if(m_pToolCam)
-		m_pToolCam->Update_Object(fDeltaTime);
+		m_pToolCam->Update_Object(m_fDeltaTime);
 
 
 	//선택한 매쉬 transform Update
 	if (m_pCtrlObject)
 	{
-		m_pCtrlTransform->Update_Component(fDeltaTime);
+		m_pCtrlTransform->Update_Component(m_fDeltaTime);
 	}
 
 	//네비모드 체크 
@@ -770,7 +779,7 @@ void CMeshTool::OnEnChangeRotationX()
 	if (!m_pCtrlTransform)
 		return;
 	UpdateData(TRUE);
-	m_vRot.x = m_fRotationX;
+	m_vRot.x = D3DXToRadian(m_fRotationX);
 	m_pCtrlTransform->Set_Rot(&m_vRot);
 	UpdateData(FALSE);
 }
@@ -781,7 +790,7 @@ void CMeshTool::OnEnChangeRotationY()
 	if (!m_pCtrlTransform)
 		return;
 	UpdateData(TRUE);
-	m_vRot.y = m_fRotationY;
+	m_vRot.y = D3DXToRadian(m_fRotationY);
 	m_pCtrlTransform->Set_Rot(&m_vRot);
 	UpdateData(FALSE);
 }
@@ -792,7 +801,7 @@ void CMeshTool::OnEnChangeRotationZ()
 	if (!m_pCtrlTransform)
 		return;
 	UpdateData(TRUE);
-	m_vRot.z = m_fRotationZ;
+	m_vRot.z = D3DXToRadian(m_fRotationZ);
 	m_pCtrlTransform->Set_Rot(&m_vRot);
 	UpdateData(FALSE);
 }
@@ -881,6 +890,202 @@ void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 
 	}
 
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinScaleX(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fScaleX += m_fDeltaTime;
+	}
+	else		//감소
+	{
+		m_fScaleX -= m_fDeltaTime;
+	}
+	m_vScale.x = m_fScaleX;
+	m_pCtrlTransform->Set_Scale(&m_vScale);
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinScaleY(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fScaleY += m_fDeltaTime;
+	}
+	else		//감소
+	{
+		m_fScaleY -= m_fDeltaTime;
+	}
+	m_vScale.y = m_fScaleY;
+	m_pCtrlTransform->Set_Scale(&m_vScale);
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinScaleZ(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fScaleZ += m_fDeltaTime;
+	}
+	else		//감소
+	{
+		m_fScaleZ -= m_fDeltaTime;
+	}
+	m_vScale.z = m_fScaleZ;
+	m_pCtrlTransform->Set_Scale(&m_vScale);
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinRotationX(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fRotationX += m_fDeltaTime*10.f;
+	}
+	else		//감소
+	{
+		m_fRotationX -= m_fDeltaTime*10.f;
+	}
+	m_vRot.x = D3DXToRadian(m_fRotationX);
+	m_pCtrlTransform->Set_Rot(&m_vRot);
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinRotationY(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fRotationY += m_fDeltaTime*10.f;
+	}
+	else		//감소
+	{
+		m_fRotationY -= m_fDeltaTime*10.f;
+	}
+
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_vRot.y = D3DXToRadian(m_fRotationY);
+	m_pCtrlTransform->Set_Rot(&m_vRot);
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinRotationZ(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fRotationZ += m_fDeltaTime*10.f;
+	}
+	else		//감소
+	{
+		m_fRotationZ -= m_fDeltaTime*10.f;
+	}
+
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_vRot.z = D3DXToRadian(m_fRotationZ);
+	m_pCtrlTransform->Set_Rot(&m_vRot);
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinPositionX(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fPositionX += m_fDeltaTime;
+	}
+	else		//감소
+	{
+		m_fPositionX -= m_fDeltaTime;
+	}
+	m_vPos.x = m_fPositionX;
+	m_pCtrlTransform->Set_Pos(&m_vPos);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinPositionY(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fPositionY += m_fDeltaTime;
+	}
+	else		//감소
+	{
+		m_fPositionY -= m_fDeltaTime;
+	}
+	m_vPos.y = m_fPositionY;
+	m_pCtrlTransform->Set_Pos(&m_vPos);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (!m_pCtrlTransform)
+		return;
+	UpdateData(TRUE);
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fPositionZ += m_fDeltaTime;
+	}
+	else		//감소
+	{
+		m_fPositionZ -= m_fDeltaTime;
+	}
+	m_vPos.z = m_fPositionZ;
+	m_pCtrlTransform->Set_Pos(&m_vPos);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	*pResult = 0;
 	UpdateData(FALSE);
 }

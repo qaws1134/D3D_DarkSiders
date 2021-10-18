@@ -51,7 +51,7 @@ private:
 	CGameObject* SpawnStaticMesh(wstring wstrMeshObjKey);
 
 	CButton* m_pCheck;
-
+	_float m_fDeltaTime = 0.f;
 
 	//MeshType, MeshKey, Mesh
 	map<wstring,map<wstring,CGameObject*>>m_mapReadyMesh;
@@ -131,4 +131,13 @@ public:
 	_vec3	m_vRot = { 0.f,0.f,0.f };
 	_vec3	m_vPos= { 0.f,0.f,0.f };
 
+	afx_msg void OnDeltaposSpinScaleX(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinScaleY(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinScaleZ(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinRotationX(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinRotationY(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinRotationZ(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinPositionX(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinPositionY(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult);
 };

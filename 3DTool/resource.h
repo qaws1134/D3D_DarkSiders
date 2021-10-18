@@ -42,6 +42,15 @@
 #define IDC_EDIT8                       1033
 #define IDC_EDIT9                       1034
 #define IDC_EDIT10                      1035
+#define IDC_SPIN2                       1040
+#define IDC_SPIN3                       1044
+#define IDC_SPIN4                       1047
+#define IDC_SPIN5                       1048
+#define IDC_SPIN6                       1050
+#define IDC_SPIN7                       1051
+#define IDC_SPIN8                       1052
+#define IDC_SPIN9                       1053
+#define IDC_SPIN10                      1054
 
 // Next default values for new objects
 // 
@@ -49,7 +58,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1039
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           314
 #endif
 #endif

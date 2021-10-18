@@ -3,6 +3,10 @@ CComponent*		Get_Component(const _tchar* pLayerTag, const _tchar* pObjTag, const
 {
 	return CManagement::GetInstance()->Get_Component(pLayerTag, pObjTag, pComponentTag, eID);
 }
+inline CGameObject * Get_GameObject(const _tchar * pLayerTag, const _tchar * pObjTag)
+{
+	return CManagement::GetInstance()->Get_GameObject(pLayerTag, pObjTag);
+}
 
 HRESULT		Create_Management(CManagement** ppManagement)
 {
