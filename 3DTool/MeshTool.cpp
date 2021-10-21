@@ -10,6 +10,7 @@
 #include "3DToolView.h"
 #include "ToolCam.h"
 #include "StaticMeshObj.h"
+#include "DynamicMeshObj.h"
 #include "NaviTri.h"
 #include "NaviMesh.h"
 #include "Terrain.h"
@@ -142,7 +143,20 @@ void CMeshTool::Set_CreateTree(CString strPath, HTREEITEM Parents)
 			m_TreeCreate.InsertItem(strFilePath, h_Obj, NULL);
 			if (strPath == L"DynamicMesh")
 			{
+				map<wstring, CGameObject*> mapFileProto;
+				for (auto iter : m_mapReadyMesh)
+				{
+					for (auto mapProto : iter.second)
+					{
+						mapFileProto.emplace(mapProto.first, mapProto.second);
+					}
+				}
+				CGameObject* pGameObject = SpawnDynamicMesh(strFilePath.GetString());
 
+				if (!pGameObject)
+					continue;
+				mapFileProto.emplace(strFilePath.GetString(), pGameObject);
+				m_mapReadyMesh[strPath.GetString()] = mapFileProto;
 			}
 			else if(strPath == L"StaticMesh")
 			{
@@ -154,12 +168,12 @@ void CMeshTool::Set_CreateTree(CString strPath, HTREEITEM Parents)
 						mapStaticProto.emplace(mapProto.first, mapProto.second);
 					}
 				}
-
+				//스테틱 매시 스폰
 				CGameObject* pGameObject = SpawnStaticMesh(strFilePath.GetString());
 				if(!pGameObject)
 					continue;
 				mapStaticProto.emplace(strFilePath.GetString(), pGameObject);
-				m_mapReadyMesh[L"StaticMesh"]= mapStaticProto;
+				m_mapReadyMesh[strPath.GetString()]= mapStaticProto;
 			}
 		}
 	}
@@ -167,7 +181,7 @@ void CMeshTool::Set_CreateTree(CString strPath, HTREEITEM Parents)
 
 }
 
-void CMeshTool::Set_Tree(CTreeCtrl* pTreeCtrl, wstring wstrType)
+void CMeshTool::Set_Tree(CTreeCtrl* pTreeCtrl, wstring wstrType, map<wstring, map<wstring, CGameObject*>> mapMesh)
 {
 	//초기화
 	pTreeCtrl->DeleteAllItems();
@@ -178,7 +192,7 @@ void CMeshTool::Set_Tree(CTreeCtrl* pTreeCtrl, wstring wstrType)
 
 	h_MeshType= pTreeCtrl->InsertItem(wstrType.c_str(), NULL, NULL);
 
-	for (auto& iter : m_mapStaticMesh)
+	for (auto& iter : mapMesh)
 	{
 		h_Layer = pTreeCtrl->InsertItem(iter.first.c_str(), h_MeshType, NULL);
 		for (auto map_iter : iter.second)
@@ -188,6 +202,29 @@ void CMeshTool::Set_Tree(CTreeCtrl* pTreeCtrl, wstring wstrType)
 	}
 	ExpandTree(pTreeCtrl, h_MeshType);
 }
+
+void CMeshTool::Set_TreeNavi(CTreeCtrl* pTreeCtrl, wstring wstrType)
+{
+	//초기화
+	pTreeCtrl->DeleteAllItems();
+
+	HTREEITEM h_MeshType;
+	HTREEITEM h_Layer;
+	HTREEITEM h_MeshObj;
+
+	h_MeshType = pTreeCtrl->InsertItem(wstrType.c_str(), NULL, NULL);
+
+	for (auto& iter : m_mapNaviMesh)
+	{
+		h_Layer = pTreeCtrl->InsertItem(to_wstring(iter.first).c_str(), h_MeshType, NULL);
+		for (auto map_iter : iter.second)
+		{
+			h_MeshObj = pTreeCtrl->InsertItem(to_wstring(map_iter.first).c_str(), h_Layer, NULL);
+		}
+	}
+	ExpandTree(pTreeCtrl, h_MeshType);
+}
+
 
 void CMeshTool::Ready_MeshPrototype()
 {
@@ -283,9 +320,6 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		}
 	}
 
-
-
-
 	m_pNaviPos[m_iNaviCount] = vPickPos;
 	m_iNaviCount += 1;
 	
@@ -312,15 +346,21 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		m_mapNaviMesh.emplace(iIdx, mapNaviObj);
 		break;
 	}
+
+	Set_TreeNavi(&m_TreeNavi, L"NaviMesh");
+
+
 }
 
 
 HRESULT CMeshTool::Ready_MeshComponent()
 {
 
-	Ready_Prototype(L"Proto_Mesh_Stone", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/TombStone/", L"TombStone.x"));
-	Ready_Prototype(L"Proto_Mesh_Tree01", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Tree/", L"Tree01.X"));
+	Ready_Prototype(L"TombStone", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/TombStone/", L"TombStone.x"));
+	Ready_Prototype(L"Tree01", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Tree/", L"Tree01.X"));
 
+	Ready_Prototype(L"War", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/War/", L"War.X"));
+	//	Ready_Prototype(L"Proto_Mesh_Player", CDynamicMesh::Create(m_pGraphicDev, L"../Resource/Mesh/DynamicMesh/PlayerXfile/", L"Player.x"));
 
 	return S_OK;
 }
@@ -368,18 +408,17 @@ void CMeshTool::DeleteMultiMap(map<_uint, map<_uint, CGameObject*>> mapDelete)
 CGameObject* CMeshTool::SpawnStaticMesh(wstring wstrMeshObjKey)
 {
 	CGameObject* pGameObject = nullptr;
-	CTransform* pTransform = nullptr;
-	if (wstrMeshObjKey == L"TombStone")
-	{
-		pGameObject = CStaticMeshObj::Create(m_pDevice, L"Proto_Mesh_Stone");
-	}
-	if (wstrMeshObjKey == L"Tree01")
-	{
-		pGameObject = CStaticMeshObj::Create(m_pDevice, L"Proto_Mesh_Tree01");
-		pTransform= dynamic_cast<CTransform*>(pGameObject->Get_Component(L"Com_Transform", Engine::ID_STATIC));
-		pTransform->Set_Scale(0.01f, 0.01f, 0.01f);
-		pTransform->Update_Component(0.f);
-	}
+	pGameObject = CStaticMeshObj::Create(m_pDevice, wstrMeshObjKey);
+
+	//예외처리
+
+	return pGameObject;
+}
+
+CGameObject * CMeshTool::SpawnDynamicMesh(wstring wstrMeshObjKey)
+{
+	CGameObject* pGameObject = nullptr;
+	pGameObject = CDynamicMeshObj::Create(m_pDevice, wstrMeshObjKey);
 
 	return pGameObject;
 }
@@ -409,17 +448,6 @@ void CMeshTool::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CMeshTool, CDialog)
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_RADIO1, &CMeshTool::OnBnClickedRenderSolid)
-	ON_BN_CLICKED(IDC_RADIO2, &CMeshTool::OnBnClickedRenderWireFrame)
-	ON_BN_CLICKED(IDC_RADIO3, &CMeshTool::OnBnClickedMouseSelectObj)
-	ON_BN_CLICKED(IDC_RADIO4, &CMeshTool::OnBnClickedNaviMesh)
-	ON_BN_CLICKED(IDC_RADIO5, &CMeshTool::OnBnClickedStaticObj)
-	ON_BN_CLICKED(IDC_RADIO6, &CMeshTool::OnBnClickedDynamicObj)
-	ON_BN_CLICKED(IDC_RADIO7, &CMeshTool::OnBnClickedNaviTogether)
-	ON_BN_CLICKED(IDC_RADIO8, &CMeshTool::OnBnClickedNaviOnly)
-	ON_BN_CLICKED(IDC_RADIO10, &CMeshTool::OnBnClickedGizmoScale)
-	ON_BN_CLICKED(IDC_RADIO11, &CMeshTool::OnBnClickedGizmoRotation)
-	ON_BN_CLICKED(IDC_RADIO9, &CMeshTool::OnBnClickedGizmoPosition)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMeshTool::OnBnClickedObjStaticListDelete)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMeshTool::OnBnClickedObjDynamicAddSection)
 	ON_BN_CLICKED(IDC_BUTTON3, &CMeshTool::OnBnClickedObjDynamicDelete)
@@ -455,7 +483,7 @@ END_MESSAGE_MAP()
 void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	if (1 != m_pForm->m_iCurSel)
+	if (0 != m_pForm->m_iCurSel)
 		return;
 
 	Set_TimeDelta(L"Timer_DeltaTime");
@@ -468,7 +496,13 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 			map_iter.second->Update_Object(m_fDeltaTime);
 		}
 	}
-
+	for (auto iter : m_mapDynamicMesh)
+	{
+		for (auto map_iter : iter.second)
+		{
+			map_iter.second->Update_Object(m_fDeltaTime);
+		}
+	}
 
 	for (auto iter : m_mapNaviMesh)
 	{
@@ -558,71 +592,6 @@ BOOL CMeshTool::OnInitDialog()
 }
 
 
-void CMeshTool::OnBnClickedRenderSolid()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedRenderWireFrame()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedMouseSelectObj()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedNaviMesh()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedStaticObj()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedDynamicObj()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedNaviTogether()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedNaviOnly()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedGizmoScale()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedGizmoRotation()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CMeshTool::OnBnClickedGizmoPosition()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
 
 void CMeshTool::OnBnClickedObjStaticListDelete()
 {
@@ -671,6 +640,8 @@ void CMeshTool::OnNMDblclkCreate(NMHDR *pNMHDR, LRESULT *pResult)
 	if (!m_TreeCreate.ItemHasChildren(hItem))
 	{
 		m_pCheck = (CButton*)GetDlgItem(IDC_RADIO5);
+
+		//스테틱 매시 
 		if (m_pCheck->GetCheck())
 		{
 			//키값 받아옴
@@ -726,12 +697,76 @@ void CMeshTool::OnNMDblclkCreate(NMHDR *pNMHDR, LRESULT *pResult)
 				mapMesh.emplace(wstrIdxingMeshKey, SpawnStaticMesh(wstrMeshKey.GetString()));
 		
 				m_mapStaticMesh[wstrMeshKey.GetString()] =mapMesh;
-				Set_Tree(&m_TreeStatic, L"StaticMesh");
+				Set_Tree(&m_TreeStatic, L"StaticMesh",m_mapStaticMesh);
 				break;
 			}
 		}
 		else
 		{
+
+			m_pCheck = (CButton*)GetDlgItem(IDC_RADIO6);
+			if (m_pCheck->GetCheck())
+			{
+				//x파일 이름 
+				CString wstrMeshKey = m_TreeCreate.GetItemText(hItem);
+				auto iter_find = m_mapReadyMesh.find(L"DynamicMesh");
+
+				auto ObjMapIter = iter_find->second.find(wstrMeshKey.GetString());
+
+				if (ObjMapIter == iter_find->second.end())
+					return;
+				CString wstrIdxingMeshKey;	//인덱싱한 키값 저장
+				CString wstrToken = L"_";
+				_uint iIdxMesh = 0;
+				while (true)
+				{
+					CString strIdx;
+					strIdx.Format(_T("%d"), iIdxMesh);
+
+					wstrIdxingMeshKey = wstrMeshKey + wstrToken + strIdx;
+
+					auto iter_find = m_mapDynamicMesh.find(wstrMeshKey.GetString());
+
+					//트리를 저장하기위한 인덱싱 object 저장
+					map<wstring, CGameObject*> mapMesh;
+					//기존 값 복사
+
+					if (iter_find != m_mapDynamicMesh.end())
+					{
+						for (auto iter : iter_find->second)
+						{
+							mapMesh.emplace(iter.first, iter.second);
+						}
+					}
+
+
+					while (true)
+					{
+						auto find_Key = mapMesh.find(wstrIdxingMeshKey.GetString());
+						if (find_Key != mapMesh.end())
+						{
+							iIdxMesh++;
+							CString strIdx;
+							strIdx.Format(_T("%d"), iIdxMesh);
+							wstrIdxingMeshKey = wstrMeshKey + wstrToken + strIdx;
+							continue;
+						}
+						break;
+					}
+					mapMesh.emplace(wstrIdxingMeshKey, SpawnDynamicMesh(wstrMeshKey.GetString()));
+
+					m_mapDynamicMesh[wstrMeshKey.GetString()] = mapMesh;
+					Set_Tree(&m_TreeDynamic, L"DynamicMesh", m_mapDynamicMesh);
+					break;
+				}
+
+
+
+
+				//Ready_Prototype(L"Proto_Mesh_Player", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/", L"Player.x"));
+			}
+
+
 			//dynamic_mesh
 
 		}

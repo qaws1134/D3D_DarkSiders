@@ -52,12 +52,16 @@ void CForm::Dump(CDumpContext& dc) const
 
 void CForm::Release_Tools(void)
 {
-	m_pMapTool->Release_Tools();
 	m_pMeshTool->Release_Tools();
+	m_pAniTool->Release_Tools();
+	//m_pCameraTool->Release_Tools();
+	//m_pAniTool->Release_Tools();
 
 
-	Safe_Delete(m_pMapTool);
 	Safe_Delete(m_pMeshTool);
+	Safe_Delete(m_pAniTool);
+	//Safe_Delete(m_pCameraTool);
+
 
 	Safe_Release(m_pCamera);
 
@@ -73,11 +77,12 @@ void CForm::Picking_View(RAY & MouseRay)
 	switch (iCursel)
 	{
 	case 0:
-		//m_pMapTool->Set_PickingOn();
+		//m_pAniTool->Set_PickingOn();
+		m_pMeshTool->PickNavi(MouseRay);
 		break;
 	case 1:
 		//m_pMeshTool
-		m_pMeshTool->PickNavi(MouseRay);
+		
 		break;
 	case 2:
 		break;
@@ -145,20 +150,17 @@ void CForm::OnInitialUpdate()
 
 	CRect rect;
 	m_tTabCtrl.GetWindowRect(&rect);
-	m_tTabCtrl.InsertItem(0, L"MapTool");
-	m_tTabCtrl.InsertItem(1, L"MeshTool");
+	m_tTabCtrl.InsertItem(0, L"MeshTool");
+	m_tTabCtrl.InsertItem(1, L"AnimationTool");
+	m_tTabCtrl.InsertItem(2, L"CameraTool");
+	m_tTabCtrl.InsertItem(3, L"EffectTool");
 
 	m_tTabCtrl.SetCurSel(0);
 
 	m_pCamera = CToolCam::Create(m_pDevice, CameraDesc);
 	NULL_CHECK_RETURN(m_pCamera, );
 
-	m_pMapTool = new CMapTool;
-	m_pMapTool->Create(IDD_MAPTOOL,
-		&m_tTabCtrl);
-	m_pMapTool->MoveWindow(0, 25, rect.Width(), rect.Height());
-	m_pMapTool->ShowWindow(SW_SHOW);
-	m_pMapTool->Set_Camera(m_pCamera);
+
 
 	/* For ObjectTool */
 
@@ -169,6 +171,21 @@ void CForm::OnInitialUpdate()
 	m_pMeshTool->ShowWindow(SW_HIDE);
 	m_pMeshTool->Set_Camera(m_pCamera);
 
+	/* For AnimationTool */
+	m_pAniTool = new CAnimationTool;
+	m_pAniTool->Create(IDD_ANIMATIONTOOL,
+		&m_tTabCtrl);
+	m_pAniTool->MoveWindow(0, 25, rect.Width(), rect.Height());
+	m_pAniTool->ShowWindow(SW_SHOW);
+	m_pAniTool->Set_Camera(m_pCamera);
+
+	/* For CameraTool */
+	//m_pCameraTool = new CCameraTool;
+	//m_pCameraTool->Create(IDD_CAMERATOOL,
+	//	&m_tTabCtrl);
+	//m_pCameraTool->MoveWindow(0, 25, rect.Width(), rect.Height());
+	//m_pCameraTool->ShowWindow(SW_SHOW);
+	//m_pCameraTool->Set_Camera(m_pCamera);
 
 	UpdateData(FALSE);
 
@@ -183,16 +200,22 @@ void CForm::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 	switch (m_iCurSel)
 	{
 	case 0:
-		m_pMapTool->ShowWindow(SW_SHOW);
+		m_pAniTool->ShowWindow(SW_SHOW);
 		m_pMeshTool->ShowWindow(SW_HIDE);
+		m_pCamera->Resetting_Camera(m_pMeshTool->Get_CameraDesc());
 
-		m_pCamera->Resetting_Camera(m_pMapTool->Get_CameraDesc());
+		//m_pCamera->Resetting_Camera(m_pAniTool->Get_CameraDesc());
 		break;
 	case 1:
-		m_pMapTool->ShowWindow(SW_HIDE);
+		m_pAniTool->ShowWindow(SW_HIDE);
 		m_pMeshTool->ShowWindow(SW_SHOW);
+		m_pCamera->Resetting_Camera(m_pAniTool->Get_CameraDesc());
 
-		m_pCamera->Resetting_Camera(m_pMeshTool->Get_CameraDesc());
+	case 2:
+
+		break;
+	case 3:
+	
 		break;
 	}
 	*pResult = 0;

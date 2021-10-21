@@ -27,7 +27,9 @@ public:
 	
 	void Find_FolderList(CString strPath);
 	void Set_CreateTree(CString strPath, HTREEITEM Parents);
-	void Set_Tree(CTreeCtrl* pTreeCtrl,wstring wstrType);
+	void Set_Tree(CTreeCtrl* pTreeCtrl,wstring wstrType, map<wstring, map<wstring, CGameObject*>> mapMesh);
+	void Set_TreeNavi(CTreeCtrl* pTreeCtrl, wstring wstrType);
+
 	void Ready_MeshPrototype();
 	void CheckNaviMod();
 	void PickNavi(RAY tRayMouse);
@@ -49,6 +51,9 @@ private:
 	class CTransform*		m_pCtrlTransform= nullptr;
 
 	CGameObject* SpawnStaticMesh(wstring wstrMeshObjKey);
+	CGameObject* SpawnDynamicMesh(wstring wstrMeshObjKey);
+
+
 
 	CButton* m_pCheck;
 	_float m_fDeltaTime = 0.f;
@@ -85,20 +90,7 @@ public:
 	CTreeCtrl m_TreeDynamic;
 	CTreeCtrl m_TreeNavi;
 
-	afx_msg void OnBnClickedRenderSolid();
-	afx_msg void OnBnClickedRenderWireFrame();
-	afx_msg void OnBnClickedMouseSelectObj();
-	afx_msg void OnBnClickedNaviMesh();
-	afx_msg void OnBnClickedStaticObj();
-	afx_msg void OnBnClickedDynamicObj();
-	afx_msg void OnBnClickedNaviTogether();
-	afx_msg void OnBnClickedNaviOnly();
 
-	
-
-	afx_msg void OnBnClickedGizmoScale();
-	afx_msg void OnBnClickedGizmoRotation();
-	afx_msg void OnBnClickedGizmoPosition();
 	afx_msg void OnBnClickedObjStaticListDelete();
 	afx_msg void OnBnClickedObjDynamicAddSection();
 	afx_msg void OnBnClickedObjDynamicDelete();

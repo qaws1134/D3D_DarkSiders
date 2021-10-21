@@ -1,24 +1,24 @@
-#ifndef StaticMeshObj_h__
-#define StaticMeshObj_h__
+#ifndef DynamicMeshObj_h__
+#define DynamicMeshObj_h__
 
 #include "GameObject.h"
 #include "Define.h"
 
 BEGIN(Engine)
 
+class CDynamicMesh;
 class CTransform;
 class CRenderer;
 class CCalculator;
-class CStaticMesh;
-
+class CCollider;
 END
 
-class CStaticMeshObj : public CGameObject
+class CDynamicMeshObj : public CGameObject
 {
 private:
-	explicit CStaticMeshObj(LPDIRECT3DDEVICE9 pGraphicDev);
-	explicit CStaticMeshObj(const CStaticMeshObj& rhs);
-	virtual ~CStaticMeshObj(void);
+	explicit CDynamicMeshObj(LPDIRECT3DDEVICE9 pGraphicDev);
+	explicit CDynamicMeshObj(const CDynamicMeshObj& rhs);
+	virtual ~CDynamicMeshObj(void);
 
 public:
 	virtual HRESULT Ready_Object(void) override;
@@ -36,18 +36,19 @@ private:
 	//_vec3			PickUp_OnTerrain(void);
 
 private:
+	CDynamicMesh*	m_pMeshCom = nullptr;
 	CTransform*		m_pTransformCom = nullptr;
 	CRenderer*		m_pRendererCom = nullptr;
 	CCalculator*	m_pCalculatorCom = nullptr;
-	CStaticMesh*	m_pMeshCom = nullptr;
+	CCollider*		m_pColliderCom = nullptr;
+	_vec3			m_vDir;
 
-	_vec3		m_vDir;
 	wstring		m_wstrProtoMesh;
 
 public:
-	static CStaticMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
-	static CStaticMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev,wstring ProtoMesh);
+	static CDynamicMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
+	static CDynamicMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev,wstring ProtoMesh);
 	virtual void			Free(void);
 };
 
-#endif // Stone_h__
+#endif // DynamicMeshObj_h__
