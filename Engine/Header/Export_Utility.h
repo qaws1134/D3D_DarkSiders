@@ -27,13 +27,12 @@
 #include "DynamicMesh.h"
 
 
+
 BEGIN(Engine)
 
 
 // Management
 inline CComponent*	Get_Component(const _tchar* pLayerTag, const _tchar* pObjTag, const _tchar* pComponentTag, COMPONENTID eID);
-inline CGameObject*	Get_GameObject(const _tchar* pLayerTag, const _tchar* pObjTag);
-
 inline HRESULT		Create_Management(CManagement** ppManagement);
 inline HRESULT		Set_Scene(CScene* pScene);
 inline _int			Update_Scene(const _float& fTimeDelta);

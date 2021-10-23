@@ -3,10 +3,8 @@
 #include "afxcmn.h"
 
 // CForm Æû ºäÀÔ´Ï´Ù.
+#include "ColliderTool.h"
 #include "MeshTool.h"
-#include "AnimationTool.h"
-#include "CameraTool.h"
-
 class CForm : public CFormView
 {
 	DECLARE_DYNCREATE(CForm)
@@ -37,10 +35,9 @@ public:
 public :
 	
 public:
-	//CColliderTool*		m_pColliderTool = nullptr;
+	CColliderTool*			m_pColliderTool = nullptr;
 	CMeshTool*			m_pMeshTool = nullptr;
-	CAnimationTool*		m_pAniTool = nullptr;
-	//CCameraTool*		m_pCameraTool = nullptr;
+
 
 	CGraphicDev*		m_pDeviceClass = nullptr;
 	LPDIRECT3DDEVICE9	m_pDevice = nullptr;

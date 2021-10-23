@@ -2,6 +2,7 @@
 
 USING(Engine)
 
+
 Engine::CDynamicMesh::CDynamicMesh(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CComponent(pGraphicDev)
 	, m_pLoader(nullptr)
@@ -15,6 +16,7 @@ Engine::CDynamicMesh::CDynamicMesh(const CDynamicMesh& rhs)
 	, m_pRootFrame(rhs.m_pRootFrame)
 	, m_pLoader(rhs.m_pLoader)
 	, m_MeshContainerList(rhs.m_MeshContainerList)
+	,m_mapBoneName(rhs.m_mapBoneName)
 {
 	m_pAniCtrl = CAniCtrl::Create(*rhs.m_pAniCtrl);
 }
@@ -57,7 +59,7 @@ HRESULT Engine::CDynamicMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar
 	NULL_CHECK_RETURN(m_pLoader, E_FAIL);
 
 	LPD3DXANIMATIONCONTROLLER		pAniCtrl = nullptr;
-
+	
 	if (FAILED(D3DXLoadMeshHierarchyFromX(szFullPath, 
 										D3DXMESH_MANAGED, 
 										m_pGraphicDev,
@@ -88,6 +90,7 @@ void Engine::CDynamicMesh::Render_Meshes(void)
 	for (auto& iter : m_MeshContainerList)
 	{
 		D3DXMESHCONTAINER_DERIVED*		pDerivedMeshContainer = iter;
+		char* name = iter->Name;
 
 		for (_ulong i = 0; i < pDerivedMeshContainer->dwNumBones; ++i)
 			pDerivedMeshContainer->pRenderingMatrix[i] = pDerivedMeshContainer->pFrameOffSetMatrix[i] 
@@ -101,10 +104,12 @@ void Engine::CDynamicMesh::Render_Meshes(void)
 
 		//소프트웨어 스키닝을 수행하는 함수(스키닝뿐 아니라 애니메이션 변경 시, 뼈와 정점들의 정보도 동시에 변경해줌)
 		pDerivedMeshContainer->pSkinInfo->UpdateSkinnedMesh(pDerivedMeshContainer->pRenderingMatrix, NULL, pSrcVtx, pDestVtx);
-				
+		
 		for (_ulong i = 0; i < pDerivedMeshContainer->NumMaterials; ++i)
 		{
 			m_pGraphicDev->SetTexture(0, pDerivedMeshContainer->ppTexture[i]);
+
+
 			pDerivedMeshContainer->MeshData.pMesh->DrawSubset(i);
 		}
 
@@ -119,7 +124,7 @@ void Engine::CDynamicMesh::Update_FrameMatrices(D3DXFRAME_DERIVED* pFrame, const
 		return;
 
 	pFrame->CombinedTransformMatrix = pFrame->TransformationMatrix * (*pParentMatrix);
-	
+
 	if (nullptr != pFrame->pFrameSibling)
 		Update_FrameMatrices((D3DXFRAME_DERIVED*)pFrame->pFrameSibling, pParentMatrix);
 
@@ -157,18 +162,26 @@ void Engine::CDynamicMesh::Free(void)
 
 void Engine::CDynamicMesh::SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame)
 {
+	USES_CONVERSION;
+
 	if (nullptr != pFrame->pMeshContainer)
 	{
-		D3DXMESHCONTAINER_DERIVED*	pDerivedMeshContainer = (D3DXMESHCONTAINER_DERIVED*)pFrame->pMeshContainer;
 
+		D3DXMESHCONTAINER_DERIVED*	pDerivedMeshContainer = (D3DXMESHCONTAINER_DERIVED*)pFrame->pMeshContainer;
+		map<_ulong, const char*> mapBone;
+		//wstring wstrBoneName;
 		for (_ulong i = 0; i < pDerivedMeshContainer->dwNumBones; ++i)
 		{
 			const char* pBoneName = pDerivedMeshContainer->pSkinInfo->GetBoneName(i);
+			//wstrBoneName = A2W(pBoneName);
+
 			D3DXFRAME_DERIVED* pDerivedFrame = (D3DXFRAME_DERIVED*)D3DXFrameFind(m_pRootFrame, pBoneName);
 
 			pDerivedMeshContainer->ppCombinedTransformMatrix[i] = &pDerivedFrame->CombinedTransformMatrix;
+			mapBone.emplace(i, pBoneName);
 		}
-
+		//wstrBoneName = A2W(pFrame->Name);
+		m_mapBoneName.emplace(pFrame->Name, mapBone);
 		m_MeshContainerList.push_back(pDerivedMeshContainer);
 	}
 

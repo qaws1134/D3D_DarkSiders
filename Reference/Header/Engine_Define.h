@@ -11,6 +11,10 @@
 #include <functional>
 #include <ctime>
 
+#include <atlbase.h>
+#include <iostream>
+
+
 #include "Engine_Macro.h"
 #include "Engine_Function.h"
 #include "Engine_Enum.h"

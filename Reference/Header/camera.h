@@ -27,22 +27,15 @@ protected:
 	virtual ~CCamera(void);
 
 public:
-	////절두체 컬링
-	//_bool			Make(_matrix* pmatViewProj);
-	//_bool			IsIn(_vec3* pPos);
-	//_bool			IsInSphere(_vec3* pPos, _float fRadius);
-
 	virtual HRESULT Ready_Object(void) override;
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 
 protected:
-	CAMERA_DESC		m_tCameraDesc;
+	//_vec3			m_vEye, m_vAt, m_vUp;
+	//_float			m_fFov, m_fAspect, m_fNear, m_fFar;
 	_matrix			m_matView, m_matProj;
+	CAMERA_DESC		m_tCameraDesc;
 
-
-	//_vec3 m_vtx[8];
-	//_vec3 m_vPos;
-	//D3DXPLANE m_plane[6];
 
 public:
 	virtual void Free(void) override;
@@ -50,4 +43,3 @@ public:
 
 END
 #endif // Camera_h__
-

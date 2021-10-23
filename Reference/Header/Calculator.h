@@ -33,7 +33,7 @@ public:
 		const _ulong& dwCntZ,
 		const _ulong& dwVtxItv = 1);
 
-	_vec3			Picking_OnTerrain(HWND hWnd, const CTerrainTex* pTerrainBufferCom,  CTransform* pTerrainTransCom);
+	_vec3			Picking_OnTerrain(HWND hWnd, const CTerrainTex* pTerrainBufferCom, const CTransform* pTerrainTransCom);
 
 	_bool			Collision_AABB(const _vec3* pDestMin, const _vec3* pDestMax, const _matrix* pDestWorld,
 		const _vec3* pSourMin, const _vec3* pSourMax, const _matrix* pSourWorld);

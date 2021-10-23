@@ -182,6 +182,8 @@ void CMy3DToolView::OnInitialUpdate()
 
 	Ready_Prototype(L"Proto_Buffer_TerrainTex", CTerrainTex::Create(m_pDevice, VTXCNTX, VTXCNTZ));
 	Ready_Prototype(L"Proto_Buffer_CubeTex", CCubeTex::Create(m_pDevice));
+	Ready_Prototype(L"War", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/War/", L"War.X"));
+
 
 	// Terrain
 	m_pTerrain = CTerrain::Create(m_pDevice);

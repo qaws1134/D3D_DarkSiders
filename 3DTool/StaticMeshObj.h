@@ -1,5 +1,5 @@
-#ifndef StaticMeshObj_h__
-#define StaticMeshObj_h__
+#ifndef Stone_h__
+#define Stone_h__
 
 #include "GameObject.h"
 #include "Define.h"

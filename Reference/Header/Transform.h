@@ -13,19 +13,19 @@ private:
 	virtual ~CTransform(void);
 
 public:
-	 _matrix*			Get_WorldMatrix(void)  { return &m_matWorld; }
-	void				Get_WorldMatrix(_matrix* pMatrix) ;
-	void				Set_Scale( _float fX,  _float fY,  _float fZ);
-	void				Set_Scale( _vec3* vScale);
+	const _matrix*		Get_WorldMatrix(void) const { return &m_matWorld; }
+	void				Get_WorldMatrix(_matrix* pMatrix) const;
+	void				Set_Scale(const _float& fX, const _float& fY, const _float& fZ);
+	void				Set_Scale(const _vec3* vScale);
 
-	void				Set_Pos( _float& fX,  _float& fY,  _float& fZ);
-	void				Set_Pos( _vec3* pPos);
-	void				Set_Rot( _vec3* vAngle);
-	void				Set_Rot( _float& fX,  _float& fY,  _float& fZ);
-	void				Set_WorldMatrix( _matrix* pWorld);
-	void				Move_Pos( _vec3* pDir,  _float& fSpeed,  _float& fTimeDelta);
+	void				Set_Pos(const _float& fX, const _float& fY, const _float& fZ);
+	void				Set_Pos(const _vec3* pPos);
+	void				Set_Rot(const _vec3* vAngle);
+	void				Set_Rot(const _float& fX, const _float& fY, const _float& fZ);
+	void				Set_WorldMatrix(const _matrix* pWorld);
+	void				Move_Pos(const _vec3* pDir, const _float& fSpeed, const _float& fTimeDelta);
 	void				Get_INFO(INFO eType, _vec3* pInfo);
-	void				Rotation(ROTATION eType,  _float& fAngle);
+	void				Rotation(ROTATION eType, const _float& fAngle);
 
 	_vec3				Get_Rot() { return m_vAngle; }
 	_vec3				Get_Scale() { return m_vScale; }

@@ -29,6 +29,9 @@ HRESULT CNaviMesh::Ready_Object( )
 	return S_OK;
 }
 
+void CNaviMesh::Late_Ready_Object()
+{
+}
 
 _int CNaviMesh::Update_Object(const _float& fTimeDelta)
 {
@@ -43,14 +46,12 @@ _int CNaviMesh::Update_Object(const _float& fTimeDelta)
 
 void CNaviMesh::Render_Object(void)
 {	
-	m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
-	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	m_pColliderCom->Render_Collider(COLTYPE(m_bColl), m_pTransformCom->Get_WorldMatrix());
-	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	//m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
+
 }
 
 CNaviMesh* CNaviMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev,_vec3 vPos)
-{ 
+{
 	CNaviMesh*	pInstance = new CNaviMesh(pGraphicDev);
 	pInstance->SetPos(vPos);
 	if (FAILED(pInstance->Ready_Object()))

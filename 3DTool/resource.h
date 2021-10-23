@@ -8,9 +8,7 @@
 #define IDR_My3DToolTYPE                130
 #define IDD_FORM                        310
 #define IDD_MESHTOOL                    311
-#define IDD_ANIMATIONTOOL               314
-#define IDD_CAMERATOOL                  315
-#define IDD_EFFECTTOOL                  316
+#define IDD_COLLIDERTOOL                314
 #define IDC_TAB1                        1000
 #define IDC_TREE1                       1002
 #define IDC_RADIO1                      1003
@@ -38,7 +36,6 @@
 #define IDC_BUTTON5                     1025
 #define IDC_BUTTON6                     1026
 #define IDC_EDIT2                       1027
-#define IDC_BUTTON7                     1027
 #define IDC_EDIT3                       1028
 #define IDC_EDIT4                       1029
 #define IDC_EDIT5                       1030
@@ -47,32 +44,32 @@
 #define IDC_EDIT8                       1033
 #define IDC_EDIT9                       1034
 #define IDC_EDIT10                      1035
-#define IDC_SPIN2                       1040
-#define IDC_SPIN3                       1044
+#define IDC_SPIN1                       1041
+#define IDC_SPIN10                      1041
+#define IDC_SPIN2                       1042
+#define IDC_LIST1                       1042
+#define IDC_SPIN3                       1043
+#define IDC_LIST2                       1043
+#define IDC_SPIN6                       1044
 #define IDC_EDIT1                       1044
-#define IDC_LIST4                       1045
-#define IDC_LIST5                       1046
-#define IDC_SPIN4                       1047
-#define IDC_SPIN1                       1047
-#define IDC_SPIN5                       1048
-#define IDC_EDIT11                      1048
-#define IDC_EDIT12                      1049
-#define IDC_SPIN6                       1050
-#define IDC_EDIT13                      1050
-#define IDC_SPIN7                       1051
-#define IDC_EDIT14                      1051
-#define IDC_SPIN8                       1052
-#define IDC_SPIN9                       1053
-#define IDC_SPIN10                      1054
-#define IDC_SPIN11                      1055
+#define IDC_SPIN7                       1045
+#define IDC_EDIT11                      1045
+#define IDC_SPIN8                       1046
+#define IDC_EDIT12                      1046
+#define IDC_SPIN9                       1047
+#define IDC_EDIT13                      1047
+#define IDC_SPIN4                       1048
+#define IDC_EDIT14                      1048
+#define IDC_SPIN5                       1049
+#define IDC_SPIN11                      1050
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        323
+#define _APS_NEXT_RESOURCE_VALUE        314
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1048
-#define _APS_NEXT_SYMED_VALUE           317
+#define _APS_NEXT_CONTROL_VALUE         1045
+#define _APS_NEXT_SYMED_VALUE           315
 #endif
 #endif

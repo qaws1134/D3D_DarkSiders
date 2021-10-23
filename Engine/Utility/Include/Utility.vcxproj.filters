@@ -61,32 +61,32 @@
     <Filter Include="06.Light\Manager">
       <UniqueIdentifier>{8b973d63-2480-4c1a-9954-348e3a06298a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\06. Collider">
+      <UniqueIdentifier>{d8793ff7-88cd-43eb-b6fb-aa224daa8d0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\06. Collider\00.Box">
+      <UniqueIdentifier>{8e836841-3940-49c8-97bb-ee7eede33688}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\06. Collider\01.Sphere">
+      <UniqueIdentifier>{345f8119-8500-4984-883a-c46b7c2c8a9b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="07. RayPickManager">
       <UniqueIdentifier>{7bcbc1e6-a3f3-4e6d-9200-555b7ae1606a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Component\06.DynamicMesh">
-      <UniqueIdentifier>{17d627ea-a0c3-4ee9-93c3-64466dcc37ff}</UniqueIdentifier>
+    <Filter Include="04. Component\07. DynamicMesh">
+      <UniqueIdentifier>{c81b36ce-cebe-4da2-ae3c-5baebcdefe25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Component\07. Collider">
-      <UniqueIdentifier>{d8793ff7-88cd-43eb-b6fb-aa224daa8d0c}</UniqueIdentifier>
+    <Filter Include="04. Component\07. DynamicMesh\00.HierarchLoader">
+      <UniqueIdentifier>{5e22623a-6aae-44b8-ad30-beb8f0da8c43}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Component\07. Collider\00.Box">
-      <UniqueIdentifier>{8e836841-3940-49c8-97bb-ee7eede33688}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. Component\07. Collider\01.Sphere">
-      <UniqueIdentifier>{345f8119-8500-4984-883a-c46b7c2c8a9b}</UniqueIdentifier>
+    <Filter Include="04. Component\07. DynamicMesh\01.AniCtrl">
+      <UniqueIdentifier>{5c1b1263-697f-4661-bf3a-75ee31b2f714}</UniqueIdentifier>
     </Filter>
     <Filter Include="04. Component\08.Optimization">
-      <UniqueIdentifier>{d8991952-ad37-48c7-af96-eee57abb9cbc}</UniqueIdentifier>
+      <UniqueIdentifier>{69d69f4e-cf15-4aa0-ae21-4900fe671d23}</UniqueIdentifier>
     </Filter>
     <Filter Include="04. Component\08.Optimization\00.Frustum">
-      <UniqueIdentifier>{3cc094c6-2edd-42c3-8624-9230928afb50}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. Component\06.DynamicMesh\00.HierarachyLoader">
-      <UniqueIdentifier>{cffce04c-9a63-4fc5-b0e6-46b7bfb75e07}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="04. Component\06.DynamicMesh\01.AniCtrl">
-      <UniqueIdentifier>{099b35dd-70af-4a09-8dd5-d8e55a6a98fd}</UniqueIdentifier>
+      <UniqueIdentifier>{bd329a76-3f6f-476a-9267-daa10895c7c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -148,28 +148,28 @@
       <Filter>06.Light\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Collider.cpp">
-      <Filter>04. Component\07. Collider\00.Box</Filter>
+      <Filter>04. Component\06. Collider\00.Box</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\ColliderSphere.cpp">
-      <Filter>04. Component\07. Collider\01.Sphere</Filter>
+      <Filter>04. Component\06. Collider\01.Sphere</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\RayPickManager.cpp">
       <Filter>07. RayPickManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\AniCtrl.cpp">
-      <Filter>04. Component\06.DynamicMesh\01.AniCtrl</Filter>
+    <ClCompile Include="..\Code\DynamicMesh.cpp">
+      <Filter>04. Component\07. DynamicMesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\HierarchyLoader.cpp">
-      <Filter>04. Component\06.DynamicMesh\00.HierarachyLoader</Filter>
+      <Filter>04. Component\07. DynamicMesh\00.HierarchLoader</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\DynamicMesh.cpp">
-      <Filter>04. Component\06.DynamicMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Frustum.cpp">
-      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
+    <ClCompile Include="..\Code\AniCtrl.cpp">
+      <Filter>04. Component\07. DynamicMesh\01.AniCtrl</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Optimization.cpp">
       <Filter>04. Component\08.Optimization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Frustum.cpp">
+      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -234,28 +234,28 @@
       <Filter>06.Light\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Collider.h">
-      <Filter>04. Component\07. Collider\00.Box</Filter>
+      <Filter>04. Component\06. Collider\00.Box</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\ColliderSphere.h">
-      <Filter>04. Component\07. Collider\01.Sphere</Filter>
+      <Filter>04. Component\06. Collider\01.Sphere</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\RayPickManager.h">
       <Filter>07. RayPickManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\AniCtrl.h">
-      <Filter>04. Component\06.DynamicMesh\01.AniCtrl</Filter>
+    <ClInclude Include="..\Code\DynamicMesh.h">
+      <Filter>04. Component\07. DynamicMesh</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\HierarchyLoader.h">
-      <Filter>04. Component\06.DynamicMesh\00.HierarachyLoader</Filter>
+      <Filter>04. Component\07. DynamicMesh\00.HierarchLoader</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\DynamicMesh.h">
-      <Filter>04. Component\06.DynamicMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Frustum.h">
-      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
+    <ClInclude Include="..\Code\AniCtrl.h">
+      <Filter>04. Component\07. DynamicMesh\01.AniCtrl</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Optimization.h">
       <Filter>04. Component\08.Optimization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Frustum.h">
+      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

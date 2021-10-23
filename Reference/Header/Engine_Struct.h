@@ -57,7 +57,7 @@ namespace Engine
 		_ulong		_1;
 		_ulong		_2;
 
-	}INDEX32;			
+	}INDEX32;
 
 
 
@@ -90,5 +90,19 @@ namespace Engine
 
 	}D3DXMESHCONTAINER_DERIVED;
 
+
+
+	typedef struct tagColliderSphere
+	{
+		_vec3 vCenterPos;
+		_float fRadius;
+	}COLLIDERSPHERE;
+
+
 }
+
+
+
+
+
 #endif // Engine_Struct_h__

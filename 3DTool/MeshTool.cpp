@@ -75,14 +75,14 @@ void CMeshTool::Find_FolderList(CString strPath)
 
 	CString fileName;
 	CString DirName;
-	
+
 	CString PathName;
 
 	while (bWorking)
-	{ 
+	{
 		//다음 파일 or 폴더 가 존재하면다면 TRUE 반환
 		bWorking = finder.FindNextFile(); // folder 일 경우는 continue 
-	
+
 		if (finder.IsDirectory() && !finder.IsDots())
 		{
 			DirName = finder.GetFilePath();
@@ -98,13 +98,13 @@ void CMeshTool::Find_FolderList(CString strPath)
 			CString file = fileName.Right(1);
 
 			//X파일-> 메쉬 이름만 가져옴
-			if (file == L"x"|| file == L"X")
+			if (file == L"x" || file == L"X")
 			{
 				fileName = finder.GetFileTitle();
 				m_queFile.emplace(fileName);
 			}
 		}
-		
+
 	}
 }
 
@@ -121,7 +121,7 @@ void CMeshTool::Set_CreateTree(CString strPath, HTREEITEM Parents)
 	h_Layer = m_TreeCreate.InsertItem(strPath, Parents, NULL);
 
 	//m_queFolder에 폴더명 저장 
-	Find_FolderList(strMeshTypePath+strPath+strAllFileDot);
+	Find_FolderList(strMeshTypePath + strPath + strAllFileDot);
 
 	while (m_queFolder.size() > 0)
 	{
@@ -130,7 +130,7 @@ void CMeshTool::Set_CreateTree(CString strPath, HTREEITEM Parents)
 
 		h_Obj = m_TreeCreate.InsertItem(strFolderPath, h_Layer, NULL);
 		//파일이 있는 폴더 경로
-		strFilePath = strMeshTypePath+strPath +L"/"+ strFolderPath+strAllFileDot;
+		strFilePath = strMeshTypePath + strPath + L"/" + strFolderPath + strAllFileDot;
 
 		Find_FolderList(strFilePath);
 
@@ -158,7 +158,7 @@ void CMeshTool::Set_CreateTree(CString strPath, HTREEITEM Parents)
 				mapFileProto.emplace(strFilePath.GetString(), pGameObject);
 				m_mapReadyMesh[strPath.GetString()] = mapFileProto;
 			}
-			else if(strPath == L"StaticMesh")
+			else if (strPath == L"StaticMesh")
 			{
 				map<wstring, CGameObject*> mapStaticProto;
 				for (auto iter : m_mapReadyMesh)
@@ -170,10 +170,10 @@ void CMeshTool::Set_CreateTree(CString strPath, HTREEITEM Parents)
 				}
 				//스테틱 매시 스폰
 				CGameObject* pGameObject = SpawnStaticMesh(strFilePath.GetString());
-				if(!pGameObject)
+				if (!pGameObject)
 					continue;
 				mapStaticProto.emplace(strFilePath.GetString(), pGameObject);
-				m_mapReadyMesh[strPath.GetString()]= mapStaticProto;
+				m_mapReadyMesh[strPath.GetString()] = mapStaticProto;
 			}
 		}
 	}
@@ -190,14 +190,14 @@ void CMeshTool::Set_Tree(CTreeCtrl* pTreeCtrl, wstring wstrType, map<wstring, ma
 	HTREEITEM h_Layer;
 	HTREEITEM h_MeshObj;
 
-	h_MeshType= pTreeCtrl->InsertItem(wstrType.c_str(), NULL, NULL);
+	h_MeshType = pTreeCtrl->InsertItem(wstrType.c_str(), NULL, NULL);
 
 	for (auto& iter : mapMesh)
 	{
 		h_Layer = pTreeCtrl->InsertItem(iter.first.c_str(), h_MeshType, NULL);
 		for (auto map_iter : iter.second)
 		{
-			h_MeshObj= pTreeCtrl->InsertItem(map_iter.first.c_str(), h_Layer, NULL);
+			h_MeshObj = pTreeCtrl->InsertItem(map_iter.first.c_str(), h_Layer, NULL);
 		}
 	}
 	ExpandTree(pTreeCtrl, h_MeshType);
@@ -245,7 +245,7 @@ void CMeshTool::CheckNaviMod()
 		m_pCheck->SetCheck(false);
 		return;
 	}
-	m_pCheck= (CButton*)GetDlgItem(IDC_RADIO7);
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO7);
 	m_pCheck->EnableWindow(true);
 	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO8);
 	m_pCheck->EnableWindow(true);
@@ -265,7 +265,7 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 	D3DXVec3TransformCoord(&tRayMouse.vRayPos, &tRayMouse.vRayPos, &matInvWorld);
 	D3DXVec3TransformNormal(&tRayMouse.vRayDir, &tRayMouse.vRayDir, &matInvWorld);
 	CTerrain* pTerrain = m_pToolView->m_pTerrain;
-	CTerrainTex* pTerrainBufferCom =  dynamic_cast<CTerrainTex*>(pTerrain->Get_Component(L"Com_Buffer", ID_STATIC));
+	CTerrainTex* pTerrainBufferCom = dynamic_cast<CTerrainTex*>(pTerrain->Get_Component(L"Com_Buffer", ID_STATIC));
 
 
 
@@ -294,7 +294,7 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 				&tRayMouse.vRayDir,
 				&fU, &fV, &fDist))
 			{
-				vPickPos =  _vec3(pTerrainVtx[dwVtxIdx[1]].x + fU * (pTerrainVtx[dwVtxIdx[0]].x - pTerrainVtx[dwVtxIdx[1]].x),
+				vPickPos = _vec3(pTerrainVtx[dwVtxIdx[1]].x + fU * (pTerrainVtx[dwVtxIdx[0]].x - pTerrainVtx[dwVtxIdx[1]].x),
 					0.f,
 					pTerrainVtx[dwVtxIdx[1]].z + fV * (pTerrainVtx[dwVtxIdx[2]].z - pTerrainVtx[dwVtxIdx[1]].z));
 			}
@@ -312,7 +312,7 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 				&tRayMouse.vRayDir,
 				&fU, &fV, &fDist))
 			{
-				vPickPos =  _vec3(pTerrainVtx[dwVtxIdx[2]].x + fU * (pTerrainVtx[dwVtxIdx[1]].x - pTerrainVtx[dwVtxIdx[2]].x),
+				vPickPos = _vec3(pTerrainVtx[dwVtxIdx[2]].x + fU * (pTerrainVtx[dwVtxIdx[1]].x - pTerrainVtx[dwVtxIdx[2]].x),
 					0.f,
 					pTerrainVtx[dwVtxIdx[2]].z + fV * (pTerrainVtx[dwVtxIdx[0]].z - pTerrainVtx[dwVtxIdx[2]].z));
 			}
@@ -322,9 +322,9 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 
 	m_pNaviPos[m_iNaviCount] = vPickPos;
 	m_iNaviCount += 1;
-	
+
 	if (m_iNaviCount < MAX_NAVIVERTEX)
-	{ 
+	{
 		return;
 	}
 	//네비 카운트 초기화
@@ -341,7 +341,7 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		map<_uint, CGameObject* > mapNaviObj;
 		for (_uint i = 0; i < MAX_NAVIVERTEX; i++)
 		{
-			mapNaviObj.emplace(i, CNaviMesh::Create(m_pDevice,m_pNaviPos[i]));
+			mapNaviObj.emplace(i, CNaviMesh::Create(m_pDevice, m_pNaviPos[i]));
 		}
 		m_mapNaviMesh.emplace(iIdx, mapNaviObj);
 		break;
@@ -359,7 +359,6 @@ HRESULT CMeshTool::Ready_MeshComponent()
 	Ready_Prototype(L"TombStone", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/TombStone/", L"TombStone.x"));
 	Ready_Prototype(L"Tree01", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Tree/", L"Tree01.X"));
 
-	Ready_Prototype(L"War", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/War/", L"War.X"));
 	//	Ready_Prototype(L"Proto_Mesh_Player", CDynamicMesh::Create(m_pGraphicDev, L"../Resource/Mesh/DynamicMesh/PlayerXfile/", L"Player.x"));
 
 	return S_OK;
@@ -376,7 +375,7 @@ HRESULT CMeshTool::Ready_LightInfo(void)
 	tLightInfo.Ambient = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
 	tLightInfo.Direction = _vec3(1.f, -1.f, 1.f);
 
-	Ready_Light(m_pDevice, &tLightInfo, 0) ;
+	Ready_Light(m_pDevice, &tLightInfo, 0);
 
 	return S_OK;
 }
@@ -428,15 +427,15 @@ void CMeshTool::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 
 
-	DDX_Text(pDX,IDC_EDIT2,m_fScaleX);
-	DDX_Text(pDX,IDC_EDIT3,m_fRotationX);
-	DDX_Text(pDX,IDC_EDIT4,m_fPositionX);
-	DDX_Text(pDX,IDC_EDIT5,m_fScaleY);
-	DDX_Text(pDX,IDC_EDIT6,m_fRotationY);
-	DDX_Text(pDX,IDC_EDIT7,m_fPositionY);
-	DDX_Text(pDX,IDC_EDIT8,m_fScaleZ);
-	DDX_Text(pDX,IDC_EDIT9,m_fRotationZ);
-	DDX_Text(pDX,IDC_EDIT10,m_fPositionZ);
+	DDX_Text(pDX, IDC_EDIT2, m_fScaleX);
+	DDX_Text(pDX, IDC_EDIT3, m_fRotationX);
+	DDX_Text(pDX, IDC_EDIT4, m_fPositionX);
+	DDX_Text(pDX, IDC_EDIT5, m_fScaleY);
+	DDX_Text(pDX, IDC_EDIT6, m_fRotationY);
+	DDX_Text(pDX, IDC_EDIT7, m_fPositionY);
+	DDX_Text(pDX, IDC_EDIT8, m_fScaleZ);
+	DDX_Text(pDX, IDC_EDIT9, m_fRotationZ);
+	DDX_Text(pDX, IDC_EDIT10, m_fPositionZ);
 
 	DDX_Control(pDX, IDC_TREE2, m_TreeCreate);
 	DDX_Control(pDX, IDC_TREE1, m_TreeStatic);
@@ -514,7 +513,7 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 
 
 
-	if(m_pToolCam)
+	if (m_pToolCam)
 		m_pToolCam->Update_Object(m_fDeltaTime);
 
 
@@ -552,16 +551,6 @@ BOOL CMeshTool::OnInitDialog()
 	SetTimer(1, 1000 / 60000, NULL);
 
 
-	CGameObject*			pGameObject = nullptr;
-
-	//pGameObject = CStaticMeshObj::Create(m_pDevice, L"Proto_Mesh_Stone");
-	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	//m_mapStaticMesh.emplace(L"Stone", pGameObject);
-
-	//pGameObject = CStaticMeshObj::Create(m_pDevice, L"Proto_Mesh_Tree01");
-	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	//m_mapStaticMesh.emplace(L"Tree01", pGameObject);
-
 
 
 	HTREEITEM h_Mesh;
@@ -588,7 +577,7 @@ BOOL CMeshTool::OnInitDialog()
 
 	m_pCheck = nullptr;
 
-	return TRUE; 	 
+	return TRUE;
 }
 
 
@@ -649,10 +638,10 @@ void CMeshTool::OnNMDblclkCreate(NMHDR *pNMHDR, LRESULT *pResult)
 			//static_mesh
 			//mapReadyMesh에 해당 X파일이 있는지 확인
 			//파일 읽으면서 프로토타입 생성하자
-			
+
 			auto iter_find = m_mapReadyMesh.find(L"StaticMesh");
 
-			auto ObjMapIter =  iter_find->second.find(wstrMeshKey.GetString());
+			auto ObjMapIter = iter_find->second.find(wstrMeshKey.GetString());
 
 			if (ObjMapIter == iter_find->second.end())
 				return;
@@ -695,9 +684,9 @@ void CMeshTool::OnNMDblclkCreate(NMHDR *pNMHDR, LRESULT *pResult)
 					break;
 				}
 				mapMesh.emplace(wstrIdxingMeshKey, SpawnStaticMesh(wstrMeshKey.GetString()));
-		
-				m_mapStaticMesh[wstrMeshKey.GetString()] =mapMesh;
-				Set_Tree(&m_TreeStatic, L"StaticMesh",m_mapStaticMesh);
+
+				m_mapStaticMesh[wstrMeshKey.GetString()] = mapMesh;
+				Set_Tree(&m_TreeStatic, L"StaticMesh", m_mapStaticMesh);
 				break;
 			}
 		}
@@ -902,7 +891,7 @@ void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 
 		m_pCtrlObject = Objiter_find->second;
 		m_pCtrlTransform = dynamic_cast<CTransform*>(m_pCtrlObject->Get_Component(L"Com_Transform", Engine::ID_STATIC));
-		
+
 		_vec3 vPos;
 		_vec3 vScale;
 		_vec3 vRot;
@@ -911,17 +900,17 @@ void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 		vRot = m_pCtrlTransform->Get_Rot();
 		vScale = m_pCtrlTransform->Get_Scale();
 
-		m_fScaleX	= vScale.x;
-		m_fScaleY	= vScale.y;
-		m_fScaleZ	= vScale.z;
+		m_fScaleX = vScale.x;
+		m_fScaleY = vScale.y;
+		m_fScaleZ = vScale.z;
 
-		m_fRotationX= vRot.x;
-		m_fRotationY= vRot.y;
-		m_fRotationZ= vRot.z;
+		m_fRotationX = vRot.x;
+		m_fRotationY = vRot.y;
+		m_fRotationZ = vRot.z;
 
-		m_fPositionX= vPos.x;
-		m_fPositionY= vPos.y;
-		m_fPositionZ= vPos.z;
+		m_fPositionX = vPos.x;
+		m_fPositionY = vPos.y;
+		m_fPositionZ = vPos.z;
 
 	}
 
@@ -1124,3 +1113,4 @@ void CMeshTool::OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 	UpdateData(FALSE);
 }
+

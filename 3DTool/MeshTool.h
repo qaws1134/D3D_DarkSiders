@@ -10,24 +10,24 @@
 class CMeshTool : public CDialog
 {
 	DECLARE_DYNAMIC(CMeshTool)
-public :
+public:
 
 public:
 	CMeshTool(CWnd* pParent = NULL);   // 표준 생성자입니다.
 	virtual ~CMeshTool();
 
 	const CAMERA_DESC& Get_CameraDesc(void);
-// 대화 상자 데이터입니다.
+	// 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MESHTOOL };
 #endif
 public:
 	void Release_Tools();
 	void Set_Camera(class CToolCam * pToolcam);
-	
+
 	void Find_FolderList(CString strPath);
 	void Set_CreateTree(CString strPath, HTREEITEM Parents);
-	void Set_Tree(CTreeCtrl* pTreeCtrl,wstring wstrType, map<wstring, map<wstring, CGameObject*>> mapMesh);
+	void Set_Tree(CTreeCtrl* pTreeCtrl, wstring wstrType, map<wstring, map<wstring, CGameObject*>> mapMesh);
 	void Set_TreeNavi(CTreeCtrl* pTreeCtrl, wstring wstrType);
 
 	void Ready_MeshPrototype();
@@ -38,8 +38,8 @@ public:
 private:
 	HRESULT Ready_MeshComponent();
 	HRESULT	Ready_LightInfo(void);
-	void	ExpandTree(CTreeCtrl* pTreeCtrl,HTREEITEM htreeItem);
-	void	DeleteMultiMap(map<wstring,map<wstring,CGameObject*>> mapDelete);
+	void	ExpandTree(CTreeCtrl* pTreeCtrl, HTREEITEM htreeItem);
+	void	DeleteMultiMap(map<wstring, map<wstring, CGameObject*>> mapDelete);
 	void	DeleteMultiMap(map<_uint, map<_uint, CGameObject*>> mapDelete);
 	LPDIRECT3DDEVICE9		m_pDevice = nullptr;
 	class CToolCam*			m_pToolCam = nullptr;
@@ -48,7 +48,7 @@ private:
 	CAMERA_DESC				m_tCameraDesc;
 
 	class CGameObject*		m_pCtrlObject = nullptr;
-	class CTransform*		m_pCtrlTransform= nullptr;
+	class CTransform*		m_pCtrlTransform = nullptr;
 
 	CGameObject* SpawnStaticMesh(wstring wstrMeshObjKey);
 	CGameObject* SpawnDynamicMesh(wstring wstrMeshObjKey);
@@ -59,10 +59,10 @@ private:
 	_float m_fDeltaTime = 0.f;
 
 	//MeshType, MeshKey, Mesh
-	map<wstring,map<wstring,CGameObject*>>m_mapReadyMesh;
+	map<wstring, map<wstring, CGameObject*>>m_mapReadyMesh;
 
-	map<wstring, map<wstring,CGameObject*>>m_mapStaticMesh;
-	map<wstring, map<wstring,CGameObject*>>m_mapDynamicMesh;
+	map<wstring, map<wstring, CGameObject*>>m_mapStaticMesh;
+	map<wstring, map<wstring, CGameObject*>>m_mapDynamicMesh;
 
 	queue<CString>	 m_queFolder;
 	queue<CString>	 m_queFile;
@@ -72,9 +72,9 @@ private:
 	_uint m_iNaviCount = 0;
 
 	_vec3 m_pNaviPos[MAX_NAVIVERTEX];
-	map<_uint, map<_uint,CGameObject*>>m_mapNaviMesh;
+	map<_uint, map<_uint, CGameObject*>>m_mapNaviMesh;
 
-	
+
 
 
 protected:
@@ -121,7 +121,7 @@ public:
 
 	_vec3	m_vScale = { 0.f,0.f,0.f };
 	_vec3	m_vRot = { 0.f,0.f,0.f };
-	_vec3	m_vPos= { 0.f,0.f,0.f };
+	_vec3	m_vPos = { 0.f,0.f,0.f };
 
 	afx_msg void OnDeltaposSpinScaleX(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpinScaleY(NMHDR *pNMHDR, LRESULT *pResult);

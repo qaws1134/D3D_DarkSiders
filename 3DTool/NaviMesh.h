@@ -22,6 +22,7 @@ private:
 
 public:
 	virtual HRESULT Ready_Object( );
+	virtual void Late_Ready_Object()override;
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 	virtual void Render_Object(void) override;
 
@@ -38,7 +39,7 @@ private:
 	CColliderSphere*m_pColliderCom = nullptr;
 
 	_vec3		m_vPos;
-	_bool		m_bColl = false;
+
 public:
 	static CNaviMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos);
 	virtual void			Free(void);

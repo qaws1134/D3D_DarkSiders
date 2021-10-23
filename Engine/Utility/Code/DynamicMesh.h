@@ -16,23 +16,38 @@ private:
 	virtual ~CDynamicMesh(void);
 
 public:	
+
 	void			Set_AnimationIndex(const _uint& iIndex);
 	void			Play_Animation(const _float& fTimeDelta);
 	const			D3DXFRAME_DERIVED*		Get_FrameByName(const char* pFrameName);
 	_bool			Is_AnimationsetFinish(void);
+	map<const char*, map<_ulong, const char*>> GetBoneNameList() { return m_mapBoneName; }
+
+
+	D3DXFRAME*		GetRootFrame() { return m_pRootFrame; }
+
+
 public:
 	HRESULT		Ready_Meshes(const _tchar* pFilePath, const _tchar* pFileName);
 	void		Render_Meshes(void);
+
+	
 
 private:
 	// 모든 뼈들을 재귀적으로 순회하면서 부모와 자식, 또는 형제 관계를 맺을 수 있도록 행렬들을 곱하여 완성된 월드 행렬 상태를 만들어주는 함수
 	void					Update_FrameMatrices(D3DXFRAME_DERIVED* pFrame, const _matrix* pParentMatrix);
 	void					SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame);
+	
+
+
 
 private:
 	D3DXFRAME*									m_pRootFrame;
 	CHierarchyLoader*							m_pLoader;
 	list<D3DXMESHCONTAINER_DERIVED*>			m_MeshContainerList;
+	map<const char*, map<_ulong, const char*>>			m_mapBoneName;
+	
+
 	CAniCtrl*									m_pAniCtrl;
 
 public:

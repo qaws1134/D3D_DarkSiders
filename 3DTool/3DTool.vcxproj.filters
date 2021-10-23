@@ -16,34 +16,37 @@
     <Filter Include="01.View\00.Form">
       <UniqueIdentifier>{fc7b54e2-b131-4a98-b778-29e3de589b4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.View\00.Form\02.Effect Tool">
+      <UniqueIdentifier>{ccc5ed6f-5cd2-4085-a5ca-549f237f95a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\00.Form\03.Animation Tool">
+      <UniqueIdentifier>{ea5663c2-5d32-4912-bb6f-d118d6557bd3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="97.Camera">
       <UniqueIdentifier>{1b42d810-1eb7-41ec-9def-7490f1acbaed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.View\01.Terrain">
+    <Filter Include="01.View\01.GameObject">
+      <UniqueIdentifier>{d7a84d63-16f8-48fb-86a6-932f0ffc9c54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\01.GameObject\00.StaticMesh">
+      <UniqueIdentifier>{587f8758-bc8f-4bc8-bbd8-03797695d171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\01.GameObject\01.DynamicMesh">
+      <UniqueIdentifier>{fd203cfc-b40b-4b5e-9fc1-1d46600dfbf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\01.GameObject\02.Terrain">
       <UniqueIdentifier>{249b7f28-2bd6-408d-83e5-1fe082469400}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.View\00.Form\00.Mesh Tool">
       <UniqueIdentifier>{8842a849-b189-4455-b451-25299e36a7fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.View\00.Form\00.Mesh Tool\00.StaticMesh">
-      <UniqueIdentifier>{587f8758-bc8f-4bc8-bbd8-03797695d171}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.View\00.Form\00.Mesh Tool\01. NaviMesh">
+    <Filter Include="01.View\00.Form\00.Mesh Tool\00. NaviMesh">
       <UniqueIdentifier>{aef84797-15d9-4100-9561-53589cfaf6c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.View\00.Form\00.Mesh Tool\02.NaviTri">
+    <Filter Include="01.View\00.Form\00.Mesh Tool\01.NaviTri">
       <UniqueIdentifier>{38d908b0-4800-4c19-a24d-c0fd535b8d17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.View\00.Form\00.Mesh Tool\03.DynamicMeshObj">
-      <UniqueIdentifier>{7781c2d1-cba0-4484-b821-8cfc00f9f237}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.View\00.Form\02.Camera Tool">
-      <UniqueIdentifier>{ccc5ed6f-5cd2-4085-a5ca-549f237f95a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.View\00.Form\03.Effect Tool">
-      <UniqueIdentifier>{ea5663c2-5d32-4912-bb6f-d118d6557bd3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.View\00.Form\01.Animation Tool">
+    <Filter Include="01.View\00.Form\01.Collider Tool">
       <UniqueIdentifier>{d10ccf2c-f969-45c6-9b3d-bbed577221b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -82,28 +85,22 @@
       <Filter>97.Camera</Filter>
     </ClInclude>
     <ClInclude Include="StaticMeshObj.h">
-      <Filter>01.View\00.Form\00.Mesh Tool\00.StaticMesh</Filter>
+      <Filter>01.View\01.GameObject\00.StaticMesh</Filter>
     </ClInclude>
     <ClInclude Include="NaviMesh.h">
-      <Filter>01.View\00.Form\00.Mesh Tool\01. NaviMesh</Filter>
+      <Filter>01.View\00.Form\00.Mesh Tool\00. NaviMesh</Filter>
     </ClInclude>
     <ClInclude Include="NaviTri.h">
-      <Filter>01.View\00.Form\00.Mesh Tool\02.NaviTri</Filter>
+      <Filter>01.View\00.Form\00.Mesh Tool\01.NaviTri</Filter>
     </ClInclude>
     <ClInclude Include="Terrain.h">
-      <Filter>01.View\01.Terrain</Filter>
+      <Filter>01.View\01.GameObject\02.Terrain</Filter>
     </ClInclude>
     <ClInclude Include="DynamicMeshObj.h">
-      <Filter>01.View\00.Form\00.Mesh Tool\03.DynamicMeshObj</Filter>
+      <Filter>01.View\01.GameObject\01.DynamicMesh</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationTool.h">
-      <Filter>01.View\00.Form\01.Animation Tool</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraTool.h">
-      <Filter>01.View\00.Form\02.Camera Tool</Filter>
-    </ClInclude>
-    <ClInclude Include="EffectTool.h">
-      <Filter>01.View\00.Form\03.Effect Tool</Filter>
+    <ClInclude Include="ColliderTool.h">
+      <Filter>01.View\00.Form\01.Collider Tool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -132,28 +129,22 @@
       <Filter>97.Camera</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshObj.cpp">
-      <Filter>01.View\00.Form\00.Mesh Tool\00.StaticMesh</Filter>
+      <Filter>01.View\01.GameObject\00.StaticMesh</Filter>
     </ClCompile>
     <ClCompile Include="NaviMesh.cpp">
-      <Filter>01.View\00.Form\00.Mesh Tool\01. NaviMesh</Filter>
+      <Filter>01.View\00.Form\00.Mesh Tool\00. NaviMesh</Filter>
     </ClCompile>
     <ClCompile Include="NaviTri.cpp">
-      <Filter>01.View\00.Form\00.Mesh Tool\02.NaviTri</Filter>
+      <Filter>01.View\00.Form\00.Mesh Tool\01.NaviTri</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
-      <Filter>01.View\01.Terrain</Filter>
+      <Filter>01.View\01.GameObject\02.Terrain</Filter>
     </ClCompile>
     <ClCompile Include="DynamicMeshObj.cpp">
-      <Filter>01.View\00.Form\00.Mesh Tool\03.DynamicMeshObj</Filter>
+      <Filter>01.View\01.GameObject\01.DynamicMesh</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationTool.cpp">
-      <Filter>01.View\00.Form\01.Animation Tool</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraTool.cpp">
-      <Filter>01.View\00.Form\02.Camera Tool</Filter>
-    </ClCompile>
-    <ClCompile Include="EffectTool.cpp">
-      <Filter>01.View\00.Form\03.Effect Tool</Filter>
+    <ClCompile Include="ColliderTool.cpp">
+      <Filter>01.View\00.Form\01.Collider Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

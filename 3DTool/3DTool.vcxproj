@@ -23,6 +23,7 @@
     <RootNamespace>My3DTool</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <Keyword>MFCProj</Keyword>
+    <ProjectName>3DTool</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -80,9 +81,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>../Bin\</OutDir>
-    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -122,13 +120,9 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../Code;../../Base;../../Reference/Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>../../Reference/Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxguid.lib;System.lib;%(AdditionalDependencies);Utility.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -200,11 +194,9 @@
     <ClInclude Include="3DTool.h" />
     <ClInclude Include="3DToolDoc.h" />
     <ClInclude Include="3DToolView.h" />
-    <ClInclude Include="AnimationTool.h" />
-    <ClInclude Include="CameraTool.h" />
+    <ClInclude Include="ColliderTool.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="DynamicMeshObj.h" />
-    <ClInclude Include="EffectTool.h" />
     <ClInclude Include="Form.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MeshTool.h" />
@@ -221,10 +213,8 @@
     <ClCompile Include="3DTool.cpp" />
     <ClCompile Include="3DToolDoc.cpp" />
     <ClCompile Include="3DToolView.cpp" />
-    <ClCompile Include="AnimationTool.cpp" />
-    <ClCompile Include="CameraTool.cpp" />
+    <ClCompile Include="ColliderTool.cpp" />
     <ClCompile Include="DynamicMeshObj.cpp" />
-    <ClCompile Include="EffectTool.cpp" />
     <ClCompile Include="Form.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MeshTool.cpp" />

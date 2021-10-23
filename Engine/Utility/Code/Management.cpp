@@ -57,11 +57,3 @@ Engine::CComponent* Engine::CManagement::Get_Component(const _tchar* pLayerTag, 
 	return m_pScene->Get_Component(pLayerTag, pObjTag, pComponentTag, eID);
 }
 
-Engine::CGameObject * Engine::CManagement::Get_GameObject(const _tchar * pLayerTag, const _tchar * pObjTag)
-{
-	if (nullptr == m_pScene)
-		return nullptr;
-
-	return m_pScene->Get_GameObject(pLayerTag, pObjTag);
-}
-
