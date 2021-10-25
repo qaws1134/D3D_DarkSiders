@@ -88,6 +88,15 @@
     <Filter Include="04. Component\08.Optimization\00.Frustum">
       <UniqueIdentifier>{bd329a76-3f6f-476a-9267-daa10895c7c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\09.NaviMesh">
+      <UniqueIdentifier>{629a8e0f-7881-445c-831c-0984287e8703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\09.NaviMesh\00.Cell">
+      <UniqueIdentifier>{c4cfe89f-e24b-4e2b-80ae-17d5f4cf9bc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\09.NaviMesh\01.Line">
+      <UniqueIdentifier>{34894c5d-5bcb-49c2-bdde-daa3c59f4aa3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Component.cpp">
@@ -170,6 +179,15 @@
     </ClCompile>
     <ClCompile Include="..\Code\Frustum.cpp">
       <Filter>04. Component\08.Optimization\00.Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Cell.cpp">
+      <Filter>04. Component\09.NaviMesh\00.Cell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Line.cpp">
+      <Filter>04. Component\09.NaviMesh\01.Line</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\NaviMesh.cpp">
+      <Filter>04. Component\09.NaviMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -256,6 +274,15 @@
     </ClInclude>
     <ClInclude Include="..\Code\Frustum.h">
       <Filter>04. Component\08.Optimization\00.Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Cell.h">
+      <Filter>04. Component\09.NaviMesh\00.Cell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Line.h">
+      <Filter>04. Component\09.NaviMesh\01.Line</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\NaviMesh.h">
+      <Filter>04. Component\09.NaviMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

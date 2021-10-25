@@ -62,6 +62,7 @@
 #define IDC_EDIT14                      1048
 #define IDC_SPIN5                       1049
 #define IDC_SPIN11                      1050
+#define IDC_SPIN12                      1051
 
 // Next default values for new objects
 // 

@@ -21,17 +21,21 @@ public:
 	virtual     void		Late_Ready_Object(void);
 	virtual		_int		Update_Object(const _float& fTimeDelta);
 	virtual		void		Render_Object(void);
+public :
+	CGameObject* GetTarget() { return m_pTarget; }
+	void SetTarget(CGameObject* pTarget) { m_pTarget = pTarget; }
+
 
 protected:
 	LPDIRECT3DDEVICE9					m_pGraphicDev;
 	map<const _tchar*, CComponent*>		m_mapComponent[ID_END];
+	CGameObject* m_pTarget;
 
 private:
 	CComponent*		Find_Component(const _tchar* pComponentTag, COMPONENTID eID);
 
 public:
 	virtual void	Free(void);
-
 };
 
 END

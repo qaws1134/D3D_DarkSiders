@@ -17,7 +17,7 @@ public:
 	const _vec3*		Get_Center() { return &m_vCenter; }
 	const _float*		Get_Radius() { return &m_fRadius; }
 public:
-	HRESULT			Ready_Collider(const _vec3* pPos, const _ulong& dwVtxCnt, const _ulong& dwStride,_float fRadius = 0);
+	HRESULT			Ready_Collider(const _vec3* pPos,_float fRadius = 0);
 	void			Render_Collider(COLTYPE eType,  _matrix* pColliderMatrix);
 
 private:
@@ -39,7 +39,6 @@ private:
 #endif
 
 public:
-	static CColliderSphere*		Create(LPDIRECT3DDEVICE9 pGraphicDev,  _vec3* pPos, const _ulong& dwVtxCnt, const _ulong& dwStride,_float fRadius = 0);
 	static CColliderSphere*		Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3* pPos, _float fRadius = 0);
 	virtual CComponent*		Clone(void);
 	virtual void			Free(void);

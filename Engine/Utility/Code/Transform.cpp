@@ -26,6 +26,7 @@ Engine::CTransform::~CTransform(void)
 
 }
 
+
 HRESULT Engine::CTransform::Ready_Transform(void)
 {
 	D3DXMatrixIdentity(&m_matWorld);
@@ -70,6 +71,12 @@ Engine::_int Engine::CTransform::Update_Component(const _float& fTimeDelta)
 		memcpy(&m_matWorld.m[i][0], &m_vInfo[i], sizeof(_vec3));
 
 	return 0;
+}
+
+
+void CTransform::Set_ParentMatrix(_matrix * pParent)
+{
+	m_matWorld *= *pParent;
 }
 
 void CTransform::Get_WorldMatrix(_matrix * pMatrix) const

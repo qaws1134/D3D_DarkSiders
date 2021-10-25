@@ -12,8 +12,12 @@
 #include "StaticMeshObj.h"
 #include "DynamicMeshObj.h"
 #include "NaviTri.h"
-#include "NaviMesh.h"
+#include "ColSphereMesh.h"
 #include "Terrain.h"
+
+#include "NaviMesh.h"
+
+
 
 // CMeshTool 대화 상자입니다.
 
@@ -341,13 +345,33 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		map<_uint, CGameObject* > mapNaviObj;
 		for (_uint i = 0; i < MAX_NAVIVERTEX; i++)
 		{
-			mapNaviObj.emplace(i, CNaviMesh::Create(m_pDevice, m_pNaviPos[i]));
+			//정점을 가지고 있는 충돌체 생성
+			//해당 매시 충돌 시 해당 메시의 pos 반환
+			mapNaviObj.emplace(i, CColSphereMesh::Create(m_pDevice, m_pNaviPos[i]));
+			
 		}
+		//수정 시 해당 메시와 동일 한 pos를 가지고 있는 네비매시를 찾음
+		//해당 네비매시 전부 update
+		
+
+		CCell*		pCell = nullptr;
+		pCell = CCell::Create(m_pDevice, m_mapNaviMesh.size(), &m_pNaviPos[0], &m_pNaviPos[1], &m_pNaviPos[2]);
+	
 		m_mapNaviMesh.emplace(iIdx, mapNaviObj);
 		break;
 	}
 
+	
+	
+	
 	Set_TreeNavi(&m_TreeNavi, L"NaviMesh");
+
+
+
+
+
+
+	m_mapNaviMesh.size(); // 리저브
 
 
 }

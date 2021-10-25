@@ -13,7 +13,7 @@ private:
 	virtual ~CTransform(void);
 
 public:
-	const _matrix*		Get_WorldMatrix(void) const { return &m_matWorld; }
+	 _matrix*		Get_WorldMatrix(void)  { return &m_matWorld; }
 	void				Get_WorldMatrix(_matrix* pMatrix) const;
 	void				Set_Scale(const _float& fX, const _float& fY, const _float& fZ);
 	void				Set_Scale(const _vec3* vScale);
@@ -29,6 +29,10 @@ public:
 
 	_vec3				Get_Rot() { return m_vAngle; }
 	_vec3				Get_Scale() { return m_vScale; }
+
+
+	void				Set_ParentMatrix(_matrix* pParent);
+
 
 public:
 	HRESULT				Ready_Transform(void);

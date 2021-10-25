@@ -27,6 +27,10 @@ HRESULT CDynamicMeshObj::Ready_Object(void)
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
 	m_pTransformCom->Update_Component(0.f);
+	m_pMeshCom->Set_AnimationIndex(0);
+
+
+
 	return S_OK;
 }
 
@@ -38,7 +42,8 @@ _int CDynamicMeshObj::Update_Object(const _float& fTimeDelta)
 {
 
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
-	
+
+	m_pMeshCom->Play_Animation(fTimeDelta);
 
 	Add_RenderGroup(RENDER_NONALPHA, this);
 
@@ -94,7 +99,7 @@ HRESULT CDynamicMeshObj::Add_Component()
 	// Transform
 	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Clone_Prototype(L"Proto_Transform"));
 	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
-	m_mapComponent[ID_STATIC].emplace(L"Com_Transform", pComponent);
+	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
 	// Renderer
 	pComponent = m_pRendererCom = Engine::Get_Renderer();

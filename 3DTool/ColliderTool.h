@@ -25,11 +25,11 @@ public:
 	void Release_Tools();
 	void Set_Camera(class CToolCam * pToolcam);
 	const CAMERA_DESC& Get_CameraDesc(void);
-
 	void CreateTree(CString strPath, HTREEITEM Parents);
 	void Find_FolderList(CString strPath);
 
 	void Set_TreeBoneName(CTreeCtrl* pTreeCtrl, HTREEITEM h_Parants, D3DXFRAME_DERIVED* pFrame);
+	void Set_TreeCollider(CTreeCtrl* pTreeCtrl, HTREEITEM h_Parants);
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -47,22 +47,31 @@ private:
 	queue<CString>	 m_queFolder;
 	queue<CString>	 m_queFile;
 
-	CGameObject* m_pSelectedGameObject = nullptr;
+	
+	CGameObject* m_pSelectedGameObject = nullptr;	//선택된 다이나믹 메시 오브젝트 
+	CGameObject* m_pColliderObj = nullptr;			//충돌체 오브젝트 
+
+	CString		m_cstrMeshName;						//선택된 메시 이름
+	const char*	m_pBoneName = nullptr;				//선택된 뼈 이름
+	wstring 	m_wstrBoneName ;
 
 	map<wstring, map<wstring, CGameObject*>>m_mapReadyMesh;
-	//map<const char*, map<_ulong, const char*>>m_mapBoneName;
 
-	//1.해당 매시이름 , 뼈 이름, 컬라이더 정보
-	map<wstring, map<_ulong, COLLIDERSPHERE>>m_mapCollider;
+	//1.태그 , 뼈, obj
+	typedef map<wstring, CGameObject*> COLMAP;
+	COLMAP	m_mapCollider;
+	
+	//메시에 따른 충돌체map 
+	map<wstring, COLMAP> m_mapMeshCollider;
+
 
 	COLLIDERSPHERE m_tColInfo;
 
 	CGameObject* SpawnDynamicMesh(wstring wstrMeshObjKey);
 	HRESULT Ready_LightInfo();
-	void DeleteMultiMap(map<wstring, map<wstring, CGameObject*>> mapDelete);
-
 
 	
+	void DeleteMultiMap(map<wstring, map<wstring, CGameObject*>> mapDelete);
 
 	void	ExpandTree(CTreeCtrl* pTreeCtrl, HTREEITEM htreeItem);
 
@@ -94,4 +103,9 @@ public:
 	afx_msg void OnNMClickAttachedColList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLbnSelchangeAnimationList();
 	afx_msg void OnLbnSelchangeSaveList();
+	afx_msg void OnEnChangePositionX();
+	afx_msg void OnEnChangePositionY();
+	afx_msg void OnEnChangePositionZ();
+	afx_msg void OnEnChangeRadius();
+	afx_msg void OnDeltaposSpinRadius(NMHDR *pNMHDR, LRESULT *pResult);
 };

@@ -12,7 +12,7 @@
 #include "ToolCam.h"
 #include "DynamicMeshObj.h"
 #include "DynamicMesh.h"
-
+#include "ColSphereMesh.h"
 // CColliderTool 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CColliderTool, CDialog)
@@ -23,9 +23,10 @@ CColliderTool::CColliderTool(CWnd* pParent /*=NULL*/)
 	, m_fPositionX(0)
 	, m_fPositionY(0)
 	, m_fPositionZ(0)
-	, m_fRadius(0)
+	, m_fRadius(1.f)
 {
-
+	m_tColInfo.fRadius = 1.f;
+	m_tColInfo.vCenterPos = _vec3{ 0.f,0.f,0.f };
 }
 
 CColliderTool::~CColliderTool()
@@ -36,6 +37,9 @@ void CColliderTool::Release_Tools()
 {
 
 	DeleteMultiMap(m_mapReadyMesh);
+
+	for_each(m_mapCollider.begin(), m_mapCollider.end(), CDeleteMap());
+
 	Safe_Release(m_pSelectedGameObject);
 	KillTimer(COLLIDERTOOL_TIMER);
 	Safe_Release(m_pToolCam);
@@ -95,6 +99,7 @@ BEGIN_MESSAGE_MAP(CColliderTool, CDialog)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN1, &CColliderTool::OnDeltaposSpinPositionX)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN5, &CColliderTool::OnDeltaposSpinPositionY)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN11, &CColliderTool::OnDeltaposSpinPositionZ)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN12, &CColliderTool::OnDeltaposSpinRadius)
 	ON_BN_CLICKED(IDC_BUTTON3, &CColliderTool::OnBnClickedAddSaveList)
 	ON_BN_CLICKED(IDC_BUTTON4, &CColliderTool::OnBnClickedDeleteSaveList)
 	ON_BN_CLICKED(IDC_BUTTON5, &CColliderTool::OnBnClickedSave)
@@ -104,6 +109,10 @@ BEGIN_MESSAGE_MAP(CColliderTool, CDialog)
 	ON_NOTIFY(NM_CLICK, IDC_TREE6, &CColliderTool::OnNMClickAttachedColList)
 	ON_LBN_SELCHANGE(IDC_LIST2, &CColliderTool::OnLbnSelchangeAnimationList)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CColliderTool::OnLbnSelchangeSaveList)
+	ON_EN_CHANGE(IDC_EDIT11, &CColliderTool::OnEnChangePositionX)
+	ON_EN_CHANGE(IDC_EDIT12, &CColliderTool::OnEnChangePositionY)
+	ON_EN_CHANGE(IDC_EDIT13, &CColliderTool::OnEnChangePositionZ)
+	ON_EN_CHANGE(IDC_EDIT14, &CColliderTool::OnEnChangeRadius)
 END_MESSAGE_MAP()
 
 
@@ -133,6 +142,7 @@ BOOL CColliderTool::OnInitDialog()
 
 
 
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -146,14 +156,24 @@ void CColliderTool::OnTimer(UINT_PTR nIDEvent)
 	Set_TimeDelta(L"Timer_DeltaTime");
 	m_fDeltaTime = Get_TimeDelta(L"Timer_DeltaTime");
 
-
-
 	if (m_pToolCam)
 		m_pToolCam->Update_Object(m_fDeltaTime);
 
-	if(m_pSelectedGameObject)
+	if (m_pSelectedGameObject)
+	{
 		m_pSelectedGameObject->Update_Object(m_fDeltaTime);
 
+		if (m_mapCollider.size() > 0)
+		{
+			for (auto iter : m_mapCollider)
+			{
+				if(iter.second->GetTarget() == nullptr)
+					iter.second->SetTarget(m_pSelectedGameObject);
+				iter.second->Update_Object(m_fDeltaTime);
+			}
+		}
+	}
+		
 
 	CDialog::OnTimer(nIDEvent);
 }
@@ -282,7 +302,6 @@ void CColliderTool::Find_FolderList(CString strPath)
 
 void CColliderTool::Set_TreeBoneName(CTreeCtrl * pTreeCtrl, HTREEITEM h_Parants, D3DXFRAME_DERIVED* pFrame)
 {
-	//pTreeCtrl->DeleteAllItems();
 	USES_CONVERSION;
 
 	HTREEITEM h_MeshType;
@@ -300,14 +319,38 @@ void CColliderTool::Set_TreeBoneName(CTreeCtrl * pTreeCtrl, HTREEITEM h_Parants,
 	ExpandTree(pTreeCtrl, h_MeshType);
 }
 
+void CColliderTool::Set_TreeCollider(CTreeCtrl * pTreeCtrl, HTREEITEM h_Parants)
+{
+	USES_CONVERSION;
+	HTREEITEM h_MeshType;
+	wstring wstrBoneName;
 
-
-
-
+	for (auto iter : m_mapCollider)
+	{
+		h_MeshType = pTreeCtrl->InsertItem(iter.first.c_str(), h_Parants, NULL);
+	}
+	
+}
 
 void CColliderTool::OnBnClickedAddCol()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	USES_CONVERSION;
+	UpdateData(TRUE);
+
+	m_pColliderObj = CColSphereMesh::Create(m_pDevice
+											, m_tColInfo.vCenterPos
+											, m_tColInfo.fRadius*20.f
+											, m_wstrBoneName.c_str());
+	auto iter_find = m_mapCollider.find(m_wstrColTag.GetString());
+	if (iter_find != m_mapCollider.end())
+		return;
+
+	m_mapCollider.emplace(m_wstrColTag.GetString(), m_pColliderObj);
+
+	m_TreeAttached.DeleteAllItems();
+	Set_TreeCollider(&m_TreeAttached,NULL );
+	
+	UpdateData(FALSE);
 }
 
 
@@ -343,7 +386,11 @@ void CColliderTool::OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CColliderTool::OnBnClickedAddSaveList()
 {
+	UpdateData(TRUE);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+
+	UpdateData(FALSE);
 }
 
 
@@ -377,20 +424,31 @@ void CColliderTool::OnNMDblclkMeshList(NMHDR *pNMHDR, LRESULT *pResult)
 
 	if (!m_TreeMeshList.ItemHasChildren(hItem))
 	{
-		CString wstrMeshKey = m_TreeMeshList.GetItemText(hItem);
+		m_cstrMeshName = m_TreeMeshList.GetItemText(hItem);
 		auto iter_find = m_mapReadyMesh.find(L"DynamicMesh");
 
-		auto iter_Obj = iter_find->second.find(wstrMeshKey.GetString());
+		auto iter_Obj = iter_find->second.find(m_cstrMeshName.GetString());
 
 		//가저온 키값으로 다이나믹 매시 접근해서 뼈 리스트 이즈고 
 		if (m_pSelectedGameObject != nullptr)
 			Safe_Release(m_pSelectedGameObject);
-		m_pSelectedGameObject = CDynamicMeshObj::Create(m_pDevice, wstrMeshKey.GetString());
+		m_pSelectedGameObject = CDynamicMeshObj::Create(m_pDevice, m_cstrMeshName.GetString());
 
 		D3DXFRAME* pRootFrame = dynamic_cast<CDynamicMesh*>(m_pSelectedGameObject->Get_Component(L"Com_Mesh", ID_STATIC))->GetRootFrame();
 
+		m_TreeBoneList.DeleteAllItems();
 		Set_TreeBoneName(&m_TreeBoneList, NULL,(D3DXFRAME_DERIVED*)pRootFrame);
+
+		//애니메이션 셋팅
+		_uint iAniIdex = dynamic_cast<CDynamicMesh*>(m_pSelectedGameObject->Get_Component(L"Com_Mesh", ID_STATIC))->GetMaxNumAnimationSet();
+
+		for (_uint i = 0; i < iAniIdex; i++)
+		{
+			m_ListAniIdx.AddString(to_wstring(i).c_str());
+		}
+
 	}
+
 	*pResult = 0;
 }
 
@@ -407,14 +465,15 @@ void CColliderTool::OnNMClickBoneList(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem = m_TreeBoneList.HitTest(pt, &flag);
 
 	CString wstrBoneKey = m_TreeMeshList.GetItemText(hItem);
+	m_wstrBoneName = wstrBoneKey.GetString();
+
+	//m_pBoneName = W2A(wstrBoneKey.GetString());
+
+	//const D3DXFRAME_DERIVED* pFrame = dynamic_cast<CDynamicMesh*>(m_pSelectedGameObject->Get_Component(L"Com_Mesh", ID_STATIC))->Get_FrameByName(m_pBoneName);
+
+	//m_tColInfo.vCenterPos = { pFrame->CombinedTransformMatrix._41,pFrame->CombinedTransformMatrix._42 ,pFrame->CombinedTransformMatrix._43};
+
 	
-	const char* pFrameName = W2A(wstrBoneKey.GetString());
-
-	const D3DXFRAME_DERIVED* pFrame  = dynamic_cast<CDynamicMesh*>(m_pSelectedGameObject->Get_Component(L"Com_Mesh", ID_STATIC))->Get_FrameByName(pFrameName);
-
-	m_tColInfo.vCenterPos = { pFrame->CombinedTransformMatrix._41,pFrame->CombinedTransformMatrix._42 ,pFrame->CombinedTransformMatrix._43};
-
-
 	*pResult = 0;
 }
 
@@ -428,6 +487,13 @@ void CColliderTool::OnNMClickAttachedColList(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CColliderTool::OnLbnSelchangeAnimationList()
 {
+	UpdateData(TRUE);
+	CString cstrAniIdx;
+	_uint iIdx = m_ListAniIdx.GetCurSel();
+
+	m_ListAniIdx.GetText(iIdx, cstrAniIdx);
+
+	dynamic_cast<CDynamicMesh*>(m_pSelectedGameObject->Get_Component(L"Com_Mesh", ID_STATIC))->Set_AnimationIndex(_ttoi(cstrAniIdx));
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
@@ -435,4 +501,62 @@ void CColliderTool::OnLbnSelchangeAnimationList()
 void CColliderTool::OnLbnSelchangeSaveList()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CColliderTool::OnEnChangePositionX()
+{
+	if (!m_pSelectedGameObject)
+		return;
+	UpdateData(TRUE);
+	m_tColInfo.vCenterPos.x += m_fPositionX;
+
+
+	UpdateData(FALSE);
+}
+
+
+void CColliderTool::OnEnChangePositionY()
+{
+	if (!m_pSelectedGameObject)
+		return;
+	UpdateData(TRUE);
+	m_tColInfo.vCenterPos.y += m_fPositionY;
+
+
+	UpdateData(FALSE);
+}
+
+
+void CColliderTool::OnEnChangePositionZ()
+{
+	if (!m_pSelectedGameObject)
+		return;
+	UpdateData(TRUE);
+	m_tColInfo.vCenterPos.z += m_fPositionZ;
+
+
+	UpdateData(FALSE);
+}
+
+
+void CColliderTool::OnEnChangeRadius()
+{
+	if (!m_pSelectedGameObject)
+		return;
+	UpdateData(TRUE);
+	m_tColInfo.fRadius = m_fRadius;
+
+
+	UpdateData(FALSE);
+}
+
+
+void CColliderTool::OnDeltaposSpinRadius(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+
+
+
+	*pResult = 0;
 }

@@ -21,6 +21,7 @@ public:
 	void			Play_Animation(const _float& fTimeDelta);
 	const			D3DXFRAME_DERIVED*		Get_FrameByName(const char* pFrameName);
 	_bool			Is_AnimationsetFinish(void);
+	_uint			GetMaxNumAnimationSet() { if (!m_pAniCtrl)return 0;  return m_pAniCtrl->GetMaxNumAnimationSets(); }
 	map<const char*, map<_ulong, const char*>> GetBoneNameList() { return m_mapBoneName; }
 
 

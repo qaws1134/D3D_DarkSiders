@@ -30,20 +30,17 @@ Engine::CColliderSphere::~CColliderSphere(void)
 
 }
 
-HRESULT CColliderSphere::Ready_Collider(const _vec3 * pPos,
-	const _ulong & dwVtxCnt,
-	const _ulong & dwStride,
-	_float fRadius)
+HRESULT CColliderSphere::Ready_Collider(const _vec3 * pPos,_float fRadius)
 {
 	//메시 사이즈에 맞는 바운딩 박스를 만글기
 	//가장 작은 좌표 값과 가증 큰 좌표 값을 만들어주는 함수
-	D3DXComputeBoundingSphere(pPos, dwVtxCnt, sizeof(_vec3), &m_vCenter, &fRadius);
+	//D3DXComputeBoundingSphere(pPos, dwVtxCnt, sizeof(_vec3), &m_vCenter, &fRadius);
 
 #ifdef  _DEBUG
 	
 	D3DXCreateSphere(
 		m_pGraphicDev,
-		m_fRadius,
+		fRadius,
 		20,
 		20,
 		&m_pSphereMesh,
@@ -80,8 +77,8 @@ void CColliderSphere::Render_Collider(COLTYPE eType,  _matrix * pColliderMatrix)
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, &m_matColMatrix);
 	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	m_pGraphicDev->SetTexture(0, m_pTexture[eType]);
-
-
+	
+	
 	m_pSphereMesh->DrawSubset(0);
 
 
@@ -91,19 +88,6 @@ void CColliderSphere::Render_Collider(COLTYPE eType,  _matrix * pColliderMatrix)
 
 }
 
-CColliderSphere * CColliderSphere::Create(LPDIRECT3DDEVICE9 pGraphicDev,
-	 _vec3 * pPos,
-	const _ulong & dwVtxCnt,
-	const _ulong & dwStride,
-	_float fRadius)
-{
-	CColliderSphere*		pInstance = new	CColliderSphere(pGraphicDev);
-
-	if (FAILED(pInstance->Ready_Collider(pPos, dwVtxCnt, dwStride,fRadius)))
-		Safe_Release(pInstance);
-
-	return pInstance;
-}
 
 CColliderSphere * CColliderSphere::Create(LPDIRECT3DDEVICE9 pGraphicDev
 	, _vec3* pPos
@@ -111,7 +95,7 @@ CColliderSphere * CColliderSphere::Create(LPDIRECT3DDEVICE9 pGraphicDev
 {
 	CColliderSphere*	pInstance = new	CColliderSphere(pGraphicDev);
 
-	if (FAILED(pInstance->Ready_Collider(pPos, 0, 0, fRadius)))
+	if (FAILED(pInstance->Ready_Collider(pPos, fRadius)))
 		Safe_Release(pInstance);
 
 	return pInstance;

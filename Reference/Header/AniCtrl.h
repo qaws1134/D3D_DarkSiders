@@ -15,7 +15,7 @@ private:
 
 public:
 	LPD3DXANIMATIONCONTROLLER		Get_AnimationCtrl(void) { return m_pAniCtrl; }
-
+	_uint GetMaxNumAnimationSets() { return m_pAniCtrl->GetMaxNumAnimationSets(); }
 public:
 	HRESULT			Ready_AniCtrl(void);
 	void			Set_AnimationIndex(const _uint& iIndex);
