@@ -11,7 +11,9 @@
 #include "ToolCam.h"
 #include "StaticMeshObj.h"
 #include "DynamicMeshObj.h"
+
 #include "NaviTri.h"
+
 #include "ColSphereMesh.h"
 #include "Terrain.h"
 
@@ -57,6 +59,7 @@ void CMeshTool::Release_Tools()
 	DeleteMultiMap(m_mapDynamicMesh);
 	DeleteMultiMap(m_mapNaviMesh);
 
+	for_each(m_mapNaviTri.begin(), m_mapNaviTri.end(), CDeleteMap());
 	KillTimer(MESHTOOL_TIMER);
 
 	Safe_Release(m_pToolCam);
@@ -234,145 +237,158 @@ void CMeshTool::Ready_MeshPrototype()
 {
 
 }
-
-void CMeshTool::CheckNaviMod()
-{
-	UpdateData(TRUE);
-	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO4);
-	if (!m_pCheck->GetCheck())
-	{
-		m_pCheck = (CButton*)GetDlgItem(IDC_RADIO7);
-		m_pCheck->EnableWindow(false);
-		m_pCheck->SetCheck(false);
-		m_pCheck = (CButton*)GetDlgItem(IDC_RADIO8);
-		m_pCheck->EnableWindow(false);
-		m_pCheck->SetCheck(false);
-		return;
-	}
-	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO7);
-	m_pCheck->EnableWindow(true);
-	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO8);
-	m_pCheck->EnableWindow(true);
-
-
-	m_pCheck = nullptr;
-	UpdateData(FALSE);
-}
-
 void CMeshTool::PickNavi(RAY tRayMouse)
 {
-
-	_vec3 vPickPos;
-	_matrix matInvWorld;
-	D3DXMatrixIdentity(&matInvWorld);
-	D3DXMatrixInverse(&matInvWorld, 0, &matInvWorld);
-	D3DXVec3TransformCoord(&tRayMouse.vRayPos, &tRayMouse.vRayPos, &matInvWorld);
-	D3DXVec3TransformNormal(&tRayMouse.vRayDir, &tRayMouse.vRayDir, &matInvWorld);
-	CTerrain* pTerrain = m_pToolView->m_pTerrain;
-	CTerrainTex* pTerrainBufferCom = dynamic_cast<CTerrainTex*>(pTerrain->Get_Component(L"Com_Buffer", ID_STATIC));
-
-
-
-	_ulong		dwVtXCntX = VTXCNTX;
-	_ulong		dwVtXCntZ = VTXCNTZ;
-	const	_vec3*		pTerrainVtx = pTerrainBufferCom->Get_VtxPos();
-
-	_float	fU, fV, fDist;
-	_ulong	dwVtxIdx[3];
-	for (_ulong i = 0; i < dwVtXCntZ - 1; ++i)
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO4);
+	if (m_pCheck->GetCheck())
 	{
-		for (_ulong j = 0; j < dwVtXCntX - 1; ++j)
-		{
-			_ulong dwIndex = i * dwVtXCntX + j;
+		_vec3 vPickPos;
+		_matrix matInvWorld;
+		D3DXMatrixIdentity(&matInvWorld);
+		D3DXMatrixInverse(&matInvWorld, 0, &matInvWorld);
+		D3DXVec3TransformCoord(&tRayMouse.vRayPos, &tRayMouse.vRayPos, &matInvWorld);
+		D3DXVec3TransformNormal(&tRayMouse.vRayDir, &tRayMouse.vRayDir, &matInvWorld);
+		//월드까지 내림?
 
-			// 오른쪽 위 삼각형
+	//	CTerrain* pTerrain = m_pToolView->m_pTerrain;
+		CTerrainTex* pTerrainBufferCom = dynamic_cast<CTerrainTex*>(m_pToolView->m_pTerrain->Get_Component(L"Com_Buffer", ID_STATIC));
 
-			dwVtxIdx[0] = dwIndex + dwVtXCntX;
-			dwVtxIdx[1] = dwIndex + dwVtXCntX + 1;
-			dwVtxIdx[2] = dwIndex + 1;
-
-			if (D3DXIntersectTri(&pTerrainVtx[dwVtxIdx[1]],
-				&pTerrainVtx[dwVtxIdx[0]],
-				&pTerrainVtx[dwVtxIdx[2]],
-				&tRayMouse.vRayPos,
-				&tRayMouse.vRayDir,
-				&fU, &fV, &fDist))
-			{
-				vPickPos = _vec3(pTerrainVtx[dwVtxIdx[1]].x + fU * (pTerrainVtx[dwVtxIdx[0]].x - pTerrainVtx[dwVtxIdx[1]].x),
-					0.f,
-					pTerrainVtx[dwVtxIdx[1]].z + fV * (pTerrainVtx[dwVtxIdx[2]].z - pTerrainVtx[dwVtxIdx[1]].z));
-			}
-
-			// 왼쪽 아래 삼각형
-
-			dwVtxIdx[0] = dwIndex + dwVtXCntX;
-			dwVtxIdx[1] = dwIndex + 1;
-			dwVtxIdx[2] = dwIndex;
-
-			if (D3DXIntersectTri(&pTerrainVtx[dwVtxIdx[2]],
-				&pTerrainVtx[dwVtxIdx[1]],
-				&pTerrainVtx[dwVtxIdx[0]],
-				&tRayMouse.vRayPos,
-				&tRayMouse.vRayDir,
-				&fU, &fV, &fDist))
-			{
-				vPickPos = _vec3(pTerrainVtx[dwVtxIdx[2]].x + fU * (pTerrainVtx[dwVtxIdx[1]].x - pTerrainVtx[dwVtxIdx[2]].x),
-					0.f,
-					pTerrainVtx[dwVtxIdx[2]].z + fV * (pTerrainVtx[dwVtxIdx[0]].z - pTerrainVtx[dwVtxIdx[2]].z));
-			}
-
-		}
-	}
-
-	m_pNaviPos[m_iNaviCount] = vPickPos;
-	m_iNaviCount += 1;
-
-	if (m_iNaviCount < MAX_NAVIVERTEX)
-	{
-		return;
-	}
-	//네비 카운트 초기화
-	m_iNaviCount = 0;
-	_uint iIdx = 0;
-	while (true)
-	{
-		auto& iter_find = m_mapNaviMesh.find(iIdx);
-		if (iter_find != m_mapNaviMesh.end())
-		{
-			iIdx++;
-			continue;
-		}
-		map<_uint, CGameObject* > mapNaviObj;
-		for (_uint i = 0; i < MAX_NAVIVERTEX; i++)
-		{
-			//정점을 가지고 있는 충돌체 생성
-			//해당 매시 충돌 시 해당 메시의 pos 반환
-			mapNaviObj.emplace(i, CColSphereMesh::Create(m_pDevice, m_pNaviPos[i]));
-			
-		}
-		//수정 시 해당 메시와 동일 한 pos를 가지고 있는 네비매시를 찾음
-		//해당 네비매시 전부 update
 		
 
-		CCell*		pCell = nullptr;
-		pCell = CCell::Create(m_pDevice, m_mapNaviMesh.size(), &m_pNaviPos[0], &m_pNaviPos[1], &m_pNaviPos[2]);
-	
-		m_mapNaviMesh.emplace(iIdx, mapNaviObj);
-		break;
+		_ulong		dwVtXCntX = VTXCNTX;
+		_ulong		dwVtXCntZ = VTXCNTZ;
+		const	_vec3*		pTerrainVtx = pTerrainBufferCom->Get_VtxPos();
+
+		_float	fU, fV, fDist;
+		_ulong	dwVtxIdx[3];
+		for (_ulong i = 0; i < dwVtXCntZ - 1; ++i)
+		{
+			for (_ulong j = 0; j < dwVtXCntX - 1; ++j)
+			{
+				_ulong dwIndex = i * dwVtXCntX + j;
+
+				// 오른쪽 위 삼각형
+
+				dwVtxIdx[0] = dwIndex + dwVtXCntX;
+				dwVtxIdx[1] = dwIndex + dwVtXCntX + 1;
+				dwVtxIdx[2] = dwIndex + 1;
+
+				if (D3DXIntersectTri(&pTerrainVtx[dwVtxIdx[1]],
+					&pTerrainVtx[dwVtxIdx[0]],
+					&pTerrainVtx[dwVtxIdx[2]],
+					&tRayMouse.vRayPos,
+					&tRayMouse.vRayDir,
+					&fU, &fV, &fDist))
+				{
+					vPickPos = _vec3(pTerrainVtx[dwVtxIdx[1]].x + fU * (pTerrainVtx[dwVtxIdx[0]].x - pTerrainVtx[dwVtxIdx[1]].x),
+						0.f,
+						pTerrainVtx[dwVtxIdx[1]].z + fV * (pTerrainVtx[dwVtxIdx[2]].z - pTerrainVtx[dwVtxIdx[1]].z));
+				}
+
+				// 왼쪽 아래 삼각형
+
+				dwVtxIdx[0] = dwIndex + dwVtXCntX;
+				dwVtxIdx[1] = dwIndex + 1;
+				dwVtxIdx[2] = dwIndex;
+
+				if (D3DXIntersectTri(&pTerrainVtx[dwVtxIdx[2]],
+					&pTerrainVtx[dwVtxIdx[1]],
+					&pTerrainVtx[dwVtxIdx[0]],
+					&tRayMouse.vRayPos,
+					&tRayMouse.vRayDir,
+					&fU, &fV, &fDist))
+				{
+					vPickPos = _vec3(pTerrainVtx[dwVtxIdx[2]].x + fU * (pTerrainVtx[dwVtxIdx[1]].x - pTerrainVtx[dwVtxIdx[2]].x),
+						0.f,
+						pTerrainVtx[dwVtxIdx[2]].z + fV * (pTerrainVtx[dwVtxIdx[0]].z - pTerrainVtx[dwVtxIdx[2]].z));
+				}
+
+			}
+		}
+		//vpickpos랑 충돌체랑 충돌 시 충돌체 pos 반환
+		_vec3 vOutPos;
+		if (NaviCol(vPickPos,&vOutPos))
+		{
+			m_pNaviPos[m_iNaviCount] = vOutPos;
+		}
+		else  // 충돌 안했을 시 
+		{
+			m_pNaviPos[m_iNaviCount] = vPickPos;
+		}
+		m_iNaviCount += 1;
+
+			if (m_iNaviCount < MAX_NAVIVERTEX)
+			{
+				return;
+			}
+		//네비 카운트 초기화
+		m_iNaviCount = 0;
+		_uint iIdx = 0;
+		while (true)
+		{
+			auto& iter_find = m_mapNaviMesh.find(iIdx);
+			if (iter_find != m_mapNaviMesh.end())
+			{
+				iIdx++;
+				continue;
+			}
+			map<_uint, CGameObject* > mapNaviObj;
+			//피킹을 위한 collider 생성
+			for (_uint i = 0; i < MAX_NAVIVERTEX; i++)
+			{
+				//정점을 가지고 있는 충돌체 생성
+				//해당 매시 충돌 시 해당 메시의 pos 반환
+				mapNaviObj.emplace(i, CColSphereMesh::Create(m_pDevice, m_pNaviPos[i]));
+
+			}
+			//수정 시 해당 메시와 동일 한 pos를 가지고 있는 네비매시를 찾음
+			//해당 네비매시 전부 update
+
+			//여기서는 점 3개만 뭉처서 넘겨주면? 로드할떄 네비매시로 찍으면 되잖아?
+			//난 바본가?
+			m_mapNaviMesh.emplace(iIdx, mapNaviObj);
+
+			Make_NaviTri(iIdx);
+
+			break;
+		}
+		Set_TreeNavi(&m_TreeNavi, L"NaviMesh");
 	}
+}
 
-	
-	
-	
-	Set_TreeNavi(&m_TreeNavi, L"NaviMesh");
+_bool CMeshTool::NaviCol(_vec3 vPickingPos, _vec3* vOutPos)
+{
+	for (auto iter : m_mapNaviMesh)
+	{
+		for (auto iter_second : iter.second)
+		{
+			_vec3 vPos;
+			dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS,&vPos);
+			_float fRadius = dynamic_cast<CColSphereMesh*>(iter_second.second)->GetRafius();
+			_float fSrcRadius = 0.1f;
+			if (dynamic_cast<CCalculator*>(iter_second.second->Get_Component(L"Com_Calculator", ID_STATIC))->Collision_Sphere(&vPos, &fRadius, &vPickingPos, &fSrcRadius))
+			{
+				*vOutPos = vPos;
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
-
-
-
-
-
-	m_mapNaviMesh.size(); // 리저브
-
+void CMeshTool::Make_NaviTri(_uint iIdx)
+{
+	auto iter_find = m_mapNaviMesh.find(iIdx);
+	_ulong Iindx = 0;
+	_vec3 vPos[3];
+	for (auto iter_second : iter_find->second)
+	{
+		dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vPos[Iindx]);
+		Iindx++;
+	}
+	//요기서 점3개 받아서 
+	//vpos 넘겨줌 
+	m_mapNaviTri.emplace(iIdx, CNaviTri::Create(m_pDevice, vPos));
 
 }
 
@@ -497,6 +513,9 @@ BEGIN_MESSAGE_MAP(CMeshTool, CDialog)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN8, &CMeshTool::OnDeltaposSpinPositionX)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN9, &CMeshTool::OnDeltaposSpinPositionY)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN10, &CMeshTool::OnDeltaposSpinPositionZ)
+	ON_NOTIFY(NM_CLICK, IDC_TREE3, &CMeshTool::OnNMClickDynamicList)
+	ON_BN_CLICKED(IDC_RADIO3, &CMeshTool::OnBnClickedObject)
+	ON_BN_CLICKED(IDC_RADIO4, &CMeshTool::OnBnClickedNaviMesh)
 END_MESSAGE_MAP()
 
 
@@ -535,6 +554,10 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 		}
 	}
 
+	for (auto iter : m_mapNaviTri)
+	{
+		iter.second->Update_Object(m_fDeltaTime);
+	}
 
 
 	if (m_pToolCam)
@@ -547,8 +570,7 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 		m_pCtrlTransform->Update_Component(m_fDeltaTime);
 	}
 
-	//네비모드 체크 
-	CheckNaviMod();
+
 
 
 	CDialog::OnTimer(nIDEvent);
@@ -943,6 +965,60 @@ void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
+void CMeshTool::OnNMClickDynamicList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData(TRUE);
+	POINT pt;
+	GetCursorPos(&pt);
+	UINT flag;
+	m_TreeDynamic.ScreenToClient(&pt);
+	HTREEITEM hItem = m_TreeDynamic.HitTest(pt, &flag);
+	if (!m_TreeDynamic.ItemHasChildren(hItem))
+	{
+		CString wstrIdxKey = m_TreeDynamic.GetItemText(hItem);
+		CString wstrToken = L"_";
+		_int iTokenIdx = 0;
+		CString wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx);
+
+		auto iter_find = m_mapDynamicMesh.find(wstrKey.GetString());
+
+		if (iter_find == m_mapDynamicMesh.end())
+			return;
+
+
+		auto Objiter_find = iter_find->second.find(wstrIdxKey.GetString());
+
+		m_pCtrlObject = Objiter_find->second;
+		m_pCtrlTransform = dynamic_cast<CTransform*>(m_pCtrlObject->Get_Component(L"Com_Transform", Engine::ID_DYNAMIC));
+		
+		_vec3 vPos;
+		_vec3 vScale;
+		_vec3 vRot;
+
+		m_pCtrlTransform->Get_INFO(INFO_POS, &vPos);
+		vRot = m_pCtrlTransform->Get_Rot();
+		vScale = m_pCtrlTransform->Get_Scale();
+
+		m_fScaleX = vScale.x;
+		m_fScaleY = vScale.y;
+		m_fScaleZ = vScale.z;
+
+		m_fRotationX = vRot.x;
+		m_fRotationY = vRot.y;
+		m_fRotationZ = vRot.z;
+
+		m_fPositionX = vPos.x;
+		m_fPositionY = vPos.y;
+		m_fPositionZ = vPos.z;
+
+	}
+
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
+
 void CMeshTool::OnDeltaposSpinScaleX(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	if (!m_pCtrlTransform)
@@ -951,11 +1027,11 @@ void CMeshTool::OnDeltaposSpinScaleX(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	if (pNMUpDown->iDelta < 0)	//->값 증가
 	{
-		m_fScaleX += m_fDeltaTime;
+		m_fScaleX += 0.1f;
 	}
 	else		//감소
 	{
-		m_fScaleX -= m_fDeltaTime;
+		m_fScaleX -= 0.1f;
 	}
 	m_vScale.x = m_fScaleX;
 	m_pCtrlTransform->Set_Scale(&m_vScale);
@@ -972,11 +1048,11 @@ void CMeshTool::OnDeltaposSpinScaleY(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	if (pNMUpDown->iDelta < 0)	//->값 증가
 	{
-		m_fScaleY += m_fDeltaTime;
+		m_fScaleY += 0.1f;
 	}
 	else		//감소
 	{
-		m_fScaleY -= m_fDeltaTime;
+		m_fScaleY -= 0.1f;
 	}
 	m_vScale.y = m_fScaleY;
 	m_pCtrlTransform->Set_Scale(&m_vScale);
@@ -993,11 +1069,11 @@ void CMeshTool::OnDeltaposSpinScaleZ(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	if (pNMUpDown->iDelta < 0)	//->값 증가
 	{
-		m_fScaleZ += m_fDeltaTime;
+		m_fScaleZ += 0.1f;
 	}
 	else		//감소
 	{
-		m_fScaleZ -= m_fDeltaTime;
+		m_fScaleZ -= 0.1f;
 	}
 	m_vScale.z = m_fScaleZ;
 	m_pCtrlTransform->Set_Scale(&m_vScale);
@@ -1014,11 +1090,11 @@ void CMeshTool::OnDeltaposSpinRotationX(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	if (pNMUpDown->iDelta < 0)	//->값 증가
 	{
-		m_fRotationX += m_fDeltaTime*10.f;
+		m_fRotationX += m_fDeltaTime*100.f;
 	}
 	else		//감소
 	{
-		m_fRotationX -= m_fDeltaTime*10.f;
+		m_fRotationX -= m_fDeltaTime*100.f;
 	}
 	m_vRot.x = D3DXToRadian(m_fRotationX);
 	m_pCtrlTransform->Set_Rot(&m_vRot);
@@ -1035,11 +1111,11 @@ void CMeshTool::OnDeltaposSpinRotationY(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	if (pNMUpDown->iDelta < 0)	//->값 증가
 	{
-		m_fRotationY += m_fDeltaTime*10.f;
+		m_fRotationY += m_fDeltaTime*100.f;
 	}
 	else		//감소
 	{
-		m_fRotationY -= m_fDeltaTime*10.f;
+		m_fRotationY -= m_fDeltaTime*100.f;
 	}
 
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -1058,11 +1134,11 @@ void CMeshTool::OnDeltaposSpinRotationZ(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	if (pNMUpDown->iDelta < 0)	//->값 증가
 	{
-		m_fRotationZ += m_fDeltaTime*10.f;
+		m_fRotationZ += m_fDeltaTime*100.f;
 	}
 	else		//감소
 	{
-		m_fRotationZ -= m_fDeltaTime*10.f;
+		m_fRotationZ -= m_fDeltaTime*100.f;
 	}
 
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -1138,3 +1214,48 @@ void CMeshTool::OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult)
 	UpdateData(FALSE);
 }
 
+
+
+
+void CMeshTool::OnBnClickedObject()
+{
+	UpdateData(TRUE);
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO5);
+	m_pCheck->EnableWindow(true);
+	m_pCheck->SetCheck(true);
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO6);
+	m_pCheck->EnableWindow(true);
+
+
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO7);
+	m_pCheck->EnableWindow(false);
+	m_pCheck->SetCheck(false);
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO8);
+	m_pCheck->EnableWindow(false);
+	m_pCheck->SetCheck(false);
+
+	m_pCheck = nullptr;
+	UpdateData(FALSE);
+}
+
+
+void CMeshTool::OnBnClickedNaviMesh()
+{
+	UpdateData(TRUE);
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO5);
+	m_pCheck->EnableWindow(false);
+	m_pCheck->SetCheck(false);
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO6);
+	m_pCheck->EnableWindow(false);
+	m_pCheck->SetCheck(false);
+
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO7);
+	m_pCheck->EnableWindow(true);
+	m_pCheck->SetCheck(true);
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO8);
+	m_pCheck->EnableWindow(true);
+
+
+	m_pCheck = nullptr;
+	UpdateData(FALSE);
+}

@@ -79,14 +79,19 @@ HRESULT CTriCol::Ready_Buffer(_vec3 * pArryPos)
 	// 3인자 값은 버텍스 버퍼에 저장된 버텍스들 중 첫 번째 주소 값을 반환
 
 	//점 3개의 월드 매트릭스를 저장 
-	_matrix* pWorld = nullptr;
+	_matrix pWorld[3];
+	for (_uint i =  0 ; i < 3; i++)
+		D3DXMatrixIdentity(&pWorld[i]);
 
+	//월드 점 받아서 로컬로 내려서 그림
 	for (_uint i = 0; i< m_dwVtxCnt; i++)
 	{
-		D3DXVec3TransformCoord(pArryPos+i, pArryPos+i, pWorld +i);
-		//역행렬로 로컬행렬을 구함 
+		//?
+		m_pGraphicDev->GetTransform(D3DTS_WORLD, pWorld+i);
 		D3DXMatrixInverse(pWorld + i, NULL, pWorld + i);
-		pVertex[i].vPosition = _vec3((pWorld+i)->_41, (pWorld + i)->_42, (pWorld + i)->_43);
+		D3DXVec3TransformCoord(pArryPos+i, pArryPos+i, (pWorld+i));
+		//역행렬로 로컬행렬을 구함 
+		pVertex[i].vPosition = _vec3((pArryPos+i)->x, (pArryPos + i)->y, (pArryPos + i)->z);
 		pVertex[i].dwColor = D3DXCOLOR(1.f, 0.f, 0.f, 1.f);
 	}
 
@@ -95,7 +100,7 @@ HRESULT CTriCol::Ready_Buffer(_vec3 * pArryPos)
 	INDEX16*		pIndex = nullptr;
 
 	m_pIB->Lock(0, 0, (void**)&pIndex, 0);
-
+	//인덱싱해서 그림
 	pIndex[0]._0 = 0;
 	pIndex[0]._1 = 1;
 	pIndex[0]._2 = 2;

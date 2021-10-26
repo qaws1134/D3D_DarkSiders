@@ -6,10 +6,10 @@
 
 BEGIN(Engine)
 
-class CTransform;
 class CRenderer;
 class CCalculator;
 class CTriCol;
+class CTransform;
 
 END
 
@@ -39,7 +39,7 @@ private:
 	CCalculator*	m_pCalculatorCom = nullptr;
 	CTriCol*		m_pTriColCom= nullptr;
 
-	_vec3*			m_pTriPos;
+	_vec3			m_pTriPos[3];
 
 
 public:

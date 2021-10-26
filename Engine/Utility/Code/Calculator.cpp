@@ -268,19 +268,17 @@ _bool CCalculator::Collision_OBB(const _vec3 * pDestMin, const _vec3 * pDestMax,
 	return true;
 }
 
-_bool CCalculator::Collision_Sphere(const _vec3 * pDestCenter, const _float * pDestRadius, const _matrix * pDestWorld,
-	const _vec3 * pSourCenter, const _float * pSourRadius, const _matrix * pSourWorld)
+_bool CCalculator::Collision_Sphere(const _vec3 * pDestCenter, const _float * pDestRadius,
+	const _vec3 * pSourCenter, const _float * pSourRadius)
 {
 
 	_vec3	vDestCenter, vSourCenter, vDistance;
 	_float	fRadiSum;
 
-	D3DXVec3TransformCoord(&vDestCenter, pDestCenter, pDestWorld);
-	D3DXVec3TransformCoord(&vSourCenter, pSourCenter, pSourWorld);
 
 	fRadiSum = *pDestRadius + *pSourRadius;
 
-	vDistance = vDestCenter - vSourCenter;
+	vDistance = *pDestCenter - *pSourCenter;
 
 	_float fDisSum = D3DXVec3Length(&vDistance);
 

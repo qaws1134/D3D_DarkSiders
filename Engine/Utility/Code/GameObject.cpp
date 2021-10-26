@@ -68,6 +68,7 @@ Engine::CComponent* Engine::CGameObject::Get_Component(const _tchar* pComponentT
 
 void CGameObject::Render_Object(void)
 {
+
 }
 
 

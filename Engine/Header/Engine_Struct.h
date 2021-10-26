@@ -6,11 +6,12 @@ namespace Engine
 	typedef struct tagVertexColor
 	{
 		_vec3		vPosition;	// float * 3  : 4, 4, 4
+		_vec3		vNormal;
 		_ulong		dwColor;	// ulong      : 4
 
 	}VTXCOL;
 
-	const _ulong	FVF_COL = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX0;
+	const _ulong	FVF_COL = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX0;
 
 
 	typedef struct tagVertexTex

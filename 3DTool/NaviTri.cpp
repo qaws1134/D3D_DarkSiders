@@ -22,7 +22,8 @@ CNaviTri::~CNaviTri(void)
 
 HRESULT CNaviTri::Ready_Object(_vec3 *pAryPos)
 {
-	memcpy(m_pTriPos, pAryPos, sizeof(_vec3) * 3);
+	memcpy(m_pTriPos, pAryPos, sizeof(_vec3)*3);
+	//요기 받아서
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 
@@ -47,7 +48,10 @@ _int CNaviTri::Update_Object(const _float& fTimeDelta)
 void CNaviTri::Render_Object(void)
 {	
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
-
+	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	m_pGraphicDev->SetTexture(0, nullptr);
+	m_pTriColCom->Render_Buffer();
+	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 }
 
@@ -76,6 +80,7 @@ HRESULT CNaviTri::Add_Component()
 	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Transform", pComponent);
 
+
 	// Renderer
 	pComponent = m_pRendererCom = Engine::Get_Renderer();
 	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
@@ -87,6 +92,7 @@ HRESULT CNaviTri::Add_Component()
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
 
+	//요기서 트라이앵글 드로우
 	pComponent = m_pTriColCom = CTriCol::Create(m_pGraphicDev,m_pTriPos);
 	NULL_CHECK_RETURN(m_pTriColCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"com_TriBuffer", pComponent);

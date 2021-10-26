@@ -29,11 +29,13 @@ public:
 	void Set_CreateTree(CString strPath, HTREEITEM Parents);
 	void Set_Tree(CTreeCtrl* pTreeCtrl, wstring wstrType, map<wstring, map<wstring, CGameObject*>> mapMesh);
 	void Set_TreeNavi(CTreeCtrl* pTreeCtrl, wstring wstrType);
+	
+	void Make_NaviTri(_uint iIdx);
 
 	void Ready_MeshPrototype();
 	void CheckNaviMod();
 	void PickNavi(RAY tRayMouse);
-
+	_bool NaviCol(_vec3 vPickingPos,_vec3* vOutPos);
 
 private:
 	HRESULT Ready_MeshComponent();
@@ -72,6 +74,8 @@ private:
 	_uint m_iNaviCount = 0;
 
 	_vec3 m_pNaviPos[MAX_NAVIVERTEX];
+	
+	map<_uint, CGameObject*> m_mapNaviTri;
 	map<_uint, map<_uint, CGameObject*>>m_mapNaviMesh;
 
 
@@ -132,4 +136,7 @@ public:
 	afx_msg void OnDeltaposSpinPositionX(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpinPositionY(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMClickDynamicList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedObject();
+	afx_msg void OnBnClickedNaviMesh();
 };

@@ -126,14 +126,15 @@ _vec3 CNaviMesh::MoveOn_NaviMesh(const _vec3 * pTargetPos, const _vec3 * pTarget
 
 	return _vec3();
 }
-_bool CNaviMesh::PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize)
-{
-	RAY rayMouse = CRayPickManager::GetInstance()->Create_MouseRay(_vec2((_float)vMousPos.x, (_float)vMousPos.y), _vec2((_float)vWindowSize.x, (_float)vWindowSize.y));
-	_vec3 vPos = rayMouse.vRayPos;
 
-
-
-}
+//_bool CNaviMesh::PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize)
+//{
+//	RAY rayMouse = CRayPickManager::GetInstance()->Create_MouseRay(_vec2((_float)vMousPos.x, (_float)vMousPos.y), _vec2((_float)vWindowSize.x, (_float)vWindowSize.y));
+//	_vec3 vPos = rayMouse.vRayPos;
+//
+//	return false;
+//
+//}
 HRESULT Engine::CNaviMesh::Link_Cell(void)
 {
 	for (_ulong i = 0; i < m_vecCell.size(); ++i)

@@ -26,6 +26,7 @@ HRESULT CColSphereMesh::Ready_Object( )
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 
 
+
 	return S_OK;
 }
 
@@ -53,7 +54,11 @@ _int CColSphereMesh::Update_Object(const _float& fTimeDelta)
 	}
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
-	m_pTransformCom->Set_ParentMatrix(&(*m_pParentBoneMatrix * *m_pParentWorldMatrix));
+	if (m_pParentBoneMatrix == nullptr&& m_wstrBone != L"")
+	{
+		m_pTransformCom->Set_ParentMatrix(&(*m_pParentBoneMatrix * *m_pParentWorldMatrix));
+	}
+
 	Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;
