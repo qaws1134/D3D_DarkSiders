@@ -55,7 +55,7 @@ void CDynamicMeshObj::Render_Object(void)
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
 	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-
+	m_pColliderCom->Render_Collider(COLTYPE(m_bCol), m_pTransformCom->Get_WorldMatrix());
 	m_pMeshCom->Render_Meshes();
 
 	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -111,6 +111,14 @@ HRESULT CDynamicMeshObj::Add_Component()
 	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
+
+	// Collider
+	_vec3 vPos; 
+	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+	_float fRadius = 100.f; 
+	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev,&vPos, fRadius);
+	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
 
 
 	return S_OK;

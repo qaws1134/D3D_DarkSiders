@@ -49,6 +49,8 @@ const			Engine::D3DXFRAME_DERIVED* Engine::CDynamicMesh::Get_FrameByName(const c
 	return (D3DXFRAME_DERIVED*)D3DXFrameFind(m_pRootFrame, pFrameName);
 }
 
+
+
 HRESULT Engine::CDynamicMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar* pFileName)
 {
 	_tchar	szFullPath[MAX_PATH] = L"";
@@ -112,10 +114,12 @@ void Engine::CDynamicMesh::Render_Meshes(void)
 
 			pDerivedMeshContainer->MeshData.pMesh->DrawSubset(i);
 		}
+		pDerivedMeshContainer->MeshData.pMesh->GetNumVertices();
 
 		pDerivedMeshContainer->pOriMesh->UnlockVertexBuffer();
 		pDerivedMeshContainer->MeshData.pMesh->UnlockVertexBuffer();
 	}
+	
 }
 
 void Engine::CDynamicMesh::Update_FrameMatrices(D3DXFRAME_DERIVED* pFrame, const _matrix* pParentMatrix)
@@ -124,6 +128,7 @@ void Engine::CDynamicMesh::Update_FrameMatrices(D3DXFRAME_DERIVED* pFrame, const
 		return;
 
 	pFrame->CombinedTransformMatrix = pFrame->TransformationMatrix * (*pParentMatrix);
+
 
 	if (nullptr != pFrame->pFrameSibling)
 		Update_FrameMatrices((D3DXFRAME_DERIVED*)pFrame->pFrameSibling, pParentMatrix);
@@ -170,6 +175,8 @@ void Engine::CDynamicMesh::SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame)
 		D3DXMESHCONTAINER_DERIVED*	pDerivedMeshContainer = (D3DXMESHCONTAINER_DERIVED*)pFrame->pMeshContainer;
 		map<_ulong, const char*> mapBone;
 		//wstring wstrBoneName;
+		//전체 뼈 - > 순회횟수
+		//뼈 위치 저장한 값 덩어리 -> 컴퓨트 버텍스 값 
 		for (_ulong i = 0; i < pDerivedMeshContainer->dwNumBones; ++i)
 		{
 			const char* pBoneName = pDerivedMeshContainer->pSkinInfo->GetBoneName(i);
@@ -183,7 +190,11 @@ void Engine::CDynamicMesh::SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame)
 		//wstrBoneName = A2W(pFrame->Name);
 		m_mapBoneName.emplace(pFrame->Name, mapBone);
 		m_MeshContainerList.push_back(pDerivedMeshContainer);
+	
 	}
+
+
+
 
 	if (nullptr != pFrame->pFrameSibling)
 		SetUp_FrameMatrices((D3DXFRAME_DERIVED*)pFrame->pFrameSibling);

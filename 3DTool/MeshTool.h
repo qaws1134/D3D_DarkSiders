@@ -32,11 +32,17 @@ public:
 	
 	void Make_NaviTri(_uint iIdx);
 
-	void Ready_MeshPrototype();
-	void CheckNaviMod();
-	void PickNavi(RAY tRayMouse);
-	_bool NaviCol(_vec3 vPickingPos,_vec3* vOutPos);
 
+	//void CheckNaviMod();
+	
+	//피킹
+	void PickNavi(RAY tRayMouse);
+	void PickMove(RAY tRayMouse);
+
+
+	//컬라이더
+	_bool NaviCol(RAY tRay,_vec3* pOutPos, _ulong* pIndex);
+	_bool MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapMesh,COMPONENTID eID);
 private:
 	HRESULT Ready_MeshComponent();
 	HRESULT	Ready_LightInfo(void);
@@ -79,6 +85,7 @@ private:
 	map<_uint, map<_uint, CGameObject*>>m_mapNaviMesh;
 
 
+	_bool	m_bCol = false;
 
 
 protected:

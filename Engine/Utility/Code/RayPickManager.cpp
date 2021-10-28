@@ -45,10 +45,34 @@ Engine::RAY Engine::CRayPickManager::Create_MouseRay(const _vec2 & MousePos, con
 
 	D3DXVec3TransformCoord(&Ray.vRayPos, &Ray.vRayPos, &matView);
 	D3DXVec3TransformNormal(&Ray.vRayDir, &Ray.vRayDir, &matView);
-
+	D3DXVec3Normalize(&Ray.vRayDir, &Ray.vRayDir);
 	/* 월드까지 내린상태 */
 
 	return Ray;
+}
+
+//뷰까지 내리고 넘겨주면 ㅇㅋ
+_bool CRayPickManager::RaySphereCollision(RAY tRay, _vec3 vCenterPos, _float fRadius)
+{
+	_vec3 vDir = tRay.vRayPos - vCenterPos;
+
+	_float fCosDir = 2.0f * D3DXVec3Dot(&tRay.vRayDir, &vDir);
+	_float fCosRadius = D3DXVec3Dot(&vDir, &vDir) - (fRadius*fRadius);
+
+	_float fDis = (fCosDir*fCosDir) - (4.0f* fCosRadius);
+
+	if (fDis < 0.0f)
+		return false;
+
+	fDis = sqrtf(fDis);
+
+	_float fRayDir1 = (-fCosDir + fDis) / 2.0f;
+	_float fRayDir2 = (-fCosDir - fDis) / 2.0f;
+
+	if (fRayDir1 >= 0.0f || fRayDir2 >= 0.0f)
+		return true;
+
+	return false;
 }
 
 

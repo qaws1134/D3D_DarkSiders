@@ -30,10 +30,10 @@ public:
 	void SetPos(_vec3 vPos) { m_vPos = vPos; }
 	void SetBone(wstring wstrBone) { m_wstrBone = wstrBone; }
 	void SetRadius(_float fRadius) { m_fRadius = fRadius; }
-
+	//void SetCol(_bool bCol) { m_bCol = bCol; }
 
 	wstring GetBone() { return m_wstrBone; }
-	_float GetRafius() { return m_fRadius; }
+	_float GetRadius() { return m_fRadius; }
 
 	void SetParantBoneMatrix(_matrix* pParantBone) { m_pParentBoneMatrix = pParantBone; }
 	void SetParantWorldMatrix(_matrix* pParantWorld) { m_pParentWorldMatrix = pParantWorld; }
@@ -52,7 +52,7 @@ private:
 	_vec3		m_vPos = {0.f,0.f,0.f};
 	_float		m_fRadius = 0.f;
 	wstring		m_wstrBone;
-	_bool		m_bCol = false;;
+//	_bool		m_bCol = false;;
 
 	const _matrix* m_pParentBoneMatrix;	//충돌체가 따라 붙을 Bone 메트릭스
 	const _matrix* m_pParentWorldMatrix;	//충돌체가 따라 붙을 부모 transform 메트릭스

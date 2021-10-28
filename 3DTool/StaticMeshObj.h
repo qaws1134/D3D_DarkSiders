@@ -10,7 +10,7 @@ class CTransform;
 class CRenderer;
 class CCalculator;
 class CStaticMesh;
-
+class CColliderSphere;
 END
 
 class CStaticMeshObj : public CGameObject
@@ -28,7 +28,7 @@ public:
 
 public:
 	void SetProtoMesh(wstring wstrProtoMesh) { m_wstrProtoMesh = wstrProtoMesh; }
-
+	//void SetCol(_bool bCol) { m_bCol = bCol; }
 private:
 	HRESULT			Add_Component();
 	//void			Key_Input(const _float& fTimeDelta);
@@ -36,14 +36,14 @@ private:
 	//_vec3			PickUp_OnTerrain(void);
 
 private:
-	CTransform*		m_pTransformCom = nullptr;
-	CRenderer*		m_pRendererCom = nullptr;
-	CCalculator*	m_pCalculatorCom = nullptr;
-	CStaticMesh*	m_pMeshCom = nullptr;
-
+	CTransform*			m_pTransformCom = nullptr;
+	CRenderer*			m_pRendererCom = nullptr;
+	CCalculator*		m_pCalculatorCom = nullptr;
+	CStaticMesh*		m_pMeshCom = nullptr;
+	CColliderSphere*	m_pColliderCom = nullptr;
 	_vec3		m_vDir;
 	wstring		m_wstrProtoMesh;
-
+	//_bool		m_bCol = false;;
 public:
 	static CStaticMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	static CStaticMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev,wstring ProtoMesh);

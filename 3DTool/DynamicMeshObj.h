@@ -10,7 +10,7 @@ class CDynamicMesh;
 class CTransform;
 class CRenderer;
 class CCalculator;
-class CCollider;
+class CColliderSphere;
 END
 
 class CDynamicMeshObj : public CGameObject
@@ -28,7 +28,7 @@ public:
 
 public:
 	void SetProtoMesh(wstring wstrProtoMesh) { m_wstrProtoMesh = wstrProtoMesh; }
-
+	//void SetCol(_bool	bCol) { m_bCol = bCol;}
 private:
 	HRESULT			Add_Component();
 	//void			Key_Input(const _float& fTimeDelta);
@@ -40,11 +40,13 @@ private:
 	CTransform*		m_pTransformCom = nullptr;
 	CRenderer*		m_pRendererCom = nullptr;
 	CCalculator*	m_pCalculatorCom = nullptr;
-	CCollider*		m_pColliderCom = nullptr;
+	CColliderSphere*		m_pColliderCom = nullptr;
 	_vec3			m_vDir;
 
-	wstring		m_wstrProtoMesh;
+	wstring			m_wstrProtoMesh;
 
+
+	//_bool			m_bCol;
 public:
 	static CDynamicMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	static CDynamicMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev,wstring ProtoMesh);

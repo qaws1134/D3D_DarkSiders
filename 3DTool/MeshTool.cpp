@@ -233,12 +233,10 @@ void CMeshTool::Set_TreeNavi(CTreeCtrl* pTreeCtrl, wstring wstrType)
 }
 
 
-void CMeshTool::Ready_MeshPrototype()
-{
 
-}
 void CMeshTool::PickNavi(RAY tRayMouse)
 {
+	
 	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO4);
 	if (m_pCheck->GetCheck())
 	{
@@ -250,7 +248,7 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		D3DXVec3TransformNormal(&tRayMouse.vRayDir, &tRayMouse.vRayDir, &matInvWorld);
 		//월드까지 내림?
 
-	//	CTerrain* pTerrain = m_pToolView->m_pTerrain;
+		//CTerrain* pTerrain = m_pToolView->m_pTerrain;
 		CTerrainTex* pTerrainBufferCom = dynamic_cast<CTerrainTex*>(m_pToolView->m_pTerrain->Get_Component(L"Com_Buffer", ID_STATIC));
 
 		
@@ -307,9 +305,13 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		}
 		//vpickpos랑 충돌체랑 충돌 시 충돌체 pos 반환
 		_vec3 vOutPos;
-		if (NaviCol(vPickPos,&vOutPos))
+		_ulong dwColIndex;
+		m_bCol = NaviCol(tRayMouse, &vOutPos, &dwColIndex);
+		 
+		if (m_bCol)
 		{
 			m_pNaviPos[m_iNaviCount] = vOutPos;
+
 		}
 		else  // 충돌 안했을 시 
 		{
@@ -317,10 +319,10 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		}
 		m_iNaviCount += 1;
 
-			if (m_iNaviCount < MAX_NAVIVERTEX)
-			{
-				return;
-			}
+		if (m_iNaviCount < MAX_NAVIVERTEX)
+		{
+			return;
+		}
 		//네비 카운트 초기화
 		m_iNaviCount = 0;
 		_uint iIdx = 0;
@@ -354,9 +356,39 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 		}
 		Set_TreeNavi(&m_TreeNavi, L"NaviMesh");
 	}
+	else
+	{
+		m_pCheck = (CButton*)GetDlgItem(IDC_RADIO5);
+		if (m_pCheck->GetCheck())
+		{
+			MeshCol(tRayMouse, m_mapStaticMesh, ID_STATIC);
+			return;
+		}
+		else
+		{
+			MeshCol(tRayMouse, m_mapDynamicMesh, ID_DYNAMIC);
+			return;
+		}
+	}
 }
 
-_bool CMeshTool::NaviCol(_vec3 vPickingPos, _vec3* vOutPos)
+void CMeshTool::PickMove(RAY tRayMouse)
+{
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO3);
+	if (m_pCheck->GetCheck())
+	{
+		//오브젝트
+		//피킹 된거로 ㄱ
+	}
+	else
+	{
+		//네비매시
+		
+	}
+
+}
+
+_bool CMeshTool::NaviCol(RAY tRay,_vec3* pOutPos, _ulong* pIndex)
 {
 	for (auto iter : m_mapNaviMesh)
 	{
@@ -364,17 +396,60 @@ _bool CMeshTool::NaviCol(_vec3 vPickingPos, _vec3* vOutPos)
 		{
 			_vec3 vPos;
 			dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS,&vPos);
-			_float fRadius = dynamic_cast<CColSphereMesh*>(iter_second.second)->GetRafius();
+			_float fRadius = dynamic_cast<CColSphereMesh*>(iter_second.second)->GetRadius();
 			_float fSrcRadius = 0.1f;
-			if (dynamic_cast<CCalculator*>(iter_second.second->Get_Component(L"Com_Calculator", ID_STATIC))->Collision_Sphere(&vPos, &fRadius, &vPickingPos, &fSrcRadius))
+
+			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay,vPos,fRadius))
 			{
-				*vOutPos = vPos;
+				m_pCtrlObject->SetCol(false);
+				*pOutPos = vPos;
+				*pIndex = iter_second.first;
+				m_pCtrlObject = iter_second.second;
+				m_pCtrlObject->GetCol() ? m_pCtrlObject->SetCol(false) : m_pCtrlObject->SetCol(true);
+				return true;
+			}
+
+		}
+	}
+	return false;
+}
+
+_bool CMeshTool::MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapMesh, COMPONENTID eID)
+{
+	for (auto iter : mapMesh)
+	{
+		for (auto iter_second : iter.second)
+		{
+			_vec3 vPos;
+			dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", eID))->Get_INFO(INFO_POS, &vPos);
+			const _float* fRadius = dynamic_cast<CColliderSphere*>(iter_second.second->Get_Component(L"Com_Collider",ID_STATIC))->Get_Radius();
+			_float fSrcRadius = 0.1f;
+
+			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay, vPos,*fRadius))
+			{
+					if(m_pCtrlObject)
+						(m_pCtrlObject)->SetCol(false);
+				
+					if (m_pCtrlObject == iter_second.second)
+					{
+						m_pCtrlObject = nullptr;
+						m_pCtrlTransform = nullptr;
+						return true;
+					}
+					m_pCtrlObject = iter_second.second;
+					m_pCtrlTransform = dynamic_cast<CTransform*>(m_pCtrlObject->Get_Component(L"Com_Transform", eID));
+					m_pCtrlObject->GetCol() ? m_pCtrlObject->SetCol(false) : m_pCtrlObject->SetCol(true);
+
 				return true;
 			}
 		}
 	}
 	return false;
 }
+
+
+
+
 
 void CMeshTool::Make_NaviTri(_uint iIdx)
 {

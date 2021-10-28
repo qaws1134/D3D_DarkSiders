@@ -24,20 +24,19 @@ public:
 	_uint			GetMaxNumAnimationSet() { if (!m_pAniCtrl)return 0;  return m_pAniCtrl->GetMaxNumAnimationSets(); }
 	map<const char*, map<_ulong, const char*>> GetBoneNameList() { return m_mapBoneName; }
 
-
 	D3DXFRAME*		GetRootFrame() { return m_pRootFrame; }
 
-
+	//list<D3DXMESHCONTAINER_DERIVED*> GetMeshContainerList() { return m_MeshContainerList; }
+	//컨테이너 리스트 받아서 포지션값들을 그냥 저장해서 넘겨줒 ㅏ
 public:
 	HRESULT		Ready_Meshes(const _tchar* pFilePath, const _tchar* pFileName);
 	void		Render_Meshes(void);
 
-	
 
 private:
 	// 모든 뼈들을 재귀적으로 순회하면서 부모와 자식, 또는 형제 관계를 맺을 수 있도록 행렬들을 곱하여 완성된 월드 행렬 상태를 만들어주는 함수
-	void					Update_FrameMatrices(D3DXFRAME_DERIVED* pFrame, const _matrix* pParentMatrix);
-	void					SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame);
+	void							Update_FrameMatrices(D3DXFRAME_DERIVED* pFrame, const _matrix* pParentMatrix);
+	void							SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame);
 	
 
 
@@ -48,9 +47,8 @@ private:
 	list<D3DXMESHCONTAINER_DERIVED*>			m_MeshContainerList;
 	map<const char*, map<_ulong, const char*>>			m_mapBoneName;
 	
-
+	
 	CAniCtrl*									m_pAniCtrl;
-
 public:
 	static CDynamicMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev, const _tchar* pFilePath, const _tchar* pFileName);
 	virtual CComponent*			Clone(void);

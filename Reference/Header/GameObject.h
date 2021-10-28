@@ -17,6 +17,12 @@ public:
 	CComponent*		Get_Component(const _tchar* pComponentTag, COMPONENTID eID);
 
 public:
+	void	SetCol(_bool bCol) { m_bCol = bCol; }
+	_bool	GetCol() { return m_bCol; }
+
+
+
+public:
 	virtual		HRESULT		Ready_Object(void);
 	virtual     void		Late_Ready_Object(void);
 	virtual		_int		Update_Object(const _float& fTimeDelta);
@@ -34,6 +40,8 @@ protected:
 private:
 	CComponent*		Find_Component(const _tchar* pComponentTag, COMPONENTID eID);
 
+protected:
+	_bool	m_bCol = false;
 public:
 	virtual void	Free(void);
 };

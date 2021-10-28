@@ -18,7 +18,7 @@ public:
 	/* 광선 만드는 함수 */
 	RAY		Create_MouseRay(const _vec2& MousePos, const _vec2& WindowSize);
 	/* 월드광선을 로컬까지 내리는 함수 */
-
+	_bool	RaySphereCollision(RAY tRay, _vec3 vCenterPos, _float fRadius);
 
 private:
 	LPDIRECT3DDEVICE9		m_pDevice = nullptr;

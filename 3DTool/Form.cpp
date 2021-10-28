@@ -90,6 +90,26 @@ void CForm::Picking_View(RAY & MouseRay)
 
 void CForm::Picking_Moving(RAY & MouseRay)
 {
+	_int iCursel = m_tTabCtrl.GetCurSel();
+
+
+	switch (iCursel)
+	{
+	case 0:
+		m_pMeshTool->PickMove(MouseRay);
+		//m_pColliderTool->Set_PickingOn();
+		break;
+	case 1:
+		//m_pMeshTool
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	default:
+		break;
+	}
+
 }
 
 void CForm::Picking_Off(void)

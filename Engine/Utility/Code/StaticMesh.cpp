@@ -11,6 +11,9 @@ Engine::CStaticMesh::CStaticMesh(LPDIRECT3DDEVICE9 pGraphicDev)
 	, m_pMtrl(nullptr)
 	, m_dwSubsetCnt(0)
 	, m_ppTexture(nullptr)
+	, m_dwStride(0)
+	, m_pVtxPos(nullptr)
+	, m_dwVtxCnt(0)
 {
 
 }
@@ -23,6 +26,9 @@ Engine::CStaticMesh::CStaticMesh(const CStaticMesh& rhs)
 	, m_pSubset(rhs.m_pSubset)
 	, m_pMtrl(rhs.m_pMtrl)
 	, m_dwSubsetCnt(rhs.m_dwSubsetCnt)
+	, m_pVtxPos(rhs.m_pVtxPos)
+	, m_dwStride(rhs.m_dwStride)
+	, m_dwVtxCnt(rhs.m_dwVtxCnt)
 {
 	m_ppTexture = new LPDIRECT3DTEXTURE9[rhs.m_dwSubsetCnt];
 
@@ -75,6 +81,36 @@ HRESULT Engine::CStaticMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar*
 		m_pOriMesh->CloneMeshFVF(m_pOriMesh->GetOptions(), dwFVF, m_pGraphicDev, &m_pMesh);
 	}
 
+	//이만큼 포지션을 돈다 
+	m_dwVtxCnt = m_pMesh->GetNumVertices(); // 메쉬가 지닌 정점의 개수를 반환
+	m_pVtxPos = new _vec3[m_dwVtxCnt];
+
+	void*			pVertex = nullptr;
+
+	m_pMesh->LockVertexBuffer(0, &pVertex);
+
+	D3DVERTEXELEMENT9			Decl[MAX_FVF_DECL_SIZE];
+	ZeroMemory(Decl, sizeof(D3DVERTEXELEMENT9) * MAX_FVF_DECL_SIZE);
+
+	m_pMesh->GetDeclaration(Decl);
+
+	_ubyte			byOffset = 0;
+
+	for (_ulong i = 0; i < MAX_FVF_DECL_SIZE; ++i)
+	{
+		if (Decl[i].Usage == D3DDECLUSAGE_POSITION)
+		{
+			byOffset = Decl[i].Offset;
+			break;
+		}
+	}
+	// fvf 정보를 토대로 정점의 크기를 계산해주는 함수
+	m_dwStride = D3DXGetFVFVertexSize(dwFVF);
+
+	for (_ulong i = 0; i < m_dwVtxCnt; ++i)
+	{
+		m_pVtxPos[i] = *((_vec3*)(((_ubyte*)pVertex) + (m_dwStride * i + byOffset)));
+	}
 
 	// m_pSubset가 갖고있는 정보의 가장 앞 주소를 리턴하는 함수
 	m_pMtrl = (D3DXMATERIAL*)m_pSubset->GetBufferPointer();
@@ -94,6 +130,7 @@ HRESULT Engine::CStaticMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar*
 		if (FAILED(D3DXCreateTextureFromFile(m_pGraphicDev, szFullPath, &m_ppTexture[i])))
 			return E_FAIL;
 	}
+	m_pMesh->UnlockVertexBuffer();
 
 	return S_OK;
 }
@@ -128,6 +165,9 @@ void Engine::CStaticMesh::Free(void)
 		Safe_Release(m_ppTexture[i]);
 
 	Safe_Delete_Array(m_ppTexture);
+
+	if (false == m_bClone)
+		Safe_Delete_Array(m_pVtxPos);
 
 	Safe_Release(m_pMesh);
 	Safe_Release(m_pOriMesh);
