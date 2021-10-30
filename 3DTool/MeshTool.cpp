@@ -233,13 +233,13 @@ void CMeshTool::Set_TreeNavi(CTreeCtrl* pTreeCtrl, wstring wstrType)
 }
 
 
-
 void CMeshTool::PickNavi(RAY tRayMouse)
 {
 	
 	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO4);
 	if (m_pCheck->GetCheck())
 	{
+		//네비매시 피킹 
 		_vec3 vPickPos;
 		_matrix matInvWorld;
 		D3DXMatrixIdentity(&matInvWorld);
@@ -303,11 +303,18 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 
 			}
 		}
+
+		//네비 피킹모드면 아래 기능을 수행 안함 
+		m_pCheck = (CButton*)GetDlgItem(IDC_RADIO13);
+		if (m_pCheck->GetCheck())
+		{
+			return;
+		}
 		//vpickpos랑 충돌체랑 충돌 시 충돌체 pos 반환
 		_vec3 vOutPos;
-		_ulong dwColIndex;
-		m_bCol = NaviCol(tRayMouse, &vOutPos, &dwColIndex);
-		 
+		_uint iColIndex;
+		m_bCol = NaviCol(tRayMouse, &vOutPos, &iColIndex);
+
 		if (m_bCol)
 		{
 			m_pNaviPos[m_iNaviCount] = vOutPos;
@@ -355,9 +362,11 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 			break;
 		}
 		Set_TreeNavi(&m_TreeNavi, L"NaviMesh");
+		
 	}
 	else
 	{
+		//메시 선택 
 		m_pCheck = (CButton*)GetDlgItem(IDC_RADIO5);
 		if (m_pCheck->GetCheck())
 		{
@@ -374,21 +383,95 @@ void CMeshTool::PickNavi(RAY tRayMouse)
 
 void CMeshTool::PickMove(RAY tRayMouse)
 {
-	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO3);
-	if (m_pCheck->GetCheck())
+
+	_vec3 vPickPos;
+	_matrix matInvWorld;
+	D3DXMatrixIdentity(&matInvWorld);
+	D3DXMatrixInverse(&matInvWorld, 0, &matInvWorld);
+	D3DXVec3TransformCoord(&tRayMouse.vRayPos, &tRayMouse.vRayPos, &matInvWorld);
+	D3DXVec3TransformNormal(&tRayMouse.vRayDir, &tRayMouse.vRayDir, &matInvWorld);
+	//월드까지 내림?
+
+	//CTerrain* pTerrain = m_pToolView->m_pTerrain;
+	CTerrainTex* pTerrainBufferCom = dynamic_cast<CTerrainTex*>(m_pToolView->m_pTerrain->Get_Component(L"Com_Buffer", ID_STATIC));
+
+	_ulong		dwVtXCntX = VTXCNTX;
+	_ulong		dwVtXCntZ = VTXCNTZ;
+	const	_vec3*		pTerrainVtx = pTerrainBufferCom->Get_VtxPos();
+
+	_float	fU, fV, fDist;
+	_ulong	dwVtxIdx[3];
+	for (_ulong i = 0; i < dwVtXCntZ - 1; ++i)
 	{
-		//오브젝트
-		//피킹 된거로 ㄱ
+		for (_ulong j = 0; j < dwVtXCntX - 1; ++j)
+		{
+			_ulong dwIndex = i * dwVtXCntX + j;
+
+			// 오른쪽 위 삼각형
+
+			dwVtxIdx[0] = dwIndex + dwVtXCntX;
+			dwVtxIdx[1] = dwIndex + dwVtXCntX + 1;
+			dwVtxIdx[2] = dwIndex + 1;
+
+			if (D3DXIntersectTri(&pTerrainVtx[dwVtxIdx[1]],
+				&pTerrainVtx[dwVtxIdx[0]],
+				&pTerrainVtx[dwVtxIdx[2]],
+				&tRayMouse.vRayPos,
+				&tRayMouse.vRayDir,
+				&fU, &fV, &fDist))
+			{
+				vPickPos = _vec3(pTerrainVtx[dwVtxIdx[1]].x + fU * (pTerrainVtx[dwVtxIdx[0]].x - pTerrainVtx[dwVtxIdx[1]].x),
+					0.f,
+					pTerrainVtx[dwVtxIdx[1]].z + fV * (pTerrainVtx[dwVtxIdx[2]].z - pTerrainVtx[dwVtxIdx[1]].z));
+			}
+
+			// 왼쪽 아래 삼각형
+
+			dwVtxIdx[0] = dwIndex + dwVtXCntX;
+			dwVtxIdx[1] = dwIndex + 1;
+			dwVtxIdx[2] = dwIndex;
+
+			if (D3DXIntersectTri(&pTerrainVtx[dwVtxIdx[2]],
+				&pTerrainVtx[dwVtxIdx[1]],
+				&pTerrainVtx[dwVtxIdx[0]],
+				&tRayMouse.vRayPos,
+				&tRayMouse.vRayDir,
+				&fU, &fV, &fDist))
+			{
+				vPickPos = _vec3(pTerrainVtx[dwVtxIdx[2]].x + fU * (pTerrainVtx[dwVtxIdx[1]].x - pTerrainVtx[dwVtxIdx[2]].x),
+					0.f,
+					pTerrainVtx[dwVtxIdx[2]].z + fV * (pTerrainVtx[dwVtxIdx[0]].z - pTerrainVtx[dwVtxIdx[2]].z));
+			}
+
+		}
 	}
-	else
+	
+	if (m_pCtrlObject && m_pCtrlObject->GetCol())
 	{
-		//네비매시
-		
+		_vec3 vCtrlPos;
+		m_pCtrlTransform->Get_INFO(INFO_POS, &vCtrlPos);
+
+		m_pCtrlTransform->Set_Pos(vPickPos.x, vCtrlPos.y, vPickPos.z);
+	}
+
+
+	if (m_mapCtrlNavi.size() > 0)
+	{
+		for (auto iter_mapNavi : m_mapCtrlNavi)
+		{
+			if (iter_mapNavi.second->GetCol())
+			{
+				_vec3 vPos;
+				dynamic_cast<CTransform*>(iter_mapNavi.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vPos);
+				dynamic_cast<CTransform*>(iter_mapNavi.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Pos(vPickPos.x, vPos.y, vPickPos.z);
+				Make_NaviTri(iter_mapNavi.first);
+			}
+		}
 	}
 
 }
 
-_bool CMeshTool::NaviCol(RAY tRay,_vec3* pOutPos, _ulong* pIndex)
+_bool CMeshTool::NaviCol(RAY tRay,_vec3* pOutPos, _uint* pIndex)
 {
 	for (auto iter : m_mapNaviMesh)
 	{
@@ -401,11 +484,9 @@ _bool CMeshTool::NaviCol(RAY tRay,_vec3* pOutPos, _ulong* pIndex)
 
 			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay,vPos,fRadius))
 			{
-				m_pCtrlObject->SetCol(false);
 				*pOutPos = vPos;
 				*pIndex = iter_second.first;
-				m_pCtrlObject = iter_second.second;
-				m_pCtrlObject->GetCol() ? m_pCtrlObject->SetCol(false) : m_pCtrlObject->SetCol(true);
+
 				return true;
 			}
 
@@ -413,6 +494,58 @@ _bool CMeshTool::NaviCol(RAY tRay,_vec3* pOutPos, _ulong* pIndex)
 	}
 	return false;
 }
+
+_bool CMeshTool::NaviSel(RAY tRay)
+{
+
+	_vec3 vPickPos;
+	_matrix matInvWorld;
+	D3DXMatrixIdentity(&matInvWorld);
+	D3DXMatrixInverse(&matInvWorld, 0, &matInvWorld);
+	D3DXVec3TransformCoord(&tRay.vRayPos, &tRay.vRayPos, &matInvWorld);
+	D3DXVec3TransformNormal(&tRay.vRayDir, &tRay.vRayDir, &matInvWorld);
+
+	m_pCheck = (CButton*)GetDlgItem(IDC_RADIO7);
+	if (!m_pCheck->IsWindowEnabled())
+		return false;
+
+
+
+	m_mapCtrlNavi.clear();
+	for (auto iter : m_mapNaviMesh)
+	{
+		for (auto iter_second : iter.second)
+		{
+			_vec3 vPos;
+			_vec3 vColPos;
+			dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vPos);
+			_float fRadius = dynamic_cast<CColSphereMesh*>(iter_second.second)->GetRadius();
+			_float fSrcRadius = 0.1f;
+
+			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay, vPos, fRadius))
+			{
+				vColPos = vPos;
+			}
+
+			if (vColPos == vPos)
+			{
+	
+				iter_second.second->GetCol() ? iter_second.second->SetCol(false) : iter_second.second->SetCol(true);
+				m_mapCtrlNavi.emplace(iter.first, iter_second.second);
+				if (!m_pCheck->GetCheck())
+				{
+					return true;
+				}
+
+			}
+
+		}
+	}
+	return false;
+}
+
+	
+
 
 _bool CMeshTool::MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapMesh, COMPONENTID eID)
 {
@@ -454,16 +587,25 @@ _bool CMeshTool::MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapM
 void CMeshTool::Make_NaviTri(_uint iIdx)
 {
 	auto iter_find = m_mapNaviMesh.find(iIdx);
+
 	_ulong Iindx = 0;
-	_vec3 vPos[3];
+	_vec3 vAryPos[3];
 	for (auto iter_second : iter_find->second)
 	{
-		dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vPos[Iindx]);
+		dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vAryPos[Iindx]);
 		Iindx++;
 	}
 	//요기서 점3개 받아서 
 	//vpos 넘겨줌 
-	m_mapNaviTri.emplace(iIdx, CNaviTri::Create(m_pDevice, vPos));
+	auto iter_NaviTri = m_mapNaviTri.find(iIdx);
+	if (iter_NaviTri == m_mapNaviTri.end())
+	{
+		m_mapNaviTri.emplace(iIdx, CNaviTri::Create(m_pDevice, vAryPos));
+	}
+	else
+	{
+		dynamic_cast<CNaviTri*>(iter_NaviTri->second)->Update_Tri(vAryPos);
+	}
 
 }
 
@@ -564,7 +706,7 @@ BEGIN_MESSAGE_MAP(CMeshTool, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON1, &CMeshTool::OnBnClickedObjStaticListDelete)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMeshTool::OnBnClickedObjDynamicAddSection)
-	ON_BN_CLICKED(IDC_BUTTON3, &CMeshTool::OnBnClickedObjDynamicDelete)
+	ON_BN_CLICKED(IDC_BUTTON3, &CMeshTool::OnBnClickedObjDynamicListDelete)
 	ON_BN_CLICKED(IDC_BUTTON4, &CMeshTool::OnBnClickedNaviDelete)
 	ON_BN_CLICKED(IDC_BUTTON5, &CMeshTool::OnBnClickedSave)
 	ON_BN_CLICKED(IDC_BUTTON6, &CMeshTool::OnBnClickedLoad)
@@ -591,6 +733,8 @@ BEGIN_MESSAGE_MAP(CMeshTool, CDialog)
 	ON_NOTIFY(NM_CLICK, IDC_TREE3, &CMeshTool::OnNMClickDynamicList)
 	ON_BN_CLICKED(IDC_RADIO3, &CMeshTool::OnBnClickedObject)
 	ON_BN_CLICKED(IDC_RADIO4, &CMeshTool::OnBnClickedNaviMesh)
+
+	ON_NOTIFY(NM_CLICK, IDC_TREE4, &CMeshTool::OnNMClickNaviList)
 END_MESSAGE_MAP()
 
 
@@ -706,23 +850,71 @@ BOOL CMeshTool::OnInitDialog()
 void CMeshTool::OnBnClickedObjStaticListDelete()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	HTREEITEM hItem = m_TreeStatic.GetSelectedItem();
+	CString wstrIdxKey = m_TreeStatic.GetItemText(hItem);
+	CString wstrToken = L"_";
+	_int iTokenIdx = 0;
+	CString wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx);
+
+	auto iter_find = m_mapStaticMesh.find(wstrKey.GetString());
+
+	if (iter_find == m_mapStaticMesh.end())
+		return;
+
+	auto Objiter_find = iter_find->second.find(wstrIdxKey.GetString());
+	m_pCtrlTransform = nullptr;
+	m_pCtrlObject = nullptr;
+	Safe_Release(Objiter_find->second);
+	iter_find->second.erase(wstrIdxKey.GetString());
+	m_TreeStatic.DeleteItem(hItem);
 }
 
 
 void CMeshTool::OnBnClickedObjDynamicAddSection()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
 }
 
 
-void CMeshTool::OnBnClickedObjDynamicDelete()
+void CMeshTool::OnBnClickedObjDynamicListDelete()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	HTREEITEM hItem = m_TreeDynamic.GetSelectedItem();
+	CString wstrIdxKey = m_TreeDynamic.GetItemText(hItem);
+	CString wstrToken = L"_";
+	_int iTokenIdx = 0;
+	CString wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx);
+
+	auto iter_find = m_mapDynamicMesh.find(wstrKey.GetString());
+
+	if (iter_find == m_mapDynamicMesh.end())
+		return;
+
+	auto Objiter_find = iter_find->second.find(wstrIdxKey.GetString());
+	m_pCtrlTransform = nullptr;
+	m_pCtrlObject = nullptr;
+	Safe_Release(Objiter_find->second);
+	iter_find->second.erase(wstrIdxKey.GetString());
+	m_TreeDynamic.DeleteItem(hItem);
 }
 
 void CMeshTool::OnBnClickedNaviDelete()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_pCtrlObject = nullptr;
+	m_pCtrlTransform = nullptr;
+	CString wstrIdxKey = m_TreeNavi.GetItemText(m_hParentItem);
+	_uint iKey = stoi(wstrIdxKey.GetString());
+
+	auto iter_find = m_mapNaviMesh.find(iKey);
+	for_each(iter_find->second.begin(), iter_find->second.end(), CDeleteMap());
+	m_mapNaviMesh.erase(iKey);
+
+	auto iter_Tri = m_mapNaviTri.find(iKey);
+	Safe_Release(iter_Tri->second);
+	m_mapNaviTri.erase(iKey);
+
+	m_TreeNavi.DeleteItem(m_hParentItem);
 }
 
 
@@ -984,6 +1176,56 @@ void CMeshTool::OnEnChangePositionZ()
 	UpdateData(FALSE);
 }
 
+void CMeshTool::OnNMClickNaviList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UpdateData(TRUE);
+	POINT pt;
+	GetCursorPos(&pt);
+	UINT flag;
+	m_TreeNavi.ScreenToClient(&pt);
+	HTREEITEM hItem = m_TreeNavi.HitTest(pt, &flag);
+
+
+	// 마지막 노드인지 체크 
+	if (!m_TreeNavi.ItemHasChildren(hItem))
+	{
+
+		m_hParentItem = m_TreeNavi.GetParentItem(hItem);
+
+		//부모
+		CString wstrIdxKey = m_TreeNavi.GetItemText(m_hParentItem);
+		_uint iKey = stoi(wstrIdxKey.GetString());
+
+		auto iter_find = m_mapNaviMesh.find(iKey);
+		if (iter_find == m_mapNaviMesh.end())
+			return;
+
+		//자식 
+		wstrIdxKey = m_TreeNavi.GetItemText(hItem);
+		iKey = stoi(wstrIdxKey.GetString());
+		_vec3 vPos;
+		for (auto iter_Col : iter_find->second)
+		{
+			if (iter_Col.first == iKey)
+			{
+				m_pCtrlObject = iter_Col.second;
+				m_pCtrlTransform = dynamic_cast<CTransform*>(iter_Col.second->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				dynamic_cast<CTransform*>(iter_Col.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vPos);
+				break;
+			}
+		}
+
+		m_fPositionX = vPos.x;
+		m_fPositionY = vPos.y;
+		m_fPositionZ = vPos.z;
+	
+
+	}
+
+	*pResult = 0;
+	UpdateData(FALSE);
+}
+
 
 void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 {
@@ -1009,6 +1251,9 @@ void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 			return;
 
 		auto Objiter_find = iter_find->second.find(wstrIdxKey.GetString());
+		
+		if (!Objiter_find->second)
+			return;
 
 		m_pCtrlObject = Objiter_find->second;
 		m_pCtrlTransform = dynamic_cast<CTransform*>(m_pCtrlObject->Get_Component(L"Com_Transform", Engine::ID_STATIC));
@@ -1063,6 +1308,9 @@ void CMeshTool::OnNMClickDynamicList(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 		auto Objiter_find = iter_find->second.find(wstrIdxKey.GetString());
+
+		if (!Objiter_find->second)
+			return;
 
 		m_pCtrlObject = Objiter_find->second;
 		m_pCtrlTransform = dynamic_cast<CTransform*>(m_pCtrlObject->Get_Component(L"Com_Transform", Engine::ID_DYNAMIC));
@@ -1334,3 +1582,7 @@ void CMeshTool::OnBnClickedNaviMesh()
 	m_pCheck = nullptr;
 	UpdateData(FALSE);
 }
+
+
+
+

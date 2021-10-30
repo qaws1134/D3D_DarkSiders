@@ -39,10 +39,12 @@ public:
 	void PickNavi(RAY tRayMouse);
 	void PickMove(RAY tRayMouse);
 
-
 	//컬라이더
-	_bool NaviCol(RAY tRay,_vec3* pOutPos, _ulong* pIndex);
+	_bool NaviCol(RAY tRay,_vec3* pOutPos, _uint* pIndex);
+	_bool NaviSel(RAY tRay);// 수정할 네비매시 선택
+	
 	_bool MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapMesh,COMPONENTID eID);
+
 private:
 	HRESULT Ready_MeshComponent();
 	HRESULT	Ready_LightInfo(void);
@@ -72,6 +74,10 @@ private:
 	map<wstring, map<wstring, CGameObject*>>m_mapStaticMesh;
 	map<wstring, map<wstring, CGameObject*>>m_mapDynamicMesh;
 
+	list<CGameObject*>m_listCtrlNavi;
+
+	map<_uint,CGameObject*>m_mapCtrlNavi;
+
 	queue<CString>	 m_queFolder;
 	queue<CString>	 m_queFile;
 
@@ -87,7 +93,7 @@ private:
 
 	_bool	m_bCol = false;
 
-
+	HTREEITEM m_hParentItem;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
@@ -104,7 +110,7 @@ public:
 
 	afx_msg void OnBnClickedObjStaticListDelete();
 	afx_msg void OnBnClickedObjDynamicAddSection();
-	afx_msg void OnBnClickedObjDynamicDelete();
+	afx_msg void OnBnClickedObjDynamicListDelete();
 	afx_msg void OnBnClickedNaviDelete();
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnBnClickedLoad();
@@ -146,4 +152,6 @@ public:
 	afx_msg void OnNMClickDynamicList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedObject();
 	afx_msg void OnBnClickedNaviMesh();
+
+	afx_msg void OnNMClickNaviList(NMHDR *pNMHDR, LRESULT *pResult);
 };

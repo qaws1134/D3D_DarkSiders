@@ -29,6 +29,7 @@ public:
 public:
 	void Picking_View(RAY& MouseRay);
 	void Picking_Moving(RAY & MouseRay);
+	void Picking_DbClick(RAY & MouseRay);
 	void Picking_Off(void);
 
 	HRESULT Ready_Layer(const _tchar* pLayerTag);

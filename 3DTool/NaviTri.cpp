@@ -55,6 +55,11 @@ void CNaviTri::Render_Object(void)
 
 }
 
+void CNaviTri::Update_Tri(_vec3 * pAryPos)
+{
+	m_pTriColCom->Update_Buffer(pAryPos);
+}
+
 CNaviTri* CNaviTri::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 *pAryPos)
 {
 	CNaviTri*	pInstance = new CNaviTri(pGraphicDev);
@@ -79,7 +84,6 @@ HRESULT CNaviTri::Add_Component()
 	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Clone_Prototype(L"Proto_Transform"));
 	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Transform", pComponent);
-
 
 	// Renderer
 	pComponent = m_pRendererCom = Engine::Get_Renderer();

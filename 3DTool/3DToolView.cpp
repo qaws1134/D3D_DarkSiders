@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CMy3DToolView, CView)
 	ON_WM_TIMER()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 // CMy3DToolView 생성/소멸
@@ -236,4 +237,20 @@ void CMy3DToolView::OnMouseMove(UINT nFlags, CPoint point)
 	m_pForm->Picking_Moving(rayMouse);
 
 	CView::OnMouseMove(nFlags, point);
+}
+
+
+void CMy3DToolView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	POINT pt = {};
+	GetCursorPos(&pt);
+	ScreenToClient(&pt);
+
+	RAY rayMouse = CreateMouseRay(_vec2((_float)pt.x, (_float)pt.y), _vec2((_float)WINCX, (_float)WINCY));
+
+
+	m_pForm->Picking_DbClick(rayMouse);
+
+	CView::OnLButtonDblClk(nFlags, point);
 }

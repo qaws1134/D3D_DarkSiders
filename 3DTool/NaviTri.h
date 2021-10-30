@@ -26,7 +26,7 @@ public:
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 	virtual void Render_Object(void) override;
 
-
+	void Update_Tri(_vec3*pAryPos);
 private:
 	HRESULT			Add_Component();
 	//void			Key_Input(const _float& fTimeDelta);
