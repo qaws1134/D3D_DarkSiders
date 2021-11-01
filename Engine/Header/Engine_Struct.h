@@ -1,6 +1,5 @@
 #ifndef Engine_Struct_h__
 #define Engine_Struct_h__
-
 namespace Engine
 {
 	typedef struct tagVertexColor
@@ -100,10 +99,17 @@ namespace Engine
 	}COLLIDERSPHERE;
 
 
+
+	typedef struct tagMesh
+	{
+		_vec3 vPos;
+		_vec3 vRot;
+		_vec3 vScale;
+		_uint eMeshID;
+	}MESH;
+
+
+
 }
-
-
-
-
 
 #endif // Engine_Struct_h__

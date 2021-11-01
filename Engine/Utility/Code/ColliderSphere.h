@@ -13,14 +13,14 @@ private:
 	virtual ~CColliderSphere(void);
 
 public:
-	 _matrix*		Get_ColliderWorld(void) { return &m_matColMatrix; }
+	 _matrix*			Get_ColliderWorld(void) { return &m_matColMatrix; }
 	const _vec3*		Get_Center() { return &m_vCenter; }
 	const _float*		Get_Radius() { return &m_fRadius; }
 public:
 	HRESULT			Ready_Collider(const _vec3* pPos,_float fRadius = 0);
 	HRESULT			Ready_Collider(const _vec3* pPos,_ulong dwVtxCnt);
 	void			Render_Collider(COLTYPE eType,  _matrix* pColliderMatrix);
-
+	void			Update_Radius(_float fRadius);
 private:
 	_matrix			m_matColMatrix;
 	_vec3			m_vCenter;

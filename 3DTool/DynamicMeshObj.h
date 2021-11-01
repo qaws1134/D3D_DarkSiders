@@ -28,6 +28,7 @@ public:
 
 public:
 	void SetProtoMesh(wstring wstrProtoMesh) { m_wstrProtoMesh = wstrProtoMesh; }
+	void SetColMode(_bool bColMode) { m_bColMode = bColMode; }
 	//void SetCol(_bool	bCol) { m_bCol = bCol;}
 private:
 	HRESULT			Add_Component();
@@ -45,11 +46,12 @@ private:
 
 	wstring			m_wstrProtoMesh;
 
+	_bool	m_bColMode = true;
 
 	//_bool			m_bCol;
 public:
 	static CDynamicMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
-	static CDynamicMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev,wstring ProtoMesh);
+	static CDynamicMeshObj*		Create(LPDIRECT3DDEVICE9 pGraphicDev,wstring ProtoMesh, _bool bColMode);
 	virtual void			Free(void);
 };
 

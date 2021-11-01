@@ -55,7 +55,8 @@ void CDynamicMeshObj::Render_Object(void)
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
 	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	m_pColliderCom->Render_Collider(COLTYPE(m_bCol), m_pTransformCom->Get_WorldMatrix());
+	if(m_bColMode)
+		m_pColliderCom->Render_Collider(COLTYPE(m_bCol), m_pTransformCom->Get_WorldMatrix());
 	m_pMeshCom->Render_Meshes();
 
 	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -71,10 +72,10 @@ CDynamicMeshObj* CDynamicMeshObj::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 	return pInstance;
 }
 
-CDynamicMeshObj * CDynamicMeshObj::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh)
+CDynamicMeshObj * CDynamicMeshObj::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh,_bool bColMode)
 {
 	CDynamicMeshObj*	pInstance = new CDynamicMeshObj(pGraphicDev);
-
+	pInstance->SetColMode(bColMode);
 	pInstance->SetProtoMesh(ProtoMesh);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
@@ -112,14 +113,15 @@ HRESULT CDynamicMeshObj::Add_Component()
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
 
-	// Collider
-	_vec3 vPos; 
-	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-	_float fRadius = 100.f; 
-	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev,&vPos, fRadius);
-	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
-	m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
-
+	if (m_bColMode)
+	{
+		_vec3 vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		_float fRadius = 100.f;
+		pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, &vPos, fRadius);
+		NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
+		m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
+	}
 
 	return S_OK;
 }

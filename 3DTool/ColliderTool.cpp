@@ -159,21 +159,40 @@ void CColliderTool::OnTimer(UINT_PTR nIDEvent)
 	if (m_pToolCam)
 		m_pToolCam->Update_Object(m_fDeltaTime);
 
+
 	if (m_pSelectedGameObject)
 	{
 		m_pSelectedGameObject->Update_Object(m_fDeltaTime);
 
 		if (m_mapCollider.size() > 0)
 		{
+			if (m_pCtrlObj&& m_bSelect)
+			{
+				_vec3 vPos;
+				m_pCtrlTransform->Get_INFO(INFO_POS, &vPos);
+				
+				m_pCtrlTransform->Set_Pos(&(vPos+m_tColInfo.vCenterPos));
+				dynamic_cast<CColliderSphere*>(m_pCtrlObj->Get_Component(L"Com_Collider", ID_STATIC))->Update_Radius(m_tColInfo.fRadius);
+				m_bSelect = false;
+			}
 			for (auto iter : m_mapCollider)
 			{
 				if(iter.second->GetTarget() == nullptr)
 					iter.second->SetTarget(m_pSelectedGameObject);
+				
+				//dynamic_cast<CTransform*>(iter.second->Get_Component(L"Com_Transform",ID_DYNAMIC))->Set_Pos(&m_tColInfo.vCenterPos);
+
+
 				iter.second->Update_Object(m_fDeltaTime);
 			}
 		}
 	}
-		
+
+
+	//auto iter_find = m_mapCollider.find(wstrKey.GetString());
+
+
+
 
 	CDialog::OnTimer(nIDEvent);
 }
@@ -239,7 +258,7 @@ void CColliderTool::CreateTree(CString strPath, HTREEITEM Parents)
 CGameObject * CColliderTool::SpawnDynamicMesh(wstring wstrMeshObjKey)
 {
 	CGameObject* pGameObject = nullptr;
-	pGameObject = CDynamicMeshObj::Create(m_pDevice, wstrMeshObjKey);
+	pGameObject = CDynamicMeshObj::Create(m_pDevice, wstrMeshObjKey,true);
 
 	return pGameObject;
 }
@@ -337,9 +356,15 @@ void CColliderTool::OnBnClickedAddCol()
 	USES_CONVERSION;
 	UpdateData(TRUE);
 
+	m_tColInfo.fRadius = 0.f;
+	m_tColInfo.vCenterPos = _vec3(0.f, 0.f, 0.f);
+	m_fPositionX = 0.f;
+	m_fPositionY = 0.f;
+	m_fPositionZ = 0.f;
+	m_fRadius = 0.f;
+
 	m_pColliderObj = CColSphereMesh::Create(m_pDevice
-											, m_tColInfo.vCenterPos
-											, m_tColInfo.fRadius*20.f
+											, m_tColInfo
 											, m_wstrBoneName.c_str());
 	auto iter_find = m_mapCollider.find(m_wstrColTag.GetString());
 	if (iter_find != m_mapCollider.end())
@@ -347,6 +372,7 @@ void CColliderTool::OnBnClickedAddCol()
 
 	m_mapCollider.emplace(m_wstrColTag.GetString(), m_pColliderObj);
 
+	m_wstrColTag = L"";
 	m_TreeAttached.DeleteAllItems();
 	Set_TreeCollider(&m_TreeAttached,NULL );
 	
@@ -357,30 +383,21 @@ void CColliderTool::OnBnClickedAddCol()
 void CColliderTool::OnBnClickedDeleteCol()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	HTREEITEM hItem = m_TreeAttached.GetSelectedItem();
+	CString wstrKey = m_TreeAttached.GetItemText(hItem);
+
+	auto iter_find = m_mapCollider.find(wstrKey.GetString());
+
+	Safe_Release(iter_find->second);
+	m_mapCollider.erase(wstrKey.GetString());
+
+	m_TreeAttached.DeleteItem(hItem);
 }
 
 
-void CColliderTool::OnDeltaposSpinPositionX(NMHDR *pNMHDR, LRESULT *pResult)
+void CColliderTool::OnLbnSelchangeSaveList()
 {
-	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	*pResult = 0;
-}
-
-
-void CColliderTool::OnDeltaposSpinPositionY(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	*pResult = 0;
-}
-
-
-void CColliderTool::OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	*pResult = 0;
 }
 
 
@@ -388,21 +405,103 @@ void CColliderTool::OnBnClickedAddSaveList()
 {
 	UpdateData(TRUE);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_mapMeshCollider.emplace(m_cstrMeshName.GetString(), m_mapCollider);
+	m_ListSave.AddString(m_cstrMeshName);
+	m_TreeAttached.DeleteAllItems();
+	m_pCtrlObj = nullptr;
+	m_pCtrlTransform = nullptr;
 
-
+	m_mapCollider.clear();	//리스트를 비워줌
 	UpdateData(FALSE);
 }
 
 
 void CColliderTool::OnBnClickedDeleteSaveList()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData(TRUE);
+
+	_uint iIdx = m_ListSave.GetCurSel();
+	CString cstrSaveKey;
+	m_ListSave.GetText(iIdx, cstrSaveKey);
+	
+	auto iter_find = m_mapMeshCollider.find(cstrSaveKey.GetString());
+	for_each(iter_find->second.begin(), iter_find->second.end(), CDeleteMap());
+
+	m_mapMeshCollider.erase(cstrSaveKey.GetString());
+	
+	m_ListSave.DeleteString(iIdx);
+	UpdateData(FALSE);
 }
 
 
 void CColliderTool::OnBnClickedSave()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CFileDialog Dlg(FALSE,
+		L"dat",
+		L"*.dat",
+		OFN_OVERWRITEPROMPT);
+	TCHAR szFilePath[MAX_PATH]{};
+
+	GetCurrentDirectory(MAX_PATH, szFilePath);
+	PathRemoveFileSpec(szFilePath);
+	for (int i = lstrlenW(szFilePath) - 1; i >= 0; --i)
+	{
+		if (szFilePath[i] == '/' || szFilePath[i] == '\\')
+		{
+			memset(szFilePath + (i + 1), 0, sizeof(wchar_t) * (MAX_PATH - (i + 1)));
+			break;
+		}
+	}
+	lstrcat(szFilePath, L"Data");
+	Dlg.m_ofn.lpstrInitialDir = szFilePath;
+	if (IDOK == Dlg.DoModal())
+	{
+		CString strFilePath = Dlg.GetPathName();
+		HANDLE hFile = CreateFile(strFilePath.GetString(),
+			GENERIC_WRITE,
+			0,
+			nullptr,
+			CREATE_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			nullptr);
+
+		if (INVALID_HANDLE_VALUE == hFile)
+			return;
+
+		DWORD dwStringSize = 0;
+		DWORD dwbyte = 0;
+		COLLIDERSPHERE tCol;
+
+		// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+		for (auto iter : m_mapMeshCollider)
+		{
+			//매시이름 
+			dwStringSize = (iter.first.length() + 1) * sizeof(TCHAR);
+			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+			WriteFile(hFile, iter.first.c_str(), dwStringSize, &dwbyte, nullptr);
+			for (auto iter_second : iter.second)
+			{
+				// 태그이름
+				dwStringSize = (iter_second.first.length() + 1) * sizeof(TCHAR);
+				WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+				WriteFile(hFile, iter_second.first.c_str(), dwStringSize, &dwbyte, nullptr);
+
+				//뼈 이름
+				dwStringSize = (dynamic_cast<CColSphereMesh*>(iter_second.second)->GetBone()).length()+1 * sizeof(TCHAR);
+				WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+				WriteFile(hFile, dynamic_cast<CColSphereMesh*>(iter_second.second)->GetBone().c_str(), dwStringSize, &dwbyte, nullptr);
+
+				//센터, 반지름
+				CTransform* pTransform = dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				tCol.vCenterPos =  pTransform->Get_CenterPos();
+				tCol.fRadius = *dynamic_cast<CColliderSphere*>(iter_second.second->Get_Component(L"Com_Collider",ID_STATIC))->Get_Radius();
+				WriteFile(hFile, &tCol, sizeof(COLLIDERSPHERE), &dwbyte, nullptr);
+			}
+		}
+		CloseHandle(hFile);
+	}
+
+
 }
 
 
@@ -432,7 +531,7 @@ void CColliderTool::OnNMDblclkMeshList(NMHDR *pNMHDR, LRESULT *pResult)
 		//가저온 키값으로 다이나믹 매시 접근해서 뼈 리스트 이즈고 
 		if (m_pSelectedGameObject != nullptr)
 			Safe_Release(m_pSelectedGameObject);
-		m_pSelectedGameObject = CDynamicMeshObj::Create(m_pDevice, m_cstrMeshName.GetString());
+		m_pSelectedGameObject = CDynamicMeshObj::Create(m_pDevice, m_cstrMeshName.GetString(),false);
 
 		D3DXFRAME* pRootFrame = dynamic_cast<CDynamicMesh*>(m_pSelectedGameObject->Get_Component(L"Com_Mesh", ID_STATIC))->GetRootFrame();
 
@@ -455,8 +554,7 @@ void CColliderTool::OnNMDblclkMeshList(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CColliderTool::OnNMClickBoneList(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	USES_CONVERSION;
+
 
 	POINT pt;
 	GetCursorPos(&pt);
@@ -467,12 +565,6 @@ void CColliderTool::OnNMClickBoneList(NMHDR *pNMHDR, LRESULT *pResult)
 	CString wstrBoneKey = m_TreeMeshList.GetItemText(hItem);
 	m_wstrBoneName = wstrBoneKey.GetString();
 
-	//m_pBoneName = W2A(wstrBoneKey.GetString());
-
-	//const D3DXFRAME_DERIVED* pFrame = dynamic_cast<CDynamicMesh*>(m_pSelectedGameObject->Get_Component(L"Com_Mesh", ID_STATIC))->Get_FrameByName(m_pBoneName);
-
-	//m_tColInfo.vCenterPos = { pFrame->CombinedTransformMatrix._41,pFrame->CombinedTransformMatrix._42 ,pFrame->CombinedTransformMatrix._43};
-
 	
 	*pResult = 0;
 }
@@ -480,7 +572,35 @@ void CColliderTool::OnNMClickBoneList(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CColliderTool::OnNMClickAttachedColList(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	//수정할 것 선택해서 저장하자 
+	UpdateData(TRUE);
+
+	POINT pt;
+	GetCursorPos(&pt);
+	UINT flag;
+	m_TreeAttached.ScreenToClient(&pt);
+	HTREEITEM hItem = m_TreeAttached.HitTest(pt, &flag);
+
+	CString wstrColKey = m_TreeAttached.GetItemText(hItem);
+
+	auto iter_find = m_mapCollider.find(wstrColKey.GetString());
+
+	if (iter_find == m_mapCollider.end())
+		return;
+
+	m_pCtrlObj = iter_find->second;
+	m_pCtrlTransform = dynamic_cast<CTransform*>(m_pCtrlObj->Get_Component(L"Com_Transform", ID_DYNAMIC));
+	//애니메이션이 적용되고 가져옴- > 센터포즈 따로 저장하자 
+	
+	_vec3 vPos = (m_pCtrlTransform->Get_CenterPos());
+	m_fPositionX = vPos.x;
+	m_fPositionY = vPos.y;
+	m_fPositionZ = vPos.z;
+	m_tColInfo.vCenterPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
+	m_fRadius =  *(dynamic_cast<CColliderSphere*>(m_pCtrlObj->Get_Component(L"Com_Collider", ID_STATIC))->Get_Radius());
+	m_tColInfo.fRadius = m_fRadius;
+	m_bSelect = true;
+	UpdateData(FALSE);
 	*pResult = 0;
 }
 
@@ -498,20 +618,18 @@ void CColliderTool::OnLbnSelchangeAnimationList()
 }
 
 
-void CColliderTool::OnLbnSelchangeSaveList()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
 
 void CColliderTool::OnEnChangePositionX()
 {
 	if (!m_pSelectedGameObject)
 		return;
 	UpdateData(TRUE);
-	m_tColInfo.vCenterPos.x += m_fPositionX;
+	m_tColInfo.vCenterPos.x = m_fPositionX;
+	_vec3 vPos = m_pCtrlTransform->Get_CenterPos();
+	vPos.x = m_tColInfo.vCenterPos.x;
+	m_pCtrlTransform->Set_CenterPos(&vPos);
 
-
+	m_bSelect = true;
 	UpdateData(FALSE);
 }
 
@@ -521,9 +639,12 @@ void CColliderTool::OnEnChangePositionY()
 	if (!m_pSelectedGameObject)
 		return;
 	UpdateData(TRUE);
-	m_tColInfo.vCenterPos.y += m_fPositionY;
+	m_tColInfo.vCenterPos.y = m_fPositionY;
+	_vec3 vPos = m_pCtrlTransform->Get_CenterPos();
+	vPos.y = m_tColInfo.vCenterPos.y;
+	m_pCtrlTransform->Set_CenterPos(&vPos);
 
-
+	m_bSelect = true;
 	UpdateData(FALSE);
 }
 
@@ -533,9 +654,12 @@ void CColliderTool::OnEnChangePositionZ()
 	if (!m_pSelectedGameObject)
 		return;
 	UpdateData(TRUE);
-	m_tColInfo.vCenterPos.z += m_fPositionZ;
+	m_tColInfo.vCenterPos.z = m_fPositionZ;
+	_vec3 vPos = m_pCtrlTransform->Get_CenterPos();
+	vPos.z = m_tColInfo.vCenterPos.z;
+	m_pCtrlTransform->Set_CenterPos(&vPos);
 
-
+	m_bSelect = true;
 	UpdateData(FALSE);
 }
 
@@ -547,16 +671,99 @@ void CColliderTool::OnEnChangeRadius()
 	UpdateData(TRUE);
 	m_tColInfo.fRadius = m_fRadius;
 
+	m_bSelect = true;
 
 	UpdateData(FALSE);
 }
 
 
+void CColliderTool::OnDeltaposSpinPositionX(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	UpdateData(TRUE);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fPositionX += 0.5f;
+	}
+	else
+	{
+		m_fPositionX -= 0.5f;
+	}
+
+	m_tColInfo.vCenterPos.x = m_fPositionX;
+	_vec3 vPos = m_pCtrlTransform->Get_CenterPos();
+	vPos.x = m_tColInfo.vCenterPos.x;
+	m_pCtrlTransform->Set_CenterPos(&vPos);
+
+	m_bSelect = true;
+	UpdateData(FALSE);
+
+	*pResult = 0;
+}
+
+
+void CColliderTool::OnDeltaposSpinPositionY(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	UpdateData(TRUE);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fPositionY += 0.5f;
+	}
+	else
+	{
+		m_fPositionY -= 0.5f;
+	}
+
+	m_tColInfo.vCenterPos.y = m_fPositionY;
+	_vec3 vPos = m_pCtrlTransform->Get_CenterPos();
+	vPos.y = m_tColInfo.vCenterPos.y;
+	m_pCtrlTransform->Set_CenterPos(&vPos);
+
+	m_bSelect = true;
+	UpdateData(FALSE);
+	*pResult = 0;
+}
+
+
+void CColliderTool::OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	UpdateData(TRUE);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fPositionZ += 0.5f;
+	}
+	else
+	{
+		m_fPositionZ -= 0.5f;
+	}
+	m_tColInfo.vCenterPos.z = m_fPositionZ;
+	_vec3 vPos = m_pCtrlTransform->Get_CenterPos();
+	vPos.z = m_tColInfo.vCenterPos.z;
+	m_pCtrlTransform->Set_CenterPos(&vPos);
+
+	UpdateData(FALSE);
+	*pResult = 0;
+}
+
 void CColliderTool::OnDeltaposSpinRadius(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	UpdateData(TRUE);
+	if (pNMUpDown->iDelta < 0)	//->값 증가
+	{
+		m_fRadius += 0.5f;
+	}
+	else
+	{
+		m_fRadius -= 0.5f;
+	}
 
-
+	m_tColInfo.fRadius = m_fRadius;
+	
+	m_bSelect = true;
+	UpdateData(FALSE);
 
 	*pResult = 0;
 }

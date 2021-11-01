@@ -50,6 +50,9 @@ private:
 	
 	CGameObject* m_pSelectedGameObject = nullptr;	//선택된 다이나믹 메시 오브젝트 
 	CGameObject* m_pColliderObj = nullptr;			//충돌체 오브젝트 
+	CGameObject* m_pCtrlObj = nullptr;
+	CTransform* m_pCtrlTransform = nullptr;
+
 
 	CString		m_cstrMeshName;						//선택된 메시 이름
 	const char*	m_pBoneName = nullptr;				//선택된 뼈 이름
@@ -64,6 +67,7 @@ private:
 	//메시에 따른 충돌체map 
 	map<wstring, COLMAP> m_mapMeshCollider;
 
+	_bool m_bSelect = false;
 
 	COLLIDERSPHERE m_tColInfo;
 

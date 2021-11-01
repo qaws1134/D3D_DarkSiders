@@ -38,7 +38,7 @@ _int CColSphereMesh::Update_Object(const _float& fTimeDelta)
 {
 	USES_CONVERSION;
 
-	if (m_pParentBoneMatrix == nullptr&& m_wstrBone != L"")
+	if (m_wstrBone != L"")
 	{
 		CDynamicMesh*	pPlayerMeshCom = dynamic_cast<CDynamicMesh*>(m_pTarget->Get_Component(L"Com_Mesh", ID_STATIC));
 		NULL_CHECK_RETURN(pPlayerMeshCom, 0);
@@ -48,17 +48,17 @@ _int CColSphereMesh::Update_Object(const _float& fTimeDelta)
 
 		CTransform*	pPlayerTransformCom = dynamic_cast<CTransform*>(m_pTarget->Get_Component(L"Com_Transform", ID_DYNAMIC));
 		NULL_CHECK_RETURN(pPlayerTransformCom, 0);
-		m_pParentWorldMatrix = pPlayerTransformCom->Get_WorldMatrix();
+		m_pParentWorldMatrix = pPlayerTransformCom->Get_WorldMatrix() ;
 
 
 	}
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
-	if (m_pParentBoneMatrix == nullptr&& m_wstrBone != L"")
+	if ( m_wstrBone != L"")
 	{
 		m_pTransformCom->Set_ParentMatrix(&(*m_pParentBoneMatrix * *m_pParentWorldMatrix));
 	}
-
+	
 	Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;
@@ -79,6 +79,18 @@ CColSphereMesh * CColSphereMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPo
 	pInstance->SetPos(vPos);
 	pInstance->SetBone(pBone);
 	pInstance->SetRadius(fRadius);
+	if (FAILED(pInstance->Ready_Object()))
+		Safe_Release(pInstance);
+
+	return pInstance;
+}
+
+CColSphereMesh * CColSphereMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev, COLLIDERSPHERE tColSphere, wstring pBone)
+{
+	CColSphereMesh*	pInstance = new CColSphereMesh(pGraphicDev);
+
+	pInstance->SetBone(pBone);
+	pInstance->SetColSphere(tColSphere);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 

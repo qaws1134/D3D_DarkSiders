@@ -74,15 +74,16 @@ Engine::_int Engine::CTransform::Update_Component(const _float& fTimeDelta)
 }
 
 
-void CTransform::Set_ParentMatrix(_matrix * pParent)
+void Engine::CTransform::Set_ParentMatrix(_matrix * pParent)
 {
 	m_matWorld *= *pParent;
 }
 
-void CTransform::Get_WorldMatrix(_matrix * pMatrix) const
+void Engine::CTransform::Get_WorldMatrix(_matrix * pMatrix) const
 {
 	*pMatrix = m_matWorld;
 }
+
 
 void Engine::CTransform::Set_Scale(const _float& fX, const _float& fY, const _float& fZ)
 {
@@ -91,34 +92,39 @@ void Engine::CTransform::Set_Scale(const _float& fX, const _float& fY, const _fl
 	m_vScale.z = fZ;
 }
 
-void CTransform::Set_Scale(const _vec3 * vScale)
+void Engine::CTransform::Set_Scale(const _vec3 * vScale)
 {
 	m_vScale = *vScale;
 }
 
-void CTransform::Set_Pos(const _float & fX, const _float & fY, const _float & fZ)
+void Engine::CTransform::Set_Pos(const _float & fX, const _float & fY, const _float & fZ)
 {
 	m_vInfo[INFO_POS].x = fX;
 	m_vInfo[INFO_POS].y = fY;
 	m_vInfo[INFO_POS].z = fZ;
 }
 
-void CTransform::Set_Pos(const _vec3* pPos)
+void Engine::CTransform::Set_Pos(const _vec3* pPos)
 {
 	m_vInfo[INFO_POS] = *pPos;
 }
 
-void CTransform::Set_Rot(const _vec3 * vAngle)
+void Engine::CTransform::Set_Rot(const _vec3 * vAngle)
 {
 	m_vAngle = *vAngle;
 }
 
-void CTransform::Set_Rot(const _float & fX, const _float & fY, const _float & fZ)
+void Engine::CTransform::Set_Rot(const _float & fX, const _float & fY, const _float & fZ)
 {
 	m_vAngle.x = fX;
 	m_vAngle.y = fY;
 	m_vAngle.z = fZ;
 
+}
+
+void CTransform::Set_CenterPos(const _vec3 * vPos)
+{
+	m_vCenterPos = *vPos;
 }
 
 void Engine::CTransform::Set_WorldMatrix(const _matrix* pWorld)

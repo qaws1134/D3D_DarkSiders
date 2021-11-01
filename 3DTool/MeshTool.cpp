@@ -674,7 +674,7 @@ CGameObject* CMeshTool::SpawnStaticMesh(wstring wstrMeshObjKey)
 CGameObject * CMeshTool::SpawnDynamicMesh(wstring wstrMeshObjKey)
 {
 	CGameObject* pGameObject = nullptr;
-	pGameObject = CDynamicMeshObj::Create(m_pDevice, wstrMeshObjKey);
+	pGameObject = CDynamicMeshObj::Create(m_pDevice, wstrMeshObjKey,true);
 
 	return pGameObject;
 }
@@ -921,12 +921,100 @@ void CMeshTool::OnBnClickedNaviDelete()
 void CMeshTool::OnBnClickedSave()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CFileDialog Dlg(FALSE,
+		L"dat",
+		L"*.dat",
+		OFN_OVERWRITEPROMPT);
+	TCHAR szFilePath[MAX_PATH]{};
+
+	GetCurrentDirectory(MAX_PATH, szFilePath);
+	PathRemoveFileSpec(szFilePath);
+	for (int i = lstrlenW(szFilePath) - 1; i >= 0; --i)
+	{
+		if (szFilePath[i] == '/' || szFilePath[i] == '\\')
+		{
+			memset(szFilePath + (i + 1), 0, sizeof(wchar_t) * (MAX_PATH - (i + 1)));
+			break;
+		}
+	}
+	lstrcat(szFilePath, L"Data");
+	Dlg.m_ofn.lpstrInitialDir = szFilePath;
+	if (IDOK == Dlg.DoModal())
+	{
+		CString strFilePath = Dlg.GetPathName();
+		HANDLE hFile = CreateFile(strFilePath.GetString(), 
+									GENERIC_WRITE,
+									0,
+									nullptr,
+									CREATE_ALWAYS,
+									FILE_ATTRIBUTE_NORMAL,
+									nullptr);
+
+		if (INVALID_HANDLE_VALUE == hFile)
+			return;
+
+		DWORD dwStringSize = 0;
+		DWORD dwbyte = 0;
+		MESH tMesh;
+
+		for (auto& iter : m_mapNaviMesh)
+		{
+			for (auto iter_second : iter.second)
+			{
+				//3개씩 읽어
+				CTransform* pMeshTransform = dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				pMeshTransform->Get_INFO(INFO_POS, &tMesh.vPos);
+				tMesh.eMeshID = (MESHTYPE)MESH_NAVI;
+				WriteFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
+			}
+
+		}
+
+		for (auto& iter : m_mapStaticMesh)
+		{
+			dwStringSize = (iter.first.length() + 1) * sizeof(TCHAR);
+			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+			WriteFile(hFile, iter.first.c_str(), dwStringSize, &dwbyte, nullptr);
+			for (auto iter_second : iter.second)
+			{
+				CTransform* pMeshTransform = dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_STATIC));
+				pMeshTransform->Get_INFO(INFO_POS, &tMesh.vPos);
+				tMesh.vScale=pMeshTransform->Get_Scale();
+				tMesh.vRot = pMeshTransform->Get_Rot();
+				WriteFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
+			}
+		}
+
+		for (auto& iter : m_mapDynamicMesh)
+		{
+			dwStringSize = (iter.first.length() + 1) * sizeof(TCHAR);
+			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+			WriteFile(hFile, iter.first.c_str(), dwStringSize, &dwbyte, nullptr);
+			for (auto iter_second : iter.second)
+			{
+				CTransform* pMeshTransform = dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				pMeshTransform->Get_INFO(INFO_POS, &tMesh.vPos);
+				tMesh.vScale = pMeshTransform->Get_Scale();
+				tMesh.vRot = pMeshTransform->Get_Rot();
+				WriteFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
+			}
+		}
+
+		CloseHandle(hFile);
+		
+	}
+
+
 }
 
 
 void CMeshTool::OnBnClickedLoad()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+
+
+
 }
 
 //Create더블클릭

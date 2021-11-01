@@ -14,12 +14,12 @@
 #include <atlbase.h>
 #include <iostream>
 
-
+using namespace std;
 #include "Engine_Macro.h"
 #include "Engine_Function.h"
 #include "Engine_Enum.h"
-#include "Engine_Struct.h"
 #include "Engine_Typedef.h"
+#include "Engine_Struct.h"
 
 #pragma warning(disable : 4251)
 
@@ -40,7 +40,7 @@
 //#endif
 //#endif
 
-using namespace std;
+
 using namespace Engine;
 
 #endif // Engine_Define_h__
