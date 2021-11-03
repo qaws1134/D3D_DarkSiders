@@ -954,8 +954,12 @@ void CMeshTool::OnBnClickedSave()
 			return;
 
 		DWORD dwStringSize = 0;
+		DWORD dwMapSize = 0;
 		DWORD dwbyte = 0;
 		MESH tMesh;
+
+		dwMapSize = m_mapNaviMesh.size();
+		WriteFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
 
 		for (auto& iter : m_mapNaviMesh)
 		{
@@ -970,11 +974,18 @@ void CMeshTool::OnBnClickedSave()
 
 		}
 
+		dwMapSize = m_mapStaticMesh.size();
+		WriteFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+
 		for (auto& iter : m_mapStaticMesh)
 		{
 			dwStringSize = (iter.first.length() + 1) * sizeof(TCHAR);
 			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			WriteFile(hFile, iter.first.c_str(), dwStringSize, &dwbyte, nullptr);
+
+			dwMapSize = iter.second.size();
+			WriteFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+
 			for (auto iter_second : iter.second)
 			{
 				CTransform* pMeshTransform = dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_STATIC));
@@ -985,11 +996,18 @@ void CMeshTool::OnBnClickedSave()
 			}
 		}
 
+		dwMapSize = m_mapDynamicMesh.size();
+		WriteFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+
 		for (auto& iter : m_mapDynamicMesh)
 		{
 			dwStringSize = (iter.first.length() + 1) * sizeof(TCHAR);
 			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			WriteFile(hFile, iter.first.c_str(), dwStringSize, &dwbyte, nullptr);
+
+			dwMapSize = iter.second.size();
+			WriteFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+
 			for (auto iter_second : iter.second)
 			{
 				CTransform* pMeshTransform = dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_DYNAMIC));
@@ -1012,8 +1030,112 @@ void CMeshTool::OnBnClickedLoad()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
+	CFileDialog Dlg(TRUE,// TRUE면 열기. 
+		L"dat",
+		L"*.dat",
+		OFN_OVERWRITEPROMPT);
 
+	TCHAR szFilePath[MAX_PATH]{};
+	GetCurrentDirectory(MAX_PATH, szFilePath);
+	PathRemoveFileSpec(szFilePath);
+	for (int i = lstrlenW(szFilePath) - 1; i >= 0; --i)
+	{
+		if (szFilePath[i] == '/' || szFilePath[i] == '\\')
+		{
+			memset(szFilePath + (i + 1), 0, sizeof(wchar_t) * (MAX_PATH - (i + 1)));
+			break;
+		}
+	}
+	lstrcat(szFilePath, L"Data");
+	Dlg.m_ofn.lpstrInitialDir = szFilePath;
 
+	if (IDOK == Dlg.DoModal())
+	{
+		CString strFilePath = Dlg.GetPathName();
+		HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+		if (INVALID_HANDLE_VALUE == hFile)
+			return;
+		m_pCtrlObject = nullptr;
+		m_pCtrlTransform = nullptr;
+
+		DeleteMultiMap(m_mapNaviMesh);
+		DeleteMultiMap(m_mapStaticMesh);
+		DeleteMultiMap(m_mapDynamicMesh);
+		m_TreeStatic.DeleteAllItems();
+		m_TreeDynamic.DeleteAllItems();
+		m_TreeNavi.DeleteAllItems();
+
+		DWORD dwbyte = 0;
+		DWORD dwStringSize = 0;
+		DWORD dwMapSize = 0;
+		TCHAR* pBuf = nullptr;
+		MESH tMesh;
+
+		ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+		for (_uint i = 0; i < dwMapSize; i++)
+		{
+			map<_uint, CGameObject*> mapNaviObj;
+			for (_uint i = 0; i < 3; i++)
+			{
+				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
+				mapNaviObj.emplace(i, CColSphereMesh::Create(m_pDevice, tMesh.vPos));
+			}
+			m_mapNaviMesh.emplace(i, mapNaviObj);
+			Make_NaviTri(i);
+		}
+
+		ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+		for (_uint i = 0; i < dwMapSize; i++)
+		{
+			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+			pBuf = new TCHAR[dwStringSize];
+			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+			ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+			map<wstring, CGameObject*> mapStaticObj;
+			for (_uint i = 0; i < dwMapSize; i ++)
+			{
+				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
+				wstring wstrKey = pBuf + i;
+				CGameObject* pStaticMesh = SpawnStaticMesh(wstrKey);
+				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Pos(&tMesh.vPos);
+				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Scale(&tMesh.vScale);
+				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Rot(&tMesh.vRot);
+				mapStaticObj.emplace(wstrKey, pStaticMesh);
+			}
+
+			m_mapStaticMesh.emplace(pBuf, mapStaticObj);
+			Safe_Delete(pBuf);
+		}
+
+		ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+		for (_uint i = 0; i < dwMapSize; i++)
+		{
+			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+			pBuf = new TCHAR[dwStringSize];
+			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+			ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+			map<wstring, CGameObject*> mapDynamicObj;
+			for (_uint i = 0; i < dwMapSize; i++)
+			{
+				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
+				wstring wstrKey = pBuf + i;
+				CGameObject* pDynamicMesh = SpawnDynamicMesh(wstrKey);
+				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Pos(&tMesh.vPos);
+				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Scale(&tMesh.vScale);
+				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Rot(&tMesh.vRot);
+				mapDynamicObj.emplace(wstrKey, pDynamicMesh);
+			}
+			m_mapDynamicMesh.emplace(pBuf, mapDynamicObj);
+			Safe_Delete(pBuf);
+		}
+
+		Set_TreeNavi(&m_TreeNavi, L"NaviMesh");
+		Set_Tree(&m_TreeStatic, L"StaticMesh", m_mapStaticMesh);
+		Set_Tree(&m_TreeDynamic, L"DynamicMesh",m_mapDynamicMesh);
+		
+		CloseHandle(hFile);
+	}
 
 }
 

@@ -61,11 +61,11 @@ private:
 	map<wstring, map<wstring, CGameObject*>>m_mapReadyMesh;
 
 	//1.태그 , 뼈, obj
-	typedef map<wstring, CGameObject*> COLMAP;
-	COLMAP	m_mapCollider;
+	map<wstring, CGameObject*> m_mapCollider;
+
 	
 	//메시에 따른 충돌체map 
-	map<wstring, COLMAP> m_mapMeshCollider;
+	map<wstring, map<wstring, CGameObject*>> m_mapMeshCollider;
 
 	_bool m_bSelect = false;
 

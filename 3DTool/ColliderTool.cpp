@@ -398,6 +398,18 @@ void CColliderTool::OnBnClickedDeleteCol()
 void CColliderTool::OnLbnSelchangeSaveList()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	//세이브 리스트 클릭하면 컬라이더 생성
+	UpdateData(TRUE);
+	_uint iIdx = m_ListSave.GetCurSel();
+	CString cstrSaveKey;
+	m_ListSave.GetText(iIdx, cstrSaveKey);
+
+	auto iter_find = m_mapMeshCollider.find(cstrSaveKey.GetString());
+	m_mapCollider = iter_find->second;
+	Set_TreeCollider(&m_TreeAttached, NULL);
+	UpdateData(FALSE);
+
+
 }
 
 
@@ -469,16 +481,23 @@ void CColliderTool::OnBnClickedSave()
 			return;
 
 		DWORD dwStringSize = 0;
+		DWORD dwMapSize = 0;
 		DWORD dwbyte = 0;
 		COLLIDERSPHERE tCol;
 
 		// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+
 		for (auto iter : m_mapMeshCollider)
 		{
 			//매시이름 
 			dwStringSize = (iter.first.length() + 1) * sizeof(TCHAR);
 			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			WriteFile(hFile, iter.first.c_str(), dwStringSize, &dwbyte, nullptr);
+
+			//충돌체 개수
+			dwMapSize = iter.second.size();
+			WriteFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
 			for (auto iter_second : iter.second)
 			{
 				// 태그이름
@@ -487,7 +506,7 @@ void CColliderTool::OnBnClickedSave()
 				WriteFile(hFile, iter_second.first.c_str(), dwStringSize, &dwbyte, nullptr);
 
 				//뼈 이름
-				dwStringSize = (dynamic_cast<CColSphereMesh*>(iter_second.second)->GetBone()).length()+1 * sizeof(TCHAR);
+				dwStringSize = ((dynamic_cast<CColSphereMesh*>(iter_second.second)->GetBone()).length()+1) * sizeof(TCHAR);
 				WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 				WriteFile(hFile, dynamic_cast<CColSphereMesh*>(iter_second.second)->GetBone().c_str(), dwStringSize, &dwbyte, nullptr);
 
@@ -507,7 +526,86 @@ void CColliderTool::OnBnClickedSave()
 
 void CColliderTool::OnBnClickedLoad()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CFileDialog Dlg(TRUE,// TRUE면 열기. 
+		L"dat",
+		L"*.dat",
+		OFN_OVERWRITEPROMPT);
+
+	TCHAR szFilePath[MAX_PATH]{};
+	GetCurrentDirectory(MAX_PATH, szFilePath);
+	PathRemoveFileSpec(szFilePath);
+	for (int i = lstrlenW(szFilePath) - 1; i >= 0; --i)
+	{
+		if (szFilePath[i] == '/' || szFilePath[i] == '\\')
+		{
+			memset(szFilePath + (i + 1), 0, sizeof(wchar_t) * (MAX_PATH - (i + 1)));
+			break;
+		}
+	}
+	lstrcat(szFilePath, L"Data");
+	Dlg.m_ofn.lpstrInitialDir = szFilePath;
+
+	if (IDOK == Dlg.DoModal())
+	{
+		CString strFilePath = Dlg.GetPathName();
+		HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+		if (INVALID_HANDLE_VALUE == hFile)
+			return;
+
+		DWORD dwbyte = 0;
+		DWORD dwStringSize = 0;
+		DWORD dwMapSize = 0;
+		TCHAR* pBuf = nullptr;
+
+		TCHAR* pTagBuf = nullptr;
+		TCHAR* pBoneBuf = nullptr;
+		COLLIDERSPHERE tCol;
+		DeleteMultiMap(m_mapMeshCollider);
+		m_TreeAttached.DeleteAllItems();
+		m_ListSave.ResetContent();
+		while (true)
+		{
+			//ojb키
+			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+			if (0 == dwbyte )
+				break;
+			pBuf = new TCHAR[dwStringSize];
+			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+			//사이즈 개수만큼 반복문 ㄱ
+			ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+			m_ListSave.AddString(pBuf);
+			for (_uint i = 0; i <dwMapSize; i++)
+			{
+				//태그
+				ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+				pTagBuf = new TCHAR[dwStringSize];
+				ReadFile(hFile, pTagBuf, dwStringSize, &dwbyte, nullptr);
+
+				//뼈이름
+				ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+				pBoneBuf = new TCHAR[dwStringSize];
+				ReadFile(hFile, pBoneBuf, dwStringSize, &dwbyte, nullptr);
+
+				ReadFile(hFile, &tCol, sizeof(COLLIDERSPHERE), &dwbyte, nullptr);
+
+				m_pColliderObj = CColSphereMesh::Create(m_pDevice
+					, tCol
+					,pBoneBuf);
+
+				m_mapCollider.emplace(pTagBuf, m_pColliderObj);
+				Safe_Delete(pTagBuf);
+				Safe_Delete(pBoneBuf);
+			}
+
+			m_mapMeshCollider.emplace(pBuf, m_mapCollider);
+			m_mapCollider.clear();
+			Safe_Delete(pBuf);
+
+		}
+
+		CloseHandle(hFile);
+	}
 }
 
 
@@ -554,8 +652,6 @@ void CColliderTool::OnNMDblclkMeshList(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CColliderTool::OnNMClickBoneList(NMHDR *pNMHDR, LRESULT *pResult)
 {
-
-
 	POINT pt;
 	GetCursorPos(&pt);
 	UINT flag;
@@ -599,6 +695,7 @@ void CColliderTool::OnNMClickAttachedColList(NMHDR *pNMHDR, LRESULT *pResult)
 	m_tColInfo.vCenterPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
 	m_fRadius =  *(dynamic_cast<CColliderSphere*>(m_pCtrlObj->Get_Component(L"Com_Collider", ID_STATIC))->Get_Radius());
 	m_tColInfo.fRadius = m_fRadius;
+	m_wstrColTag = wstrColKey.GetString();
 	m_bSelect = true;
 	UpdateData(FALSE);
 	*pResult = 0;
