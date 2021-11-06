@@ -16,10 +16,11 @@ private:
 	
 public:
 	_byte	Get_DIKeyState(_ubyte byKeyID)			{ return m_byKeyState[byKeyID]; }
-
 	_byte	Get_DIMouseState(MOUSEKEYSTATE eMouse) 	{ 	return m_tMouseState.rgbButtons[eMouse]; 	}
-		
-	_long	Get_DIMouseMove(MOUSEMOVESTATE eMouseState)	{return *(((_long*)&m_tMouseState) + eMouseState);	}
+	_long	Get_DIMouseMove(MOUSEMOVESTATE eMouseState)	
+	{
+		return *(((_long*)&m_tMouseState) + eMouseState);	
+	}
 	
 public:
 	HRESULT Ready_InputDev(HINSTANCE hInst, HWND hWnd);

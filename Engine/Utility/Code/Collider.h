@@ -15,7 +15,7 @@ private:
 public:
 	const _vec3*		Get_Min() { return &m_vMin; }
 	const _vec3*		Get_Max() { return &m_vMin; }
-
+	const _matrix*		Get_ColliderWorld(void) { return &m_matColMatrix; }
 public:
 	HRESULT		Ready_Collider(const _vec3* pPos, const _ulong& dwVtxCnt, const _ulong& dwStride);
 	void		Render_Collider(COLTYPE eType, const _matrix* pColliderMatrix);

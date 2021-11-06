@@ -616,6 +616,7 @@ HRESULT CMeshTool::Ready_MeshComponent()
 	Ready_Prototype(L"TombStone", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/TombStone/", L"TombStone.x"));
 	Ready_Prototype(L"Tree01", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Tree/", L"Tree01.X"));
 
+
 	//	Ready_Prototype(L"Proto_Mesh_Player", CDynamicMesh::Create(m_pGraphicDev, L"../Resource/Mesh/DynamicMesh/PlayerXfile/", L"Player.x"));
 
 	return S_OK;

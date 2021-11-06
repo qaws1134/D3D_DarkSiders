@@ -13,7 +13,8 @@ private:
 
 public:
 	CComponent*		Get_Component(const _tchar* pObjTag, const _tchar* pComponentTag, COMPONENTID eID);
-	
+	CGameObject*	Get_GameObject(const _tchar* pObjTag);
+
 public:
 	HRESULT		Add_GameObject(const _tchar* pObjTag, CGameObject* pInstance);
 

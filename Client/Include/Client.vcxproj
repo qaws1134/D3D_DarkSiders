@@ -158,10 +158,19 @@
   <ItemGroup>
     <ClInclude Include="..\Code\BackGround.h" />
     <ClInclude Include="..\Code\Define.h" />
+    <ClInclude Include="..\Code\DynamicCamera.h" />
+    <ClInclude Include="..\Code\Enum.h" />
+    <ClInclude Include="..\Code\Loading.h" />
+    <ClInclude Include="..\Code\LoadMgr.h" />
     <ClInclude Include="..\Code\Logo.h" />
     <ClInclude Include="..\Code\MainApp.h" />
-    <ClInclude Include="..\Code\Monster.h" />
     <ClInclude Include="..\Code\Player.h" />
+    <ClInclude Include="..\Code\SpawnMgr.h" />
+    <ClInclude Include="..\Code\Stage.h" />
+    <ClInclude Include="..\Code\StaticCamera.h" />
+    <ClInclude Include="..\Code\Struct.h" />
+    <ClInclude Include="..\Code\Terrain.h" />
+    <ClInclude Include="..\Code\WaterBoss.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -169,10 +178,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\BackGround.cpp" />
+    <ClCompile Include="..\Code\DynamicCamera.cpp" />
+    <ClCompile Include="..\Code\Loading.cpp" />
+    <ClCompile Include="..\Code\LoadMgr.cpp" />
     <ClCompile Include="..\Code\Logo.cpp" />
     <ClCompile Include="..\Code\MainApp.cpp" />
-    <ClCompile Include="..\Code\Monster.cpp" />
     <ClCompile Include="..\Code\Player.cpp" />
+    <ClCompile Include="..\Code\SpawnMgr.cpp" />
+    <ClCompile Include="..\Code\Stage.cpp" />
+    <ClCompile Include="..\Code\StaticCamera.cpp" />
+    <ClCompile Include="..\Code\Terrain.cpp" />
+    <ClCompile Include="..\Code\WaterBoss.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

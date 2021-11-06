@@ -5,9 +5,9 @@
 #include "Scene.h"
 
 #include "BackGround.h"
+#include "Loading.h"
 
-#include "Player.h"
-#include "Monster.h"
+
 
 class CLogo : public CScene
 {
@@ -25,6 +25,9 @@ private:
 	HRESULT				Ready_Layer_GameLogic(const _tchar* pLayerTag) { return S_OK; }
 	HRESULT				Ready_Layer_UI(const _tchar* pLayerTag) { return S_OK; }
 	HRESULT				Ready_Prototype(void);
+
+private:
+	CLoading*			m_pLoading = nullptr;
 
 public:
 	static CLogo*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

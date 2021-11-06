@@ -37,6 +37,10 @@ public:
 
 	void				Set_ParentMatrix(_matrix* pParent);
 
+	void				Chase_Target(const _vec3* pTargetPos, const _float& fSpeed, const _float& fTimeDelta);
+	const _matrix*		Compute_LookAtTarget(const _vec3* pTargetPos);
+
+
 
 public:
 	HRESULT				Ready_Transform(void);

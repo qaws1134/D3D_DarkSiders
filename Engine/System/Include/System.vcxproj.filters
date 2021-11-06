@@ -28,6 +28,9 @@
     <Filter Include="03.Font\Manager">
       <UniqueIdentifier>{83d82927-59c3-4edd-9b65-774afea42382}</UniqueIdentifier>
     </Filter>
+    <Filter Include="05.KeyMgr">
+      <UniqueIdentifier>{83c7b12c-2094-40f1-8620-fdb9739754dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GraphicDev.cpp">
@@ -45,14 +48,17 @@
     <ClCompile Include="..\Code\FrameMgr.cpp">
       <Filter>02. Frame\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\InputDev.cpp">
-      <Filter>04.InputDev</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Font.cpp">
       <Filter>03.Font</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\FontMgr.cpp">
       <Filter>03.Font\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\KeyMgr.cpp">
+      <Filter>05.KeyMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\InputDev.cpp">
+      <Filter>04.InputDev</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,14 +80,17 @@
     <ClInclude Include="..\Code\FrameMgr.h">
       <Filter>02. Frame\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\InputDev.h">
-      <Filter>04.InputDev</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Font.h">
       <Filter>03.Font</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\FontMgr.h">
       <Filter>03.Font\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\KeyMgr.h">
+      <Filter>05.KeyMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\InputDev.h">
+      <Filter>04.InputDev</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

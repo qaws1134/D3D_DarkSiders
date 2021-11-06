@@ -1,13 +1,25 @@
 #include "Export_Utility.h"
+
+
+
+
 CComponent*		Get_Component(const _tchar* pLayerTag, const _tchar* pObjTag, const _tchar* pComponentTag, COMPONENTID eID)
 {
 	return CManagement::GetInstance()->Get_Component(pLayerTag, pObjTag, pComponentTag, eID);
 }
 
-HRESULT		Create_Management(CManagement** ppManagement)
+inline CGameObject * Get_GameObject(const _tchar * pLayerTag, const _tchar * pObjTag)
+{
+	return CManagement::GetInstance()->Get_GameObject(pLayerTag, pObjTag);
+}
+
+HRESULT		Create_Management(LPDIRECT3DDEVICE9& pGraphicDev,CManagement** ppManagement)
 {
 	CManagement*		pManagement = CManagement::GetInstance();
 	NULL_CHECK_RETURN(pManagement, E_FAIL);
+
+	FAILED_CHECK_RETURN(pManagement->Ready_Shader(pGraphicDev), E_FAIL);
+
 
 	*ppManagement = pManagement;
 

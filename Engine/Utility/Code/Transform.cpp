@@ -79,6 +79,35 @@ void Engine::CTransform::Set_ParentMatrix(_matrix * pParent)
 	m_matWorld *= *pParent;
 }
 
+void Engine::CTransform::Chase_Target(const _vec3* pTargetPos, const _float& fSpeed, const _float& fTimeDelta)
+{
+	_vec3		vDirection = *pTargetPos - m_vInfo[INFO_POS];
+
+	m_vInfo[INFO_POS] += *D3DXVec3Normalize(&vDirection, &vDirection) * fSpeed * fTimeDelta;
+
+	_matrix		matRot = *Compute_LookAtTarget(pTargetPos);
+	_matrix		matScale, matTrans;
+
+	D3DXMatrixScaling(&matScale, m_vScale.x, m_vScale.y, m_vScale.z);
+	D3DXMatrixTranslation(&matTrans, m_vInfo[INFO_POS].x, m_vInfo[INFO_POS].y, m_vInfo[INFO_POS].z);
+
+	m_matWorld = matScale * matRot * matTrans;
+}
+
+const Engine::_matrix* Engine::CTransform::Compute_LookAtTarget(const _vec3* pTargetPos)
+{
+	_vec3		vDirection = *pTargetPos - m_vInfo[INFO_POS];
+
+	_vec3		vAxis;
+	_matrix		matRot;
+	_vec3		vUp;
+
+	return D3DXMatrixRotationAxis(&matRot,
+		D3DXVec3Cross(&vAxis, &m_vInfo[INFO_UP], &vDirection),
+		acosf(D3DXVec3Dot(D3DXVec3Normalize(&vUp, &m_vInfo[INFO_UP]),
+			D3DXVec3Normalize(&vDirection, &vDirection))));
+}
+
 void Engine::CTransform::Get_WorldMatrix(_matrix * pMatrix) const
 {
 	*pMatrix = m_matWorld;

@@ -1,3 +1,4 @@
+#include "Export_System.h"
 
 HRESULT		Ready_GraphicDev(HWND hWnd, WINMODE eMode, const _uint& iSizeX, const _uint& iSizeY, CGraphicDev** ppGraphicDev)
 {
@@ -16,8 +17,6 @@ LPDIRECT3DDEVICE9 GetDevice()
 {
 	return CGraphicDev::GetInstance()->GetDevice();
 }
-
-
 
 // TimerMgr
 _float		Get_TimeDelta(const _tchar* pTimerTag)
@@ -79,8 +78,31 @@ void		Update_InputDev(void)
 	CInputDev::GetInstance()->Update_InputDev();
 }
 
+//KeyMgr
+inline void Key_Update()
+{
+	CKeyMgr::GetInstance()->Key_Update();
+}
+
+inline _bool Key_Up(DWORD64 dwKey)
+{
+	return CKeyMgr::GetInstance()->Key_Up(dwKey);
+}
+
+inline _bool Key_Down(DWORD64 dwKey)
+{
+	return CKeyMgr::GetInstance()->Key_Down(dwKey);
+}
+
+inline _bool Key_Pressing(DWORD64 dwKey)
+{
+	return CKeyMgr::GetInstance()->Key_Pressing(dwKey);
+}
+
+
 void		Release_System(void)
 {
+	CKeyMgr::GetInstance()->DestroyInstance();
 	CInputDev::GetInstance()->DestroyInstance();
 	CFontMgr::GetInstance()->DestroyInstance();
 	CFrameMgr::GetInstance()->DestroyInstance();

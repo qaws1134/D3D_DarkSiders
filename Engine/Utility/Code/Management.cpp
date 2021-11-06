@@ -44,6 +44,20 @@ void Engine::CManagement::Render_Scene(LPDIRECT3DDEVICE9& pGraphicDev)
 	m_pScene->Render_Scene();
 }
 
+HRESULT Engine::CManagement::Ready_Shader(LPDIRECT3DDEVICE9 & pGraphicDev)
+{
+	CShader*		pShader = nullptr;
+
+	// shader_sample
+
+	pShader = CShader::Create(pGraphicDev, L"../../Reference/Header/Shader_Sample.hpp");
+	NULL_CHECK_RETURN(pShader, E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Shader_Sample", pShader), E_FAIL);
+
+
+	return S_OK;
+}
+
 void Engine::CManagement::Free(void)
 {
 	Safe_Release(m_pScene);
@@ -55,5 +69,13 @@ Engine::CComponent* Engine::CManagement::Get_Component(const _tchar* pLayerTag, 
 		return nullptr;
 
 	return m_pScene->Get_Component(pLayerTag, pObjTag, pComponentTag, eID);
+}
+
+CGameObject * CManagement::Get_GameObject(const _tchar * pLayerTag, const _tchar * pObjTag)
+{
+	if (nullptr == m_pScene)
+		return nullptr;
+
+	return m_pScene->Get_GameObject(pLayerTag, pObjTag);
 }
 

@@ -26,9 +26,9 @@ Engine::CDynamicMesh::~CDynamicMesh(void)
 
 }
 
-void CDynamicMesh::Set_AnimationIndex(const _uint & iIndex)
+void CDynamicMesh::Set_AnimationIndex(const _uint & iIndex,_bool bBlend)
 {
-	m_pAniCtrl->Set_AnimationIndex(iIndex);
+	m_pAniCtrl->Set_AnimationIndex(iIndex, bBlend);
 }
 
 void CDynamicMesh::Play_Animation(const _float & fTimeDelta)
@@ -36,12 +36,31 @@ void CDynamicMesh::Play_Animation(const _float & fTimeDelta)
 	m_pAniCtrl->Play_Animation(fTimeDelta);
 	
 	_matrix		matTemp;
-	Update_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame, D3DXMatrixRotationY(&matTemp, D3DXToRadian(180.f)));
+	Update_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame, D3DXMatrixRotationY(&matTemp, D3DXToRadian(270.f)));
 }
 
 Engine::_bool Engine::CDynamicMesh::Is_AnimationsetFinish(void)
 {
 	return m_pAniCtrl->Is_AnimationsetFinish();
+}
+
+_bool CDynamicMesh::Is_Animationset(_double dRadius)
+{
+	return m_pAniCtrl->Is_Animationset(dRadius);
+}
+
+_vec3 CDynamicMesh::GetBonePos(const char * pFrameName)
+{
+	_vec3 vBonePos;
+
+	D3DXFRAME_DERIVED* pFrame = (D3DXFRAME_DERIVED*)D3DXFrameFind(m_pRootFrame, pFrameName);
+
+	_matrix matBone = pFrame->CombinedTransformMatrix;
+	vBonePos.x =  matBone._41;
+	vBonePos.y = matBone._42;
+	vBonePos.z = matBone._43;
+
+	return vBonePos;
 }
 
 const			Engine::D3DXFRAME_DERIVED* Engine::CDynamicMesh::Get_FrameByName(const char* pFrameName)
@@ -114,11 +133,12 @@ void Engine::CDynamicMesh::Render_Meshes(void)
 
 			pDerivedMeshContainer->MeshData.pMesh->DrawSubset(i);
 		}
-		pDerivedMeshContainer->MeshData.pMesh->GetNumVertices();
+		//pDerivedMeshContainer->MeshData.pMesh->GetNumVertices();
 
 		pDerivedMeshContainer->pOriMesh->UnlockVertexBuffer();
 		pDerivedMeshContainer->MeshData.pMesh->UnlockVertexBuffer();
 	}
+	
 	
 }
 
@@ -146,6 +166,7 @@ Engine::CDynamicMesh* Engine::CDynamicMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev
 
 	return pInstance;
 }
+
 
 Engine::CComponent* Engine::CDynamicMesh::Clone(void)
 {
@@ -192,8 +213,6 @@ void Engine::CDynamicMesh::SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame)
 		m_MeshContainerList.push_back(pDerivedMeshContainer);
 	
 	}
-
-
 
 
 	if (nullptr != pFrame->pFrameSibling)

@@ -52,7 +52,7 @@ Engine::RAY Engine::CRayPickManager::Create_MouseRay(const _vec2 & MousePos, con
 }
 
 //뷰까지 내리고 넘겨주면 ㅇㅋ
-_bool CRayPickManager::RaySphereCollision(RAY tRay, _vec3 vCenterPos, _float fRadius)
+_bool Engine::CRayPickManager::RaySphereCollision(RAY tRay, _vec3 vCenterPos, _float fRadius)
 {
 	_vec3 vDir = tRay.vRayPos - vCenterPos;
 

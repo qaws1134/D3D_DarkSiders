@@ -6,6 +6,8 @@
 #include "FrameMgr.h"
 #include "FontMgr.h"
 #include "InputDev.h"
+#include "KeyMgr.h"
+
 BEGIN(Engine)
 
 // GraphicDev
@@ -43,6 +45,13 @@ inline _byte	Get_DIMouseState(MOUSEKEYSTATE eMouse);
 inline _long	Get_DIMouseMove(MOUSEMOVESTATE eMouseState);
 inline HRESULT	Ready_InputDev(HINSTANCE hInst, HWND hWnd);
 inline void		Update_InputDev(void);
+
+inline void		Key_Update();
+inline _bool	Key_Up(DWORD64 dwKey);
+inline _bool	Key_Down(DWORD64 dwKey);
+inline _bool	Key_Pressing(DWORD64 dwKey);
+
+
 
 inline void		Release_System(void);
 

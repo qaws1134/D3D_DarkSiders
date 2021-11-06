@@ -17,11 +17,15 @@ private:
 
 public:	
 
-	void			Set_AnimationIndex(const _uint& iIndex);
+	void			Set_AnimationIndex(const _uint& iIndex, _bool bBlend = true);
 	void			Play_Animation(const _float& fTimeDelta);
 	const			D3DXFRAME_DERIVED*		Get_FrameByName(const char* pFrameName);
 	_bool			Is_AnimationsetFinish(void);
+	_bool			Is_Animationset(_double dRadius);
 	_uint			GetMaxNumAnimationSet() { if (!m_pAniCtrl)return 0;  return m_pAniCtrl->GetMaxNumAnimationSets(); }
+
+	_vec3			GetBonePos(const char* pFrameName);
+
 	map<const char*, map<_ulong, const char*>> GetBoneNameList() { return m_mapBoneName; }
 
 	D3DXFRAME*		GetRootFrame() { return m_pRootFrame; }

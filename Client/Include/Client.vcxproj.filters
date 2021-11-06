@@ -34,11 +34,41 @@
     <Filter Include="02. GameObject\00. BackGround">
       <UniqueIdentifier>{9d5d7814-ca7a-4204-896e-df2c1dcb9d7c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\01. Player">
+    <Filter Include="02. GameObject\01. Character">
+      <UniqueIdentifier>{61456f25-37d3-4f47-88af-d3d2a15ac0d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\00. Player">
       <UniqueIdentifier>{39bbe1ba-7054-44df-8cfb-5880a88c10c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\02. Monster">
+    <Filter Include="02. GameObject\01. Character\02. NPC">
+      <UniqueIdentifier>{bca6e1e5-57ae-457a-a402-925a6c31ec64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\01. WaterBoss">
       <UniqueIdentifier>{6d4ee4bd-727f-49c9-9175-2265a4943f07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\99. LoadMgr">
+      <UniqueIdentifier>{2bcc4c30-1061-4256-81ae-842c3c33eec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\98. SpawnMgr">
+      <UniqueIdentifier>{4384acaf-40c5-49e2-b063-6544d08174e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98.Headers">
+      <UniqueIdentifier>{77d4be1d-8203-48a5-bd41-d04d66323aca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\02.Loading">
+      <UniqueIdentifier>{ddd684c9-5547-44eb-be69-b9c6ebee28c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\02. Camera">
+      <UniqueIdentifier>{28d6a71f-2528-4201-ad1a-3a941e69ed6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\02. Camera\00.DynamicCamera">
+      <UniqueIdentifier>{419a55e4-d209-46db-a33f-73e4b70b5068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\02. Camera\01.StaticCaemra">
+      <UniqueIdentifier>{02025ffb-2cec-4ac2-afff-fc298434f094}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\03. Terrain">
+      <UniqueIdentifier>{c4d0af7e-8b31-4e4a-a343-30dceaf3ad71}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -67,10 +97,37 @@
       <Filter>02. GameObject\00. BackGround</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Player.h">
-      <Filter>02. GameObject\01. Player</Filter>
+      <Filter>02. GameObject\01. Character\00. Player</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Monster.h">
-      <Filter>02. GameObject\02. Monster</Filter>
+    <ClInclude Include="..\Code\WaterBoss.h">
+      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\LoadMgr.h">
+      <Filter>01. Scene\99. LoadMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\SpawnMgr.h">
+      <Filter>01. Scene\98. SpawnMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Loading.h">
+      <Filter>01. Scene\02.Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Stage.h">
+      <Filter>01. Scene\01. Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\DynamicCamera.h">
+      <Filter>02. GameObject\02. Camera\00.DynamicCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Terrain.h">
+      <Filter>02. GameObject\03. Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Enum.h">
+      <Filter>98.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Struct.h">
+      <Filter>98.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\StaticCamera.h">
+      <Filter>02. GameObject\02. Camera\01.StaticCaemra</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -90,10 +147,31 @@
       <Filter>02. GameObject\00. BackGround</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Player.cpp">
-      <Filter>02. GameObject\01. Player</Filter>
+      <Filter>02. GameObject\01. Character\00. Player</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Monster.cpp">
-      <Filter>02. GameObject\02. Monster</Filter>
+    <ClCompile Include="..\Code\WaterBoss.cpp">
+      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\LoadMgr.cpp">
+      <Filter>01. Scene\99. LoadMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SpawnMgr.cpp">
+      <Filter>01. Scene\98. SpawnMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Loading.cpp">
+      <Filter>01. Scene\02.Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Stage.cpp">
+      <Filter>01. Scene\01. Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\DynamicCamera.cpp">
+      <Filter>02. GameObject\02. Camera\00.DynamicCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Terrain.cpp">
+      <Filter>02. GameObject\03. Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\StaticCamera.cpp">
+      <Filter>02. GameObject\02. Camera\01.StaticCaemra</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

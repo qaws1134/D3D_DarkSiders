@@ -1,8 +1,8 @@
 #ifndef Define_h__
 #define Define_h__
 
-#define			WINCX		800
-#define			WINCY		600
+#define			WINCX		1200
+#define			WINCY		800
 
 extern	HWND		 g_hWnd;
 extern	HINSTANCE	 g_hInst;

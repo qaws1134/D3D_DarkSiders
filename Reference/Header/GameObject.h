@@ -14,12 +14,13 @@ protected:
 
 
 public:
+	_float			Get_ViewZ(void) { return m_fViewZ; }
 	CComponent*		Get_Component(const _tchar* pComponentTag, COMPONENTID eID);
+	void			Compute_ViewZ(const _vec3* pPos);
 
 public:
 	void	SetCol(_bool bCol) { m_bCol = bCol; }
 	_bool	GetCol() { return m_bCol; }
-
 
 
 public:
@@ -36,6 +37,7 @@ protected:
 	LPDIRECT3DDEVICE9					m_pGraphicDev;
 	map<const _tchar*, CComponent*>		m_mapComponent[ID_END];
 	CGameObject* m_pTarget;
+	_float								m_fViewZ;
 
 private:
 	CComponent*		Find_Component(const _tchar* pComponentTag, COMPONENTID eID);

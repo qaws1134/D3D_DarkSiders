@@ -97,6 +97,12 @@
     <Filter Include="04. Component\09.NaviMesh\01.Line">
       <UniqueIdentifier>{34894c5d-5bcb-49c2-bdde-daa3c59f4aa3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="08.Shader">
+      <UniqueIdentifier>{0371cb4c-f221-4f3f-811e-5433ed1442ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08.Shader\hpp">
+      <UniqueIdentifier>{6ef1d2c7-113d-45c4-a897-86ba99fc7589}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Component.cpp">
@@ -188,6 +194,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\NaviMesh.cpp">
       <Filter>04. Component\09.NaviMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Shader.cpp">
+      <Filter>08.Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +292,12 @@
     </ClInclude>
     <ClInclude Include="..\Code\NaviMesh.h">
       <Filter>04. Component\09.NaviMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader.h">
+      <Filter>08.Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader_Sample.hpp">
+      <Filter>08.Shader\hpp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

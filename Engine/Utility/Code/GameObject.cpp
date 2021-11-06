@@ -46,7 +46,7 @@ Engine::_int Engine::CGameObject::Update_Object(const _float& fTimeDelta)
 	return iResult;
 }
 
-CComponent * CGameObject::Find_Component(const _tchar * pComponentTag, COMPONENTID eID)
+Engine::CComponent * Engine::CGameObject::Find_Component(const _tchar * pComponentTag, COMPONENTID eID)
 {
 	auto	iter = find_if(m_mapComponent[eID].begin(), m_mapComponent[eID].end(), CTag_Finder(pComponentTag));
 
@@ -64,6 +64,18 @@ Engine::CComponent* Engine::CGameObject::Get_Component(const _tchar* pComponentT
 		return nullptr;
 
 	return pComponent;
+}
+
+void Engine::CGameObject::Compute_ViewZ(const _vec3 * pPos)
+{
+	_matrix		matCamWorld;
+	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matCamWorld);
+	D3DXMatrixInverse(&matCamWorld, NULL, &matCamWorld);
+
+	_vec3	vCamPos;
+	memcpy(&vCamPos, &matCamWorld.m[3][0], sizeof(_vec3));
+
+	m_fViewZ = D3DXVec3Length(&(vCamPos - *pPos));
 }
 
 void CGameObject::Render_Object(void)

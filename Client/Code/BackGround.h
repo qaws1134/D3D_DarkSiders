@@ -7,6 +7,9 @@ BEGIN(Engine)
 
 class CRcTex;
 class CTexture;
+class CRenderer;
+class CTransform;
+class CShader;
 
 END
 
@@ -24,11 +27,15 @@ public:
 
 private:
 	HRESULT			Add_Component(void);
+	HRESULT			SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 
 private:
 	CRcTex*		m_pBufferCom = nullptr;
 	CTexture*	m_pTextureCom = nullptr;
-	
+	CRenderer*	m_pRendererCom = nullptr;
+	CTransform*	m_pTransformCom = nullptr;
+	CShader*	m_pShaderCom = nullptr;
+
 public:
 	static CBackGround*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	virtual void			Free(void);
