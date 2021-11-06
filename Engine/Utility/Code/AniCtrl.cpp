@@ -87,7 +87,7 @@ void Engine::CAniCtrl::Set_AnimationIndex(const _uint& iIndex, _bool bBlend)
 	if (bBlend)
 	{
 		// 현재 지정한 트랙을 활성화 또는 비활성화를 결정하는데 시점을 지정할 수 있는 함수
-		m_pAniCtrl->KeyTrackEnable(m_iCurrentTrack, FALSE, m_fAccTime + 0.001f);
+		m_pAniCtrl->KeyTrackEnable(m_iCurrentTrack, FALSE, m_fAccTime + 0.25f);
 
 		// 지정된 트랙의 재생속도를 지정하는 함수
 		m_pAniCtrl->KeyTrackSpeed(m_iCurrentTrack, 1.f, m_fAccTime, 0.25, D3DXTRANSITION_LINEAR);

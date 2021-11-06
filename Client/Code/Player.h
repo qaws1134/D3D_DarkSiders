@@ -28,9 +28,12 @@ public:
 
 public:
 	void		StateChange();
-	void		StateLinker();		//다음 동작 연결 
-	void		DirSet(War::DIR eDir, _float fTimeDelta);	//키에 따른 방향 결정
-	void		RunState();
+	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
+	void		DirSet(War::DIR eDir, _float fTimeDelta, _float fAngleSpeed);	//키에 따른 방향 결정
+	void		DirSet_Combo();
+	void		ElementSet();
+
+	_bool		Combat_to_Idle_Timer(_float fDeltaTime);
 	//void		SetNextAniPos();
 private:
 	HRESULT			Add_Component();
@@ -50,8 +53,10 @@ private:
 
 
 	War::DIR		m_eDir;			//방향값 저장
+
 	War::KeyState	m_eKeyState;	//콤보 키 상태 저장 
 
+	_bool m_bCancle;
 	//머신 상태
 	War::STATE		m_eMachineState;
 	War::STATE		m_ePreMachineState;
@@ -63,10 +68,24 @@ private:
 	//캐릭터 상태 
 	War::CHARSTATE  m_eCharState;	
 	_double dAttackCheckFrame;
+	_double dDashCheckFrame;
+	_double dJumpLandCheckFrame;
 
+	War::WEAPON_ELEMENT m_eElement;
+
+
+	//애니메이션 블랜드
+	_bool	m_bBlend = true;
 	
 	//애니 동작 전 위치
 	_vec3 m_vPreAniPos;
+
+
+	//타이머
+	_float m_fCToITime = 5.f;
+	_float m_fCToISpeed = 0.f;
+
+
 
 
 public:

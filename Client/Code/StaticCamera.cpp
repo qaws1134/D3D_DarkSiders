@@ -75,7 +75,8 @@ void CStaticCamera::Move(_float fDeltaTime)
 	_vec3 vTargetPosition;
 	m_pTargetTransform->Get_INFO(INFO_POS, &vTargetPosition);  // Æ÷Áö¼Ç
 
-
+	vTargetRight = _vec3{ 1.f,0.f,0.f };
+	vTargetLook = _vec3{ 0.f,0.f,1.f };
 	_vec3 vPlayerCameraDistance;
 
 	if (GetAsyncKeyState(VK_ADD))

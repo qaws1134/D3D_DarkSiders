@@ -115,7 +115,10 @@ void Engine::CKeyMgr::Key_Update()
 		m_dwKey |= KEY_F1;
 	if (GetAsyncKeyState(VK_F2) & 0x8000)
 		m_dwKey |= KEY_F2;
-
+	if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
+		m_dwKey |= KEY_MBUTTON;
+	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
+		m_dwKey |= KEY_SHIFT;
 }
 
 bool CKeyMgr::Key_Up(DWORD64 dwKey)

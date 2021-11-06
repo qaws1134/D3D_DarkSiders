@@ -23,6 +23,7 @@ namespace War {
 		LBUTTON,
 		RBUTTON,
 		SPACE,
+		WASD,
 		KEYSTATE_END
 	};
 
@@ -42,14 +43,26 @@ namespace War {
 		STATE_IDLE,
 		STATE_IDLE_CB,
 		MOVE,
-		MOVE_CB,
 		ATTACK,
+		BLOCK,
 		JUMP,
 		JUMP_CB,
 		JUMPATTACK,
 		DASH,
 		HIT,
 		STATE_END
+	};
+
+	enum WEAPON_ELEMENT
+	{
+		ELEMENT_EARTH,
+		ELEMENT_FLAME,
+		ELEMENT_LIGHTNING,
+		ELEMENT_VAMP,
+		ELEMENT_WIND,
+		ELEMENT_DEATH,
+		ELEMENT_END
+
 	};
 
 	enum Ani {
@@ -78,43 +91,50 @@ namespace War {
 		War_Atk_Light_02,                         //22	frame:[44]
 		War_Atk_Light_03,                         //23	frame:[66]
 		War_Atk_Light_04,                         //24	frame:[74]
-		War_Atk_Air_Light_01,                     //25	frame:[51]
-		War_Atk_Air_Light_02,                     //26	frame:[51]
-		War_Atk_Air_Filpsaw_Start,                //27	frame:[8]
-		War_Atk_Air_Filpsaw_Loop,                 //28	frame:[6]
-		War_Atk_Air_Filpsaw_Land,                 //29	frame:[57]
-		War_Atk_Dash,                             //30	frame:[54]
-		War_Atk_Earth_Start,                      //31	frame:[31]
-		War_Atk_Earth_Loop,                       //32	frame:[66]
-		War_Atk_Earth_End,                        //33	frame:[72]
-		War_Atk_Flamebrand,                       //34	frame:[28]
-		War_Atk_Flamebrand_Start,                 //35	frame:[9]
-		War_Atk_Flamebrand_End,                   //36	frame:[49]
-		War_Chest_Open,                           //37	frame:[66]
-		War_Death,                                //38	frame:[101]
-		War_Block_Idle,                           //39	frame:[91]
-		War_Block_Impact_Heavy,                   //40	frame:[17]
-		War_Block_Impact_Light,                   //41	frame:[17]
-		War_Block_Impact_Medium,                  //42	frame:[17]
-		War_Block_Start,                          //43	frame:[10]
-		War_Knockback_Fall,                       //44	frame:[41]
-		War_Knockback_Land,                       //45	frame:[53]
-		War_Knockback_Loop,                       //46	frame:[41]
-		War_Knockback_Start,                      //47	frame:[21]
-		War_Impack_From_Back,                     //48	frame:[31]
-		War_Impack_From_Front,                    //49	frame:[21]
-		War_Impack_From_Left,                     //50	frame:[21]
-		War_Impack_From_Right,                    //51	frame:[21]
-		War_Skill_01,                             //52	frame:[72]
-		War_Skill_02_Start,                       //53	frame:[11]
-		War_Skill_02_Strike,                      //54	frame:[39]
-		War_Skill_02_Run,                         //55	frame:[33]
-		War_Skill_03,                             //56	frame:[56]
-		War_Glide,                                //57	frame:[61]
-		War_Glide_Start,                          //58	frame:[21]
-		War_Atk_Heavy_01,                         //59	frame:[53]
-		War_Atk_Heavy_02,                         //60	frame:[59]
-		War_Atk_Heavy_03,                         //61	frame:[88]
+		War_Atk_Air_Filpsaw_Start,                //25	frame:[8]
+		War_Atk_Air_Filpsaw_Loop,                 //26	frame:[6]
+		War_Atk_Air_Filpsaw_Land,                 //27	frame:[57]
+		War_Atk_Dash,                             //28	frame:[54]
+		War_Atk_Earth_Start,                      //29	frame:[31]
+		War_Atk_Earth_Loop,                       //30	frame:[66]
+		War_Atk_Earth_End,                        //31	frame:[72]
+		War_Atk_Flamebrand,                       //32	frame:[28]
+		War_Atk_Flamebrand_Start,                 //33	frame:[9]
+		War_Atk_Flamebrand_End,                   //34	frame:[49]
+		War_Atk_Lightning,                        //35	frame:[65]
+		War_Atk_LoomingDeath,                     //36	frame:[99]
+		War_Atk_Vamp_Start,                       //37	frame:[19]
+		War_Atk_Vamp_Loop,                        //38	frame:[8]
+		War_Atk_Vamp_Finish,                      //39	frame:[48]
+		War_Atk_Launch_A,                         //40	frame:[33]
+		War_Atk_Launch_B,                         //41	frame:[33]
+		War_Atk_Air_Light_01,                     //42	frame:[51]
+		War_Atk_Air_Light_02,                     //43	frame:[51]
+		War_Chest_Open,                           //44	frame:[66]
+		War_Death,                                //45	frame:[101]
+		War_Block_Idle,                           //46	frame:[91]
+		War_Block_Impact_Heavy,                   //47	frame:[17]
+		War_Block_Impact_Light,                   //48	frame:[17]
+		War_Block_Impact_Medium,                  //49	frame:[17]
+		War_Block_Start,                          //50	frame:[10]
+		War_Knockback_Fall,                       //51	frame:[41]
+		War_Knockback_Land,                       //52	frame:[53]
+		War_Knockback_Loop,                       //53	frame:[41]
+		War_Knockback_Start,                      //54	frame:[21]
+		War_Impack_From_Back,                     //55	frame:[31]
+		War_Impack_From_Front,                    //56	frame:[21]
+		War_Impack_From_Left,                     //57	frame:[21]
+		War_Impack_From_Right,                    //58	frame:[21]
+		War_Skill_01,                             //59	frame:[72]
+		War_Skill_02_Start,                       //60	frame:[11]
+		War_Skill_02_Strike,                      //61	frame:[39]
+		War_Skill_02_Run,                         //62	frame:[33]
+		War_Skill_03,                             //63	frame:[56]
+		War_Glide,                                //64	frame:[61]
+		War_Glide_Start,                          //65	frame:[21]
+		War_Atk_Heavy_01,                         //66	frame:[53]
+		War_Atk_Heavy_02,                         //67	frame:[59]
+		War_Atk_Heavy_03,                         //68	frame:[88]
 		War_End
 	};
 }
