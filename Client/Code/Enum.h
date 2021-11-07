@@ -24,6 +24,9 @@ namespace War {
 		RBUTTON,
 		SPACE,
 		WASD,
+		NUM1,
+		NUM2,
+		NUM3,
 		KEYSTATE_END
 	};
 

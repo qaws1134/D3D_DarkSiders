@@ -11,6 +11,7 @@
 #include "Terrain.h"
 #include "DynamicCamera.h"
 #include "StaticCamera.h"
+#include "UI_WeaponElement.h"
 //#include "SkyBox.h"
 //#include "Stone.h"
 //#include "Sword.h"

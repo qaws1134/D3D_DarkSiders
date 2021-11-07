@@ -170,6 +170,7 @@
     <ClInclude Include="..\Code\StaticCamera.h" />
     <ClInclude Include="..\Code\Struct.h" />
     <ClInclude Include="..\Code\Terrain.h" />
+    <ClInclude Include="..\Code\Ui_WeaponElement.h" />
     <ClInclude Include="..\Code\WaterBoss.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="..\Code\Stage.cpp" />
     <ClCompile Include="..\Code\StaticCamera.cpp" />
     <ClCompile Include="..\Code\Terrain.cpp" />
+    <ClCompile Include="..\Code\Ui_WeaponElement.cpp" />
     <ClCompile Include="..\Code\WaterBoss.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

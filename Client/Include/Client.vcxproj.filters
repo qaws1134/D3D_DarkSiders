@@ -70,6 +70,21 @@
     <Filter Include="02. GameObject\03. Terrain">
       <UniqueIdentifier>{c4d0af7e-8b31-4e4a-a343-30dceaf3ad71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\04. UI">
+      <UniqueIdentifier>{b34b89cb-ab46-4b3d-9059-91cdacbf1d35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\00. WeaponElement">
+      <UniqueIdentifier>{05cf2815-1411-4f5a-878f-4a4d27e11872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\01. Status">
+      <UniqueIdentifier>{e1c5184e-74ce-430d-b6d5-77bf1489fa94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\02. StatShop">
+      <UniqueIdentifier>{eead5df8-5860-479a-a22b-887d288836bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\03. ComboShop">
+      <UniqueIdentifier>{1ee38237-7936-4a5d-95a3-1c154e2aad24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -129,6 +144,9 @@
     <ClInclude Include="..\Code\StaticCamera.h">
       <Filter>02. GameObject\02. Camera\01.StaticCaemra</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Ui_WeaponElement.h">
+      <Filter>02. GameObject\04. UI\00. WeaponElement</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -172,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\StaticCamera.cpp">
       <Filter>02. GameObject\02. Camera\01.StaticCaemra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Ui_WeaponElement.cpp">
+      <Filter>02. GameObject\04. UI\00. WeaponElement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

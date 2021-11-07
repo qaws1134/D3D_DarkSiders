@@ -10,6 +10,7 @@ class CDynamicMesh;
 class CTransform;
 class CRenderer;
 class CCalculator;
+class CShader;
 //class CColliderSphere;
 END
 
@@ -32,9 +33,8 @@ public:
 	void		DirSet(War::DIR eDir, _float fTimeDelta, _float fAngleSpeed);	//키에 따른 방향 결정
 	void		DirSet_Combo();
 	void		ElementSet();
-
 	_bool		Combat_to_Idle_Timer(_float fDeltaTime);
-	//void		SetNextAniPos();
+	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 private:
 	HRESULT			Add_Component();
 	void			Key_Input(const _float& fTimeDelta);
@@ -44,6 +44,7 @@ private:
 	CTransform*		m_pTransformCom = nullptr;
 	CRenderer*		m_pRendererCom = nullptr;
 	CCalculator*	m_pCalculatorCom = nullptr;
+	CShader*			m_pShaderCom = nullptr;
 
 private:
 	//전투 상태판단

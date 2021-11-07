@@ -103,6 +103,12 @@
     <Filter Include="08.Shader\hpp">
       <UniqueIdentifier>{6ef1d2c7-113d-45c4-a897-86ba99fc7589}</UniqueIdentifier>
     </Filter>
+    <Filter Include="09.RenderTarget">
+      <UniqueIdentifier>{b82dee23-7753-42df-9117-cf97c1576b02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09.RenderTarget\Manger">
+      <UniqueIdentifier>{dec1baca-efed-4ebb-86d7-3c95096ac064}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Component.cpp">
@@ -197,6 +203,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\Shader.cpp">
       <Filter>08.Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\RenderTarget.cpp">
+      <Filter>09.RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\RenderTargetMgr.cpp">
+      <Filter>09.RenderTarget\Manger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -296,7 +308,25 @@
     <ClInclude Include="..\Code\Shader.h">
       <Filter>08.Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\RenderTarget.h">
+      <Filter>09.RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\RenderTargetMgr.h">
+      <Filter>09.RenderTarget\Manger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader_Mesh.hpp">
+      <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
     <ClInclude Include="..\Code\Shader_Sample.hpp">
+      <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader_Shade.hpp">
+      <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader_Terrain.hpp">
+      <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader_Blend.hpp">
       <Filter>08.Shader\hpp</Filter>
     </ClInclude>
   </ItemGroup>

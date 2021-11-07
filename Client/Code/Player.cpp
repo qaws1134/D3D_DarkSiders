@@ -60,8 +60,85 @@ _int CPlayer::Update_Object(const _float& fTimeDelta)
 	return iExit;
 }
 
+CPlayer* CPlayer::Create(LPDIRECT3DDEVICE9 pGraphicDev)
+{
+	CPlayer*	pInstance = new CPlayer(pGraphicDev);
+	if (FAILED(pInstance->Ready_Object()))
+		Safe_Release(pInstance);
+
+	return pInstance;
+}
+
+CPlayer * CPlayer::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
+{
+	CPlayer*	pInstance = new CPlayer(pGraphicDev);
+	if (FAILED(pInstance->Ready_Object()))
+		Safe_Release(pInstance);
+
+	return pInstance;
+}
+
+void CPlayer::Free(void)
+{
+	CGameObject::Free();
+}
+
+HRESULT CPlayer::Add_Component()
+{
+	CComponent*		pComponent = nullptr;
+
+	// Mesh
+	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"War"));
+	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
+
+	// Transform
+	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Clone_Prototype(L"Proto_Transform"));
+	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
+	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
+
+	// Renderer
+	pComponent = m_pRendererCom = Engine::Get_Renderer();
+	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	pComponent->AddRef();
+	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+
+	// Calculator
+	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));
+	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
+
+
+	// Shader
+	pComponent = m_pShaderCom = dynamic_cast<CShader*>(Clone_Prototype(L"Proto_Shader_Mesh"));
+	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
+
+	return S_OK;
+}
+
 void CPlayer::Render_Object(void)
 {
+	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
+	pEffect->AddRef();
+
+	FAILED_CHECK_RETURN(SetUp_ConstantTable(pEffect), );
+
+	_uint iMaxPass = 0;
+
+	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
+											// 2인자 : 시작하는 방식을 묻는 FLAG
+	pEffect->BeginPass(0);
+
+	m_pMeshCom->Render_Meshes(pEffect);
+
+	pEffect->EndPass();
+	pEffect->End();
+
+	Safe_Release(pEffect);
+
+	m_pGraphicDev->SetRenderState(D3DRS_LIGHTING, FALSE);
+
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
 	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
@@ -132,10 +209,23 @@ void CPlayer::StateChange()
 			{
 				m_eCurAniState = War::War_Atk_Heavy_01;
 			}
+			if (m_eKeyState == War::NUM1)
+			{
+				m_eCurAniState = War::War_Skill_01;
+			}
+			if (m_eKeyState == War::NUM2)
+			{
+				m_eCurAniState = War::War_Skill_02_Start;
+			}
+			if (m_eKeyState == War::NUM3)
+			{
+				m_eCurAniState = War::War_Skill_03;
+			}
 			if (m_ePreMachineState == War::DASH)
 			{
 				m_eCurAniState = War::War_Atk_Dash;
 			}
+
 			m_eCharState = War::COMBAT;
 			m_bBlend = false;
 			break;
@@ -223,7 +313,6 @@ void CPlayer::StateChange()
 			break;
 		case War::War_Dash:
 			m_eKeyState = War::KEYSTATE_END;
-
 			break;
 		case War::War_Dash_Air_Land:
 			break;
@@ -321,14 +410,19 @@ void CPlayer::StateChange()
 		case War::War_Impack_From_Right:
 			break;
 		case War::War_Skill_01:
+			m_eKeyState = War::KEYSTATE_END;
 			break;
 		case War::War_Skill_02_Start:
+			m_eKeyState = War::KEYSTATE_END;
 			break;
 		case War::War_Skill_02_Strike:
+			m_bBlend = true;
 			break;
 		case War::War_Skill_02_Run:
 			break;
 		case War::War_Skill_03:
+			m_eKeyState = War::KEYSTATE_END;
+			m_bBlend = true;
 			break;
 		case War::War_Glide:
 			break;
@@ -767,14 +861,34 @@ void CPlayer::StateLinker(_float fDeltaTime)
 	case War::War_Impack_From_Right:
 		break;
 	case War::War_Skill_01:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = War::STATE_IDLE_CB;
+		}
 		break;
 	case War::War_Skill_02_Start:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = War::War_Skill_02_Run;
+		}
 		break;
 	case War::War_Skill_02_Strike:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = War::STATE_IDLE_CB;
+		}
 		break;
 	case War::War_Skill_02_Run:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = War::War_Skill_02_Strike;
+		}
 		break;
 	case War::War_Skill_03:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = War::STATE_IDLE_CB;
+		}
 		break;
 	case War::War_Glide:
 		break;
@@ -867,73 +981,6 @@ _bool CPlayer::Combat_to_Idle_Timer(_float fDeltaTime)
 	return false;
 }
 
-//void CPlayer::SetNextAniPos()
-//{
-//	//현재 로테이션 값으로 회전시키고 
-//	
-//	_vec3 vBonsPos = m_pMeshCom->GetBonePos("null_Spine");
-//	_vec3 vPos;
-//	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-//
-//	_vec3 vScale = m_pTransformCom->Get_Scale();
-//
-//	_vec3 vNextPos = _vec3{ (vBonsPos.x* vScale.x), (vBonsPos.y* vScale.y), (vBonsPos.z* vScale.z) }+m_vPreAniPos;
-//
-//	vNextPos.y = vPos.y;
-//	m_pTransformCom->Set_Pos(&vNextPos);
-//}
-
-
-CPlayer* CPlayer::Create(LPDIRECT3DDEVICE9 pGraphicDev)
-{
-	CPlayer*	pInstance = new CPlayer(pGraphicDev);
-	if (FAILED(pInstance->Ready_Object()))
-		Safe_Release(pInstance);
-
-	return pInstance;
-}
-
-CPlayer * CPlayer::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
-{
-	CPlayer*	pInstance = new CPlayer(pGraphicDev);
-	if (FAILED(pInstance->Ready_Object()))
-		Safe_Release(pInstance);
-
-	return pInstance;
-}
-
-void CPlayer::Free(void)
-{
-	CGameObject::Free();
-}
-
-HRESULT CPlayer::Add_Component()
-{
-	CComponent*		pComponent = nullptr;
-
-	// Mesh
-	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"War"));
-	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
-	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
-
-	// Transform
-	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Clone_Prototype(L"Proto_Transform"));
-	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
-	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
-
-	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
-
-	// Calculator
-	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));
-	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
-	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
-
-	return S_OK;
-}
 
 void CPlayer::Key_Input(const _float & fTimeDelta)
 {
@@ -1025,15 +1072,18 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	//스킬
 	if (Key_Down(KEY_1))
 	{
-
+		m_eMachineState = War::ATTACK;
+		m_eKeyState = War::NUM1;
 	}
 	if (Key_Down(KEY_2))
 	{
-
+		m_eMachineState = War::ATTACK;
+		m_eKeyState = War::NUM2;
 	}
 	if (Key_Down(KEY_3))
 	{
-
+		m_eMachineState = War::ATTACK;
+		m_eKeyState = War::NUM3;
 	}
 
 	//점프
@@ -1331,5 +1381,48 @@ void CPlayer::ElementSet()
 	case War::ELEMENT_END:
 		break;
 	}
+}
+
+
+HRESULT CPlayer::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
+{
+	_matrix		matWorld, matView, matProj;
+
+	m_pTransformCom->Get_WorldMatrix(&matWorld);
+	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
+	m_pGraphicDev->GetTransform(D3DTS_PROJECTION, &matProj);
+
+	pEffect->SetMatrix("g_matWorld", &matWorld);
+	pEffect->SetMatrix("g_matView", &matView);
+	pEffect->SetMatrix("g_matProj", &matProj);
+
+	D3DMATERIAL9		tMtrl;
+	ZeroMemory(&tMtrl, sizeof(D3DMATERIAL9));
+
+	tMtrl.Diffuse = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
+	tMtrl.Specular = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
+	tMtrl.Ambient = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
+	tMtrl.Emissive = D3DXCOLOR(0.f, 0.f, 0.f, 1.f);
+	tMtrl.Power = 10.f;
+
+	pEffect->SetVector("g_vMtrlDiffuse", (_vec4*)&tMtrl.Diffuse);
+	pEffect->SetVector("g_vMtrlSpecular", (_vec4*)&tMtrl.Specular);
+	pEffect->SetVector("g_vMtrlAmbient", (_vec4*)&tMtrl.Ambient);
+
+	pEffect->SetFloat("g_fPower", tMtrl.Power);
+
+	const D3DLIGHT9*		pLightInfo = Get_Light();
+	NULL_CHECK_RETURN(pLightInfo, E_FAIL);
+
+	pEffect->SetVector("g_vLightDir", &_vec4(pLightInfo->Direction, 0.f));
+
+	pEffect->SetVector("g_vLightDiffuse", (_vec4*)&pLightInfo->Diffuse);
+	pEffect->SetVector("g_vLightSpecular", (_vec4*)&pLightInfo->Specular);
+	pEffect->SetVector("g_vLightAmbient", (_vec4*)&pLightInfo->Ambient);
+
+	D3DXMatrixInverse(&matView, NULL, &matView);
+	pEffect->SetVector("g_vCamPos", (_vec4*)&matView._41);
+
+	return S_OK;
 }
 
