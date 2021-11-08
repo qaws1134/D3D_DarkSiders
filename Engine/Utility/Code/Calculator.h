@@ -6,6 +6,7 @@
 BEGIN(Engine)
 class CTransform;
 class CTerrainTex;
+class CRcTex;
 
 class ENGINE_DLL CCalculator : public CComponent
 {
@@ -34,6 +35,8 @@ public:
 		const _ulong& dwVtxItv = 1);
 
 	_vec3			Picking_OnTerrain(HWND hWnd, const CTerrainTex* pTerrainBufferCom, const CTransform* pTerrainTransCom);
+	_bool			Picking_OnRect(HWND hWnd, const CRcTex* pRcBuffCom, const CTransform* pRcTrasform);
+	_bool			Picking_OnUI(HWND hWnd, const RECT tRcUI);
 
 	_bool			Collision_AABB(const _vec3* pDestMin, const _vec3* pDestMax, const _matrix* pDestWorld,
 		const _vec3* pSourMin, const _vec3* pSourMax, const _matrix* pSourWorld);

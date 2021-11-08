@@ -2,7 +2,7 @@
 #include "MainApp.h"
 #include "Define.h"
 #include "Logo.h"
-
+#include "UIMgr.h"
 
 CMainApp::CMainApp(void)
 {
@@ -17,6 +17,8 @@ CMainApp::~CMainApp(void)
 HRESULT CMainApp::Ready_MainApp(void)
 {
 	FAILED_CHECK_RETURN(SetUp_DefaultSetting(&m_pGraphicDev), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Renderer(m_pGraphicDev), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Scene(m_pGraphicDev, &m_pManagementClass), E_FAIL);
 
 	return S_OK;
@@ -97,6 +99,7 @@ CMainApp* CMainApp::Create(void)
 
 void CMainApp::Free(void)
 {
+	CUIMgr::GetInstance()->DestroyInstance();
 	Safe_Release(m_pGraphicDev);
 
 	Safe_Release(m_pManagementClass);

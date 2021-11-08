@@ -66,6 +66,29 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Explosion/Explosion%d.png", TEX_NORMAL, 90)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_UI", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/hpbar.png", TEX_NORMAL, 1)), E_FAIL);
 
+
+#pragma region UI Texture
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Element",				CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Element/Element_0%d.png", TEX_NORMAL, 6)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Element_Base",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI//Element/Base_0%d.png", TEX_NORMAL, 4)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Skill",					CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Skill/Skill_0%d.png", TEX_NORMAL, 3)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Skill_Base",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Skill/Base.png", TEX_NORMAL,1)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Skill_Select",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Skill/Select.png", TEX_NORMAL, 1)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_StatStone_Health",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/StatStone/Health_0%d.png", TEX_NORMAL, 4)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_StatStone_Skill",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/StatStone/SkillGage_0%d.png", TEX_NORMAL, 4)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Base",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Base_0%d.png", TEX_NORMAL,3)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_COreTree_Select",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Select.png", TEX_NORMAL, 1)), E_FAIL);
+	
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneBase",	CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Stone/Base_0%d.png", TEX_NORMAL, 2)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneElement", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Stone/StoneElement_0%d.png", TEX_NORMAL, 8)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Creature",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Stone/Creature_0%d.png", TEX_NORMAL, 12)), E_FAIL);
+
+
+#pragma endregion UI Texture
+
+
+
 	lstrcpy(m_szLoading, L"Loading Component...............");
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Calculator", CCalculator::Create(m_pGraphicDev)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Optimization", COptimization::Create(m_pGraphicDev, true, VTXCNTX, VTXCNTZ)), E_FAIL);
@@ -76,7 +99,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	lstrcpy(m_szLoading, L"Loading Mesh...............");
 
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Stone", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/TombStone/", L"TombStone.x")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Navi", CNaviMesh::Create(m_pGraphicDev)), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Navi", CNaviMesh::Create(m_pGraphicDev)), E_FAIL);
 //	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Player", CDynamicMesh::Create(m_pGraphicDev, L"../Bin/Resource/Mesh/DynamicMesh/PlayerXfile/", L"Player.x")), E_FAIL);
 //	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Sword", CStaticMesh::Create(m_pGraphicDev, L"../Bin/Resource/Mesh/StaticMesh/Sword/", L"Sword.x")), E_FAIL);
 #pragma region DYNAMICMESH

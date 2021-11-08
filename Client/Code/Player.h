@@ -10,6 +10,7 @@ class CDynamicMesh;
 class CTransform;
 class CRenderer;
 class CCalculator;
+class CShader;
 //class CColliderSphere;
 END
 
@@ -31,10 +32,20 @@ public:
 	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
 	void		DirSet(War::DIR eDir, _float fTimeDelta, _float fAngleSpeed);	//키에 따른 방향 결정
 	void		DirSet_Combo();
-	void		ElementSet();
-
+	void		ElementAniSet();
 	_bool		Combat_to_Idle_Timer(_float fDeltaTime);
-	//void		SetNextAniPos();
+	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
+
+
+#pragma region Set 함수
+public:
+	void		Set_Element(War::WEAPON_ELEMENT eElement) { m_eElement = eElement; }
+#pragma  endregion Set 함수
+#pragma region Get 함수
+
+#pragma  endregion Set 함수
+
+
 private:
 	HRESULT			Add_Component();
 	void			Key_Input(const _float& fTimeDelta);
@@ -44,19 +55,15 @@ private:
 	CTransform*		m_pTransformCom = nullptr;
 	CRenderer*		m_pRendererCom = nullptr;
 	CCalculator*	m_pCalculatorCom = nullptr;
+	CShader*			m_pShaderCom = nullptr;
 
 private:
-	//전투 상태판단
-	_bool			m_bCombat = false;
-	_bool			m_bCombo = false; // 콤보상태 판단
+
 	_vec3 m_vDir;
 
-
 	War::DIR		m_eDir;			//방향값 저장
-
 	War::KeyState	m_eKeyState;	//콤보 키 상태 저장 
 
-	_bool m_bCancle;
 	//머신 상태
 	War::STATE		m_eMachineState;
 	War::STATE		m_ePreMachineState;

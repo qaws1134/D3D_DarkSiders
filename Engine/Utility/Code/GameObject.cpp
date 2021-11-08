@@ -78,6 +78,42 @@ void Engine::CGameObject::Compute_ViewZ(const _vec3 * pPos)
 	m_fViewZ = D3DXVec3Length(&(vCamPos - *pPos));
 }
 
+void CGameObject::SetPos(_vec3 vPos, COMPONENTID eID)
+{
+	CComponent*		pComponent = Find_Component(L"Com_Transform", eID);
+
+	if (nullptr == pComponent)
+		return;
+
+	dynamic_cast<CTransform*>(pComponent)->Set_Pos(&vPos);
+
+}
+
+void CGameObject::SetZPos(_float fzPos, COMPONENTID eID)
+{
+	CComponent*		pComponent = Find_Component(L"Com_Transform", eID);
+
+	if (nullptr == pComponent)
+		return ;
+
+	_vec3 vPos;
+	dynamic_cast<CTransform*>(pComponent)->Get_INFO(INFO_POS,&vPos);
+	dynamic_cast<CTransform*>(pComponent)->Set_Pos(vPos.x, vPos.y ,fzPos);
+
+}
+
+_float CGameObject::GetWorldZ(COMPONENTID eID)
+{
+	CComponent*		pComponent = Find_Component(L"Com_Transform", eID);
+
+	if (nullptr == pComponent)
+		return 0.f;
+
+	_vec3 vPos;
+	dynamic_cast<CTransform*>(pComponent)->Get_INFO(INFO_POS, &vPos);
+	return vPos.z;
+}
+
 void CGameObject::Render_Object(void)
 {
 

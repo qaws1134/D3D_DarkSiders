@@ -2,7 +2,7 @@
 
 #include "Transform.h"
 #include "TerrainTex.h"
-
+#include "RcTex.h"
 USING(Engine)
 
 Engine::CCalculator::CCalculator(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -183,6 +183,104 @@ Engine::_vec3 Engine::CCalculator::Picking_OnTerrain(HWND hWnd,
 	}
 
 	return _vec3(0.f, 0.f, 0.f);
+}
+
+_bool CCalculator::Picking_OnRect(HWND hWnd, const CRcTex * pRcBuffCom, const CTransform * pRcTrasform)
+{
+	POINT		ptMouse{};
+
+	GetCursorPos(&ptMouse);
+	ScreenToClient(hWnd, &ptMouse);
+
+	_vec3		vMousePos;
+	D3DVIEWPORT9		ViewPort;
+	ZeroMemory(&ViewPort, sizeof(D3DVIEWPORT9));
+
+	m_pGraphicDev->GetViewport(&ViewPort);
+
+	// 윈도우 좌표를 투영 좌표로 변환
+	vMousePos.x = ptMouse.x / (ViewPort.Width * 0.5f) - 1.f;
+	vMousePos.y = ptMouse.y / (ViewPort.Height * -0.5f) + 1.f;
+	vMousePos.z = 0.f;
+
+	// 투영 좌표에서 뷰스페이스로 변환
+	_matrix		matProj;
+	m_pGraphicDev->GetTransform(D3DTS_PROJECTION, &matProj);
+	D3DXMatrixInverse(&matProj, NULL, &matProj);
+	D3DXVec3TransformCoord(&vMousePos, &vMousePos, &matProj);
+
+	const	_vec3*		pRcVtx = pRcBuffCom->Get_VtxPos();
+
+	// 뷰스페이스에서 월드 스페이스로 변환
+	_vec3	vRayPos, vRayDir;
+
+	vRayPos = _vec3(0.f, 0.f, 0.f);
+	vRayDir = vMousePos - vRayPos;
+
+	_matrix		matView;
+	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
+	D3DXMatrixInverse(&matView, NULL, &matView);
+
+	D3DXVec3TransformCoord(&vRayPos, &vRayPos, &matView);
+	D3DXVec3TransformNormal(&vRayDir, &vRayDir, &matView);
+
+	// 월드스페이스에서 로컬 스페이스로 변환
+
+	_matrix		matWorld;
+	pRcTrasform->Get_WorldMatrix(&matWorld);
+	D3DXMatrixInverse(&matWorld, NULL, &matWorld);
+
+	D3DXVec3TransformCoord(&vRayPos, &vRayPos, &matWorld);
+	D3DXVec3TransformNormal(&vRayDir, &vRayDir, &matWorld);
+
+	_float	fU, fV, fDist;
+	_ulong	dwVtxIdx[3];
+
+	// 오른쪽 위 삼각형
+	//0 1 2
+	dwVtxIdx[0] = 0;
+	dwVtxIdx[1] = 1;
+	dwVtxIdx[2] = 2;
+	if (D3DXIntersectTri(&pRcVtx[dwVtxIdx[1]],
+		&pRcVtx[dwVtxIdx[0]],
+		&pRcVtx[dwVtxIdx[2]],
+		&vRayPos,
+		&vRayDir,
+		&fU, &fV, &fDist))
+	{
+		return true;
+	}
+
+	// 왼쪽 아래 삼각형
+	dwVtxIdx[0] = 0;
+	dwVtxIdx[1] = 2;
+	dwVtxIdx[2] = 3;
+
+	if (D3DXIntersectTri(&pRcVtx[dwVtxIdx[2]],
+		&pRcVtx[dwVtxIdx[1]],
+		&pRcVtx[dwVtxIdx[0]],
+		&vRayPos,
+		&vRayDir,
+		&fU, &fV, &fDist))
+	{
+		return true;
+	}
+	return false;
+}
+
+_bool CCalculator::Picking_OnUI(HWND hWnd, const RECT tRcUI)
+{
+
+	POINT		ptMouse{};
+
+	GetCursorPos(&ptMouse);
+	ScreenToClient(hWnd, &ptMouse);
+
+	if (PtInRect(&tRcUI, ptMouse))
+	{
+		return true;
+	}
+	return false;
 }
 
 Engine::_bool Engine::CCalculator::Collision_AABB(const _vec3* pDestMin, const _vec3* pDestMax, const _matrix* pDestWorld, const _vec3* pSourMin, const _vec3* pSourMax, const _matrix* pSourWorld)

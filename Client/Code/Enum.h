@@ -1,6 +1,45 @@
 #ifndef ClientEnum_h__
 #define ClientEnum_h__
 
+namespace UI
+{
+	enum  ELEMENT{
+		ELEMENT_00,
+		ELEMENT_01,
+		ELEMENT_02,
+		ELEMENT_03,
+		ELEMENT_04,
+		ELEMENT_05,
+		ELEMENT_END
+	};
+	enum SKILL
+	{
+		SKILL,
+		SKILL_BASE,
+		SKILL_SELECT,
+		SKILL_END
+	};
+
+	enum CORETREE
+	{
+		CORETREE_BASE,
+		CORETREE_SELECT,
+		CORETREE_STONE_BASE,
+		CORETREE_STONE_ELEMENT,
+		CORETREE_STONE_CREATURE,
+		CORETREE_END
+	};
+
+	enum STATSTONE
+	{
+		HEALTH,
+		SKILLGAGE,
+		STATSTONE_END
+	};
+}
+
+
+
 namespace War {
 
 	//버튼 방향값 입력 상태 
@@ -24,6 +63,9 @@ namespace War {
 		RBUTTON,
 		SPACE,
 		WASD,
+		NUM1,
+		NUM2,
+		NUM3,
 		KEYSTATE_END
 	};
 
@@ -58,9 +100,9 @@ namespace War {
 		ELEMENT_EARTH,
 		ELEMENT_FLAME,
 		ELEMENT_LIGHTNING,
-		ELEMENT_VAMP,
-		ELEMENT_WIND,
 		ELEMENT_DEATH,
+		ELEMENT_WIND,
+		ELEMENT_VAMP,
 		ELEMENT_END
 
 	};
@@ -102,6 +144,9 @@ namespace War {
 		War_Atk_Flamebrand_Start,                 //33	frame:[9]
 		War_Atk_Flamebrand_End,                   //34	frame:[49]
 		War_Atk_Lightning,                        //35	frame:[65]
+		War_Atk_Wind_Start,                       //36	frame:[31]
+		War_Atk_Wind_Loop,                        //37	frame:[66]
+		War_Atk_Wind_End,                         //38	frame:[71]
 		War_Atk_LoomingDeath,                     //36	frame:[99]
 		War_Atk_Vamp_Start,                       //37	frame:[19]
 		War_Atk_Vamp_Loop,                        //38	frame:[8]

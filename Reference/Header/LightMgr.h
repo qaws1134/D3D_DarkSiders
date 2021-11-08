@@ -13,10 +13,16 @@ private:
 	explicit CLightMgr(void);
 	virtual ~CLightMgr(void);
 
+
 public:
-	HRESULT		Ready_Light(LPDIRECT3DDEVICE9 pGraphicDev, 
-							const D3DLIGHT9* pLightInfo,
-							const _uint& iIndex);
+	const D3DLIGHT9*			Get_Light(const _uint& iIndex = 0);
+
+public:
+	HRESULT		Ready_Light(LPDIRECT3DDEVICE9 pGraphicDev,
+		const D3DLIGHT9* pLightInfo,
+		const _uint& iIndex);
+	void			Render_Light(LPD3DXEFFECT& pEffect);
+
 
 private:
 	list<CLight*>			m_LightList;

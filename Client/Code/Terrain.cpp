@@ -40,14 +40,10 @@ _int CTerrain::Update_Object(const _float& fTimeDelta)
 void CTerrain::Render_Object(void)
 {
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
-	//m_pGraphicDev->SetRenderState(D3DRS_LIGHTING, TRUE);
 	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	//FAILED_CHECK_RETURN(SetUp_Material(), );
 	m_pGraphicDev->SetTexture(0, nullptr);
 	m_pBufferCom->Render_Buffer();
-
 	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	//m_pGraphicDev->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 }
 

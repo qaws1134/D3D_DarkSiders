@@ -28,17 +28,17 @@ HRESULT Engine::CShader::Ready_Shader(const _tchar* pFilePath)
 	// 3. 만약 m_pEffect 값이 있고 m_pErrMsg 값도 있는 경우 : 컴파일 상에는 문제가 없으나 작성한 코드 중 경고성 메세지가 발생한 경우
 
 	if (FAILED(D3DXCreateEffectFromFile(m_pGraphicDev, pFilePath,
-										NULL,
-										NULL,
-										D3DXSHADER_DEBUG,
-										NULL, 
-										&m_pEffect,
-										&m_pErrMsg)))
+		NULL,
+		NULL,
+		D3DXSHADER_DEBUG,
+		NULL,
+		&m_pEffect,
+		&m_pErrMsg)))
 	{
 		MessageBoxA(NULL, (char*)m_pErrMsg->GetBufferPointer(), "Shader_Error", MB_OK);
 		return E_FAIL;
 	}
-	
+
 	else if (nullptr != m_pErrMsg)
 	{
 		MessageBoxA(NULL, (char*)m_pErrMsg->GetBufferPointer(), "Shader_Warning", MB_OK);

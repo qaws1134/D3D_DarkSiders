@@ -185,7 +185,7 @@ void CMy3DToolView::OnInitialUpdate()
 	Ready_Prototype(L"Proto_Buffer_CubeTex", CCubeTex::Create(m_pDevice));
 	Ready_Prototype(L"War", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/War/", L"War.X"));
 
-
+	Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X"));
 	// Terrain
 	m_pTerrain = CTerrain::Create(m_pDevice);
 	NULL_CHECK_RETURN(m_pTerrain, );
@@ -200,7 +200,7 @@ void CMy3DToolView::OnTimer(UINT_PTR nIDEvent)
 	Update_InputDev();
 	m_pTerrain->Update_Object(0.f);
 	Render_Begin(D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.f));
-	Render_GameObject(m_pDevice);
+	Render_MFCGameObject(m_pDevice);
 	Render_End();
 
 

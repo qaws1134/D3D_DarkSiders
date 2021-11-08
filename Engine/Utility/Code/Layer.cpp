@@ -45,7 +45,10 @@ int Engine::CLayer::Update_Layer(const _float& fTimeDelta)
 void Engine::CLayer::Render_Layer(void)
 {
 	for (auto& iter : m_mapObject)
+	{
+		
 		iter.second->Render_Object();
+	}
 }
 
 CLayer* Engine::CLayer::Create(void)

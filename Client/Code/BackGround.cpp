@@ -34,7 +34,7 @@ _int CBackGround::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
-	Add_RenderGroup(RENDER_PRIORITY, this);
+	Add_RenderGroup(RENDER_ALPHA, this);
 
 	return iExit;
 }
@@ -100,7 +100,7 @@ HRESULT CBackGround::Add_Component(void)
 	NULL_CHECK_RETURN(m_pBufferCom, E_FAIL);
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
-	// Transform
+	// Shader
 	pComponent = m_pShaderCom = dynamic_cast<CShader*>(Clone_Prototype(L"Proto_Shader_Sample"));
 	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);

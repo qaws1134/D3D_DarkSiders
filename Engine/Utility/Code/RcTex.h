@@ -12,10 +12,16 @@ private:
 	explicit CRcTex(const CRcTex& rhs);
 	virtual ~CRcTex(void);
 
+public:
+	const _vec3*		Get_VtxPos(void) const { return m_pPos; }
 
 public:
 	HRESULT		Ready_Buffer(void);
 	void		Render_Buffer(void);
+
+private:
+	_vec3*					m_pPos = nullptr;
+
 
 public:
 	static CRcTex*			Create(LPDIRECT3DDEVICE9 pGraphicDev);

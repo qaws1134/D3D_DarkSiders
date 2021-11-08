@@ -100,7 +100,7 @@ HRESULT Engine::CStaticMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar*
 	{
 		if (Decl[i].Usage == D3DDECLUSAGE_POSITION)
 		{
-			byOffset = Decl[i].Offset;
+			byOffset = (_ubyte)Decl[i].Offset;
 			break;
 		}
 	}

@@ -6,6 +6,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <queue>
 #include <string>
 #include <algorithm>
 #include <functional>
@@ -26,7 +27,7 @@ using namespace std;
 #define DIRECTINPUT_VERSION	0x0800
 #include <dinput.h>
 
-//
+
 //#ifdef _DEBUG
 //
 //#define _CRTDBG_MAP_ALLOC

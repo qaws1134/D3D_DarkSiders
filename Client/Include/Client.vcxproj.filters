@@ -70,6 +70,12 @@
     <Filter Include="02. GameObject\03. Terrain">
       <UniqueIdentifier>{c4d0af7e-8b31-4e4a-a343-30dceaf3ad71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\04. UI">
+      <UniqueIdentifier>{b34b89cb-ab46-4b3d-9059-91cdacbf1d35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\UIMgr">
+      <UniqueIdentifier>{555f9912-cb0e-4c2e-81e6-054de7cc20be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -129,6 +135,12 @@
     <ClInclude Include="..\Code\StaticCamera.h">
       <Filter>02. GameObject\02. Camera\01.StaticCaemra</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\UIMgr.h">
+      <Filter>02. GameObject\04. UI\UIMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\UI.h">
+      <Filter>02. GameObject\04. UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -172,6 +184,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\StaticCamera.cpp">
       <Filter>02. GameObject\02. Camera\01.StaticCaemra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\UIMgr.cpp">
+      <Filter>02. GameObject\04. UI\UIMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\UI.cpp">
+      <Filter>02. GameObject\04. UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
