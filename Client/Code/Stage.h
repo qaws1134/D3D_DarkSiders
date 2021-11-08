@@ -12,8 +12,10 @@
 #include "DynamicCamera.h"
 #include "StaticCamera.h"
 #include "UI_WeaponElement.h"
+
 #include "UIMgr.h"
 #include "UI.h"
+
 //#include "SkyBox.h"
 //#include "Stone.h"
 //#include "Sword.h"

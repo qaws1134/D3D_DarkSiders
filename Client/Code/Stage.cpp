@@ -56,6 +56,7 @@ HRESULT CStage::Ready_Layer_Environment(const _tchar* pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
+
 	//CAMERA_DESC CameraDesc;
 	//CameraDesc.fFovY = D3DXToRadian(60.f);
 	//CameraDesc.fAspect = (_float)WINCX / WINCY;
@@ -134,13 +135,14 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
-	CAMERA_DESC CameraDesc;
-	CameraDesc.fFovY = D3DXToRadian(60.f);
-	CameraDesc.fAspect = (_float)WINCX / WINCY;
-	CameraDesc.fNear = 1.f;
-	CameraDesc.fFar = 1000.f;
-	CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
-	CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
+	//CAMERA_DESC CameraDesc;
+	//CameraDesc.fFovY = D3DXToRadian(60.f);
+	//CameraDesc.fAspect = (_float)WINCX / WINCY;
+	//CameraDesc.fNear = 1.f;
+	//CameraDesc.fFar = 1000.f;
+	//CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
+	//CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
+
 
 	pGameObject = CStaticCamera::Create(m_pGraphicDev, CameraDesc);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
@@ -169,6 +171,7 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 			FAILED_CHECK_RETURN(pLayer->Add_GameObject(dynamic_cast<CUI*>(iter_second)->GetObjTag().c_str(), iter_second), E_FAIL);
 		}
 	}
+
 
 	m_mapLayer.emplace(pLayerTag, pLayer);
 	return S_OK;

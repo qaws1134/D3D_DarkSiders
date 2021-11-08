@@ -32,6 +32,7 @@ public:
 	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
 	void		DirSet(War::DIR eDir, _float fTimeDelta, _float fAngleSpeed);	//키에 따른 방향 결정
 	void		DirSet_Combo();
+
 	void		ElementAniSet();
 	_bool		Combat_to_Idle_Timer(_float fDeltaTime);
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);

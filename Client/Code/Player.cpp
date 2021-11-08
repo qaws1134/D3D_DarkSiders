@@ -84,7 +84,6 @@ void CPlayer::Free(void)
 }
 
 
-
 HRESULT CPlayer::Add_Component()
 {
 	CComponent*		pComponent = nullptr;
@@ -137,17 +136,9 @@ void CPlayer::Render_Object(void)
 	pEffect->EndPass();
 	pEffect->End();
 
+
 	Safe_Release(pEffect);
 
-	//m_pGraphicDev->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-	//m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
-	//m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
-	//m_pMeshCom->Render_Meshes();
-
-	//m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-}
 
 void CPlayer::StateChange()
 {
