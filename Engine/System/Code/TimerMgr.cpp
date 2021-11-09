@@ -62,6 +62,16 @@ void		Engine::CTimerMgr::Set_TimeDelta(const _tchar* pTimerTag)
 	pTimer->SetUp_TimeDelta();
 }
 
+void CTimerMgr::Stop_TimeDelta(const _tchar * pTimerTag,  _bool bStop)
+{
+	CTimer*	pTimer = Find_Timer(pTimerTag);
+
+	if (nullptr == pTimer)
+		return;
+
+	return pTimer->Stop_Timer(bStop);
+}
+
 void Engine::CTimerMgr::Free(void)
 {
 	for_each(m_mapTimers.begin(), m_mapTimers.end(), CDeleteMap());

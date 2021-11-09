@@ -26,7 +26,7 @@ Engine::CDynamicMesh::~CDynamicMesh(void)
 
 }
 
-void CDynamicMesh::Set_AnimationIndex(const _uint & iIndex,_bool bBlend)
+void CDynamicMesh::Set_AnimationIndex(const _uint & iIndex,_bool bBlend, _double dBlendTime)
 {
 	m_pAniCtrl->Set_AnimationIndex(iIndex, bBlend);
 }

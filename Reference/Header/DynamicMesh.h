@@ -17,7 +17,7 @@ private:
 
 public:	
 
-	void			Set_AnimationIndex(const _uint& iIndex, _bool bBlend = true);
+	void			Set_AnimationIndex(const _uint& iIndex, _bool bBlend = true, _double dBlendTime = 0.25);
 	void			Play_Animation(const _float& fTimeDelta);
 	const			D3DXFRAME_DERIVED*		Get_FrameByName(const char* pFrameName);
 	_bool			Is_AnimationsetFinish(void);

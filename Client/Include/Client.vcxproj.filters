@@ -76,6 +76,9 @@
     <Filter Include="02. GameObject\04. UI\UIMgr">
       <UniqueIdentifier>{555f9912-cb0e-4c2e-81e6-054de7cc20be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.GameMgr">
+      <UniqueIdentifier>{9164c4a6-4e31-4e74-bf3b-01e2bf9887d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -104,9 +107,6 @@
     </ClInclude>
     <ClInclude Include="..\Code\Player.h">
       <Filter>02. GameObject\01. Character\00. Player</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\WaterBoss.h">
-      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\LoadMgr.h">
       <Filter>01. Scene\99. LoadMgr</Filter>
@@ -141,6 +141,12 @@
     <ClInclude Include="..\Code\UI.h">
       <Filter>02. GameObject\04. UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\GameMgr.h">
+      <Filter>97.GameMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\WaterBoss.h">
+      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -160,9 +166,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\Player.cpp">
       <Filter>02. GameObject\01. Character\00. Player</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\WaterBoss.cpp">
-      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\LoadMgr.cpp">
       <Filter>01. Scene\99. LoadMgr</Filter>
@@ -190,6 +193,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\UI.cpp">
       <Filter>02. GameObject\04. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GameMgr.cpp">
+      <Filter>97.GameMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\WaterBoss.cpp">
+      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

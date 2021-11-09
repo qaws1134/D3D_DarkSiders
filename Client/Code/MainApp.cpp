@@ -60,7 +60,7 @@ HRESULT CMainApp::SetUp_DefaultSetting(LPDIRECT3DDEVICE9* ppGraphicDev)
 	(*ppGraphicDev)->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// Font √ﬂ∞°
-	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Default", L"πŸ≈¡", 15, 15, FW_NORMAL), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Default", L"πŸ≈¡", 18, 18, FW_NORMAL), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Jinji", L"±√º≠", 30, 30, FW_HEAVY), E_FAIL);
 
 

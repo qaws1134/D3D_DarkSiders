@@ -62,7 +62,7 @@ HRESULT Engine::CAniCtrl::Ready_AniCtrl(void)
 	return S_OK;
 }
 
-void Engine::CAniCtrl::Set_AnimationIndex(const _uint& iIndex, _bool bBlend)
+void Engine::CAniCtrl::Set_AnimationIndex(const _uint& iIndex, _bool bBlend, _double dBlendTime)
 {
 	if (m_iOldAniIndex == iIndex)
 		return;
@@ -87,18 +87,18 @@ void Engine::CAniCtrl::Set_AnimationIndex(const _uint& iIndex, _bool bBlend)
 	if (bBlend)
 	{
 		// 현재 지정한 트랙을 활성화 또는 비활성화를 결정하는데 시점을 지정할 수 있는 함수
-		m_pAniCtrl->KeyTrackEnable(m_iCurrentTrack, FALSE, m_fAccTime + 0.25f);
+		m_pAniCtrl->KeyTrackEnable(m_iCurrentTrack, FALSE, m_fAccTime + (_float)dBlendTime);
 
 		// 지정된 트랙의 재생속도를 지정하는 함수
-		m_pAniCtrl->KeyTrackSpeed(m_iCurrentTrack, 1.f, m_fAccTime, 0.25, D3DXTRANSITION_LINEAR);
+		m_pAniCtrl->KeyTrackSpeed(m_iCurrentTrack, 1.f, m_fAccTime, dBlendTime, D3DXTRANSITION_LINEAR);
 
 		// 지정된 트랙의 재생 가중치를 지정하는 함수
-		m_pAniCtrl->KeyTrackWeight(m_iCurrentTrack, 0.1f, m_fAccTime, 0.25, D3DXTRANSITION_LINEAR);
+		m_pAniCtrl->KeyTrackWeight(m_iCurrentTrack, 0.1f, m_fAccTime, dBlendTime, D3DXTRANSITION_LINEAR);
 
 		// 트랙의 활성화 유무를 결정하는 함수
 		m_pAniCtrl->SetTrackEnable(m_iNewTrack, TRUE);
-		m_pAniCtrl->KeyTrackSpeed(m_iNewTrack, 1.f, m_fAccTime, 0.25, D3DXTRANSITION_LINEAR);
-		m_pAniCtrl->KeyTrackWeight(m_iNewTrack, 0.9f, m_fAccTime, 0.25, D3DXTRANSITION_LINEAR);
+		m_pAniCtrl->KeyTrackSpeed(m_iNewTrack, 1.f, m_fAccTime, dBlendTime, D3DXTRANSITION_LINEAR);
+		m_pAniCtrl->KeyTrackWeight(m_iNewTrack, 0.9f, m_fAccTime, dBlendTime, D3DXTRANSITION_LINEAR);
 	}
 	else
 	{

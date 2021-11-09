@@ -84,14 +84,13 @@ private:
 
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
-	
-	//애니 동작 전 위치
-	_vec3 m_vPreAniPos;
-
 
 	//타이머
 	_float m_fCToITime = 5.f;
 	_float m_fCToISpeed = 0.f;
+
+
+	_bool bUIOn = false;//UI 상태시 다른 조작 키에 접근 못하도록 하는 변수 
 
 
 

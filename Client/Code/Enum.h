@@ -1,6 +1,9 @@
 #ifndef ClientEnum_h__
 #define ClientEnum_h__
 
+
+
+
 namespace UI
 {
 	enum  ELEMENT{
@@ -184,6 +187,27 @@ namespace War {
 	};
 }
 namespace WaterBoss {
+
+	enum DIR 
+	{
+		//플레이어 방향에 따른 각도 지정 
+		
+
+	};
+
+	//패턴상태 
+	enum STATE
+	{
+		STATE_IDLE,
+		STATE_CALL_LIGHTNING,
+		STATE_ORB,
+		STATE_SLAM,
+		STATE_IMPACT,
+		STATE_WAVE,
+		STATE_END
+	};
+
+
 	enum  Ani {
 		Atk_CallLightning_Start,                  //0	frame:[66]
 		Atk_CallLightning,                        //1	frame:[60]

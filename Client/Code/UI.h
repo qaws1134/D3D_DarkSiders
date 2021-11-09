@@ -30,9 +30,15 @@ public:
 	virtual		void Render_Object(void) override;
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 	void UI_ElementUpdate(const _float& fTimeDelta);
+	void UI_CoreTreeUpdate(const _float& fTimeDelta);
+
 
 	void		SetUI(UISET tInfo);
 	wstring		&GetObjTag() { return m_tInfo.wstrObjTag; }	//레퍼런스로 넘겨볼까
+
+	void SetSubTex1(wstring wstrProtoTag,_uint iTextureNum);
+	void SetSubTex2(wstring wstrProtoTag,_uint iTextureNum);
+
 
 private:
 	HRESULT			Add_Component(void);
@@ -42,10 +48,20 @@ private:
 	_matrix			m_matOldProj, m_matOldView;
 	UISET			m_tInfo;
 	RECT			m_tRcUI;
+	_bool			m_bSubTex1 = false;	//서브텍스쳐 활성화 유무
+	_uint			m_iSubTexNum1;
 
+	_bool			m_bSubTex2 =false;
+	_uint			m_iSubTexNum2;
+
+
+	_uint			m_iPassIdx;
 private:
 	CRcTex*		m_pBufferCom = nullptr;
 	CTexture*	m_pTextureCom = nullptr;
+	CTexture*	m_pSubTextureCom1 = nullptr;
+	CTexture*	m_pSubTextureCom2 = nullptr;
+
 	CRenderer*	m_pRendererCom = nullptr;
 	CTransform*	m_pTransformCom = nullptr;
 	CCalculator* m_pCalculatorCom = nullptr;

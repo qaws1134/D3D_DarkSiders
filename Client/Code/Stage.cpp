@@ -30,6 +30,14 @@ HRESULT CStage::Ready_Scene(void)
 Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 {
 	m_fTime += fTimeDelta;
+	POINT		ptMouse{};
+
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
+
+	m_dwPosX = ptMouse.x;
+	m_dwPosY = ptMouse.y;
+
 
 	return CScene::Update_Scene(fTimeDelta);
 }
@@ -47,6 +55,17 @@ void CStage::Render_Scene(void)
 	}
 
 	Render_Font(L"Font_Jinji", m_szFPS, &_vec2(400.f, 10.f), D3DXCOLOR(0.f, 1.f, 0.f, 1.f));
+
+
+
+	wsprintf(m_szPosX, L"X : %d", m_dwPosX);
+	wsprintf(m_szPosY, L"Y : %d", m_dwPosY);
+
+
+	Render_Font(L"Font_Default", m_szPosX, &_vec2(50.f, 15.f), D3DXCOLOR(0.f, 0.f, 0.f, 1.f));
+	Render_Font(L"Font_Default", m_szPosY, &_vec2(200.f, 15.f), D3DXCOLOR(0.f, 0.f, 0.f, 1.f));
+
+
 }
 
 HRESULT CStage::Ready_Layer_Environment(const _tchar* pLayerTag)
@@ -92,7 +111,8 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 	pGameObject = CTerrain::Create(m_pGraphicDev);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Terrain", pGameObject), E_FAIL);
-	//
+
+
 	//// Stone
 	//pGameObject = CStone::Create(m_pGraphicDev);
 	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
@@ -113,8 +133,14 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 	// Player
 	pGameObject = CPlayer::Create(m_pGraphicDev);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	CGameMgr::GetInstance()->SetPlayer(pGameObject);
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Player", pGameObject), E_FAIL);
-//
+
+
+	//pGameObject = CWaterBoss::Create(m_pGraphicDev);
+	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"WaterBoss", pGameObject), E_FAIL);
+
 //	// Sword
 //	pGameObject = CSword::Create(m_pGraphicDev);
 //	NULL_CHECK_RETURN(pGameObject, E_FAIL);
@@ -135,13 +161,13 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
-	//CAMERA_DESC CameraDesc;
-	//CameraDesc.fFovY = D3DXToRadian(60.f);
-	//CameraDesc.fAspect = (_float)WINCX / WINCY;
-	//CameraDesc.fNear = 1.f;
-	//CameraDesc.fFar = 1000.f;
-	//CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
-	//CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
+	CAMERA_DESC CameraDesc;
+	CameraDesc.fFovY = D3DXToRadian(60.f);
+	CameraDesc.fAspect = (_float)WINCX / WINCY;
+	CameraDesc.fNear = 1.f;
+	CameraDesc.fFar = 1000.f;
+	CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
+	CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
 
 
 	pGameObject = CStaticCamera::Create(m_pGraphicDev, CameraDesc);

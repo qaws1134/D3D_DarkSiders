@@ -32,11 +32,11 @@ HRESULT CUI::Ready_Object(void)
 	m_tRcUI.right	= (LONG)(m_tInfo.vPos.x + m_tInfo.vSize.x*0.8f);
 	m_tRcUI.bottom  = (LONG)(m_tInfo.vPos.y + m_tInfo.vSize.y*0.8f);
 
+	m_iPassIdx = 0;		//서브 텍스쳐가 늘어날 시 랜더 패스 변경 
 
 	m_pTransformCom->Set_Scale(0.1f, 0.1f, 0.1f);
 	m_pTransformCom->Update_Component(0.f);
-	//m_pTarget = Engine::Get_GameObject(L"GameLogic",L"Player");
-	//NULL_CHECK_RETURN(m_pTarget, E_FAIL);
+
 	return S_OK;
 }
 
@@ -48,7 +48,7 @@ _int CUI::Update_Object(const _float& fTimeDelta)
 		D3DXMatrixOrthoLH(&m_matProj, WINCX, WINCY, 0.f, 1.f);
 
 		UI_ElementUpdate(fTimeDelta);
-
+		UI_CoreTreeUpdate(fTimeDelta);
 		Add_RenderGroup(RENDER_UI, this);
 	}
 	return iExit;
@@ -67,7 +67,7 @@ void CUI::Render_Object(void)
 	pEffect->Begin(&iMaxPass, NULL);
 
 
-	pEffect->BeginPass(0);
+	pEffect->BeginPass(m_iPassIdx);
 
 	m_pBufferCom->Render_Buffer();
 
@@ -165,10 +165,16 @@ HRESULT CUI::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	pEffect->SetMatrix("g_matWorld", &matWorld);
 	pEffect->SetMatrix("g_matView", &matView);
 	pEffect->SetMatrix("g_matProj", &m_matProj);
+	//pEffect->SetFloat("g_SizeX", m_tInfo.vSize.x);
+	//pEffect->SetFloat("g_SizeY", m_tInfo.vSize.y);
 
 	m_pTextureCom->Set_Texture(pEffect, "g_BaseTexture", m_tInfo.iTextureNum);
 
-	
+	if(m_bSubTex1)
+		m_pSubTextureCom1->Set_Texture(pEffect, "g_SubTexture1", m_iSubTexNum1);
+	if(m_bSubTex2)
+		m_pSubTextureCom2->Set_Texture(pEffect, "g_SubTexture2", m_iSubTexNum2);
+
 	return S_OK;
 }
 
@@ -250,6 +256,28 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 	}
 }
 
+void CUI::UI_CoreTreeUpdate(const _float & fTimeDelta)
+{
+	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_Base")
+	{
+		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
+		{
+
+			//이 UI 가 가지고 있는 돌에 접근해야됨 - > 장착된 돌UI 따로 만들어서 베이스 위에 올리자
+			//돌 UI는 따로 업데이트 ㄱㄱ 
+
+			if (Key_Down(KEY_LBUTTON))
+			{
+				//버튼 클릭 시 돌 장착 UI로 넘어감 
+				//플레이어가 가지고 있는 돌 리스트 출력하는 UI 
+				//->상점하고 유사하게 클릭 시 장착
+				//-> 픽셀 셰이더에서 스크롤 시 UV 위치 판단해서 이미지 제거
+				// 상점은 클릭 시 구매 
+			}
+		}
+	}
+}
+
 void CUI::SetUI(UISET tInfo)
 {
 	m_tInfo.vPos = tInfo.vPos;
@@ -264,5 +292,29 @@ void CUI::SetUI(UISET tInfo)
 	m_mapComponent[ID_STATIC].emplace(L"Com_Texture", pComponent);
 	
 
+}
+
+void CUI::SetSubTex1(wstring wstrProtoTag, _uint iTextureNum)
+{
+	m_bSubTex1 = true;
+	m_iSubTexNum1 = iTextureNum;
+
+	CComponent*		pComponent = nullptr;
+	pComponent = m_pSubTextureCom1 = dynamic_cast<CTexture*>(Clone_Prototype(wstrProtoTag.c_str()));
+	NULL_CHECK_RETURN(m_pTextureCom, );
+	m_mapComponent[ID_STATIC].emplace(L"Com_SubTexture1", pComponent);
+	m_iPassIdx++;
+}
+
+void CUI::SetSubTex2(wstring wstrProtoTag, _uint iTextureNum)
+{
+	m_bSubTex2 = true;
+	m_iSubTexNum2 = iTextureNum;
+
+	CComponent*		pComponent = nullptr;
+	pComponent = m_pSubTextureCom2 = dynamic_cast<CTexture*>(Clone_Prototype(wstrProtoTag.c_str()));
+	NULL_CHECK_RETURN(m_pTextureCom, );
+	m_mapComponent[ID_STATIC].emplace(L"Com_SubTexture2", pComponent);
+	m_iPassIdx++;
 }
 
