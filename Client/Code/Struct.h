@@ -22,4 +22,6 @@ typedef struct Stone
 }STONE;
 
 
+
+
 #endif 
