@@ -20,6 +20,8 @@ inline LPDIRECT3DDEVICE9 GetDevice();
 inline _float		Get_TimeDelta(const _tchar* pTimerTag);
 inline void			Set_TimeDelta(const _tchar* pTimerTag);
 inline HRESULT		Ready_Timer(const _tchar* pTimerTag);
+inline void		Stop_TimeDelta(const _tchar* pTimerTag, _bool bStop);
+
 
 // FrameMgr
 inline	_bool				IsPermit_Call(const _tchar* pFrameTag, const _float& fTimeDelta);

@@ -1,8 +1,33 @@
 #ifndef ClientEnum_h__
 #define ClientEnum_h__
 
+
+
+
 namespace UI
 {
+	enum TYPE
+	{
+		TYPE_DEFAULT,
+		TYPE_SELECT_BOX,
+	};
+	enum SHADE
+	{
+		SHADE_DEAFAULT,
+		SHADE_UVMOVE,
+		SHADE_END
+	};
+
+	enum LISTKEY 
+	{
+		LISTKEY_WEAPONELEMENT,
+		LISTKEY_CORETREE,
+		LISTKEY_CORELIST,
+		LISTKEY_PLAYERINFO,
+		LISTKEY_STONE,
+		LISTKEY_END
+
+	};
 	enum  ELEMENT{
 		ELEMENT_00,
 		ELEMENT_01,
@@ -12,30 +37,41 @@ namespace UI
 		ELEMENT_05,
 		ELEMENT_END
 	};
-	enum SKILL
+	enum STONE_ELEMENT
 	{
-		SKILL,
-		SKILL_BASE,
-		SKILL_SELECT,
-		SKILL_END
+		STONE_ALL,
+		STONE_SKILL,
+		STONE_ATK,
+		STONE_HEALTH,
+		STONE_ELEMENT_END
 	};
-
-	enum CORETREE
+	enum STONE
 	{
-		CORETREE_BASE,
-		CORETREE_SELECT,
-		CORETREE_STONE_BASE,
-		CORETREE_STONE_ELEMENT,
-		CORETREE_STONE_CREATURE,
-		CORETREE_END
+		GOBLERIN,
+		STATUE,
+		KNIGHT,
+		ICEMAGE,
+		SKULL,
+		CRIBO,
+		LARVA,
+		ANT,
+		BLUEANGEL,
+		GREMLIN1,
+		GREMLIN2,
+		GREENGOBLE,
+		SKULLMAGE,
+		GRINNER,
+		BROODI,
+		BAT,
+		LEVIATHAN,
+		NINJA,
+		WATERBOSS,
+		GRINNER2,
+		CRIBO2,
+		MAE,
+		STONE_END
 	};
-
-	enum STATSTONE
-	{
-		HEALTH,
-		SKILLGAGE,
-		STATSTONE_END
-	};
+	
 }
 
 
@@ -184,6 +220,27 @@ namespace War {
 	};
 }
 namespace WaterBoss {
+
+	enum DIR 
+	{
+		//플레이어 방향에 따른 각도 지정 
+		
+
+	};
+
+	//패턴상태 
+	enum STATE
+	{
+		STATE_IDLE,
+		STATE_CALL_LIGHTNING,
+		STATE_ORB,
+		STATE_SLAM,
+		STATE_IMPACT,
+		STATE_WAVE,
+		STATE_END
+	};
+
+
 	enum  Ani {
 		Atk_CallLightning_Start,                  //0	frame:[66]
 		Atk_CallLightning,                        //1	frame:[60]

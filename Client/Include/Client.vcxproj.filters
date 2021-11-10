@@ -76,6 +76,30 @@
     <Filter Include="02. GameObject\04. UI\UIMgr">
       <UniqueIdentifier>{555f9912-cb0e-4c2e-81e6-054de7cc20be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.GameMgr">
+      <UniqueIdentifier>{9164c4a6-4e31-4e74-bf3b-01e2bf9887d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\05. Item">
+      <UniqueIdentifier>{f47eeb95-ce5e-42fd-a4d4-25d717a75800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\00.WeaponElement">
+      <UniqueIdentifier>{cca57c04-0c46-4c0a-b647-ce9a04327894}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\01.CoreTree">
+      <UniqueIdentifier>{ef37c00b-3e50-470a-b6a6-b24867d17bb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\02.CoreList">
+      <UniqueIdentifier>{6c4dfe11-e047-4040-9ac0-d77876d0c5c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\03.StoneList">
+      <UniqueIdentifier>{cbb3c2a0-2a01-448f-a08d-d1ad92f005ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\04.StoneInfo">
+      <UniqueIdentifier>{fbd6350b-0db4-4983-bda1-d5bbe4209749}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\04. UI\05.StoreList">
+      <UniqueIdentifier>{6d96b6c7-9115-4bfe-835b-2b8d1d055650}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -104,9 +128,6 @@
     </ClInclude>
     <ClInclude Include="..\Code\Player.h">
       <Filter>02. GameObject\01. Character\00. Player</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\WaterBoss.h">
-      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\LoadMgr.h">
       <Filter>01. Scene\99. LoadMgr</Filter>
@@ -141,6 +162,12 @@
     <ClInclude Include="..\Code\UI.h">
       <Filter>02. GameObject\04. UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\GameMgr.h">
+      <Filter>97.GameMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\WaterBoss.h">
+      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -160,9 +187,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\Player.cpp">
       <Filter>02. GameObject\01. Character\00. Player</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\WaterBoss.cpp">
-      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\LoadMgr.cpp">
       <Filter>01. Scene\99. LoadMgr</Filter>
@@ -190,6 +214,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\UI.cpp">
       <Filter>02. GameObject\04. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GameMgr.cpp">
+      <Filter>97.GameMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\WaterBoss.cpp">
+      <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

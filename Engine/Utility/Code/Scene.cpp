@@ -67,3 +67,12 @@ CGameObject * CScene::Get_GameObject(const _tchar * pLayerTag, const _tchar * pO
 	return iter->second->Get_GameObject(pObjTag);
 }
 
+void CScene::Add_GameObject(const _tchar * pLayerTag, const _tchar* pObjTag, CGameObject* pInstance)
+{
+	auto	iter = find_if(m_mapLayer.begin(), m_mapLayer.end(), CTag_Finder(pLayerTag));
+
+	if (iter == m_mapLayer.end())
+		return;
+	iter->second->Add_GameObject(pObjTag, pInstance);
+}
+

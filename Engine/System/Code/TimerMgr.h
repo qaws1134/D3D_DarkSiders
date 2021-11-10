@@ -16,6 +16,8 @@ private:
 public:
 	_float		Get_TimeDelta(const _tchar* pTimerTag);
 	void		Set_TimeDelta(const _tchar* pTimerTag);
+	void		Stop_TimeDelta(const _tchar* pTimerTag,_bool bStop);
+
 
 public:
 	HRESULT		Ready_Timer(const _tchar* pTimerTag);

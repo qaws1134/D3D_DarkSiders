@@ -18,6 +18,7 @@ public:
 public:
 	HRESULT		Ready_Timer(void);
 	void		SetUp_TimeDelta(void);	// update ÇÔ¼ö
+	void		Stop_Timer(_bool bStop) { m_bStop = bStop; }
 
 private:
 	LARGE_INTEGER		m_FrameTime;
@@ -28,7 +29,7 @@ private:
 
 private:
 	_float				m_fTimeDelta;
-
+	_bool				m_bStop =true;
 public:
 	static	CTimer*		Create(void);
 	virtual void		Free(void);

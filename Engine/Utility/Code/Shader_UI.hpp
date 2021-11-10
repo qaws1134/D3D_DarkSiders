@@ -1,7 +1,10 @@
 matrix		g_matWorld, g_matView, g_matProj;		// 상수 테이블
 texture		g_BaseTexture;
+texture		g_SubTexture1;
+texture		g_SubTexture2;
 
-
+float g_SizeX;
+float g_SizeY;
 sampler BaseSampler = sampler_state
 {
 	texture = g_BaseTexture;
@@ -9,6 +12,25 @@ sampler BaseSampler = sampler_state
 	minfilter = linear;
 	magfilter = linear;
 };
+
+sampler SubSampler1 = sampler_state
+{
+	texture = g_SubTexture1;
+
+	minfilter = linear;
+	magfilter = linear;
+};
+
+
+sampler SubSampler2 = sampler_state
+{
+	texture = g_SubTexture2;
+
+	minfilter = linear;
+	magfilter = linear;
+};
+
+
 
 struct VS_IN
 {
@@ -36,7 +58,7 @@ VS_OUT			VS_MAIN(VS_IN In)
 	Out.vTexUV = In.vTexUV;
 
 	return Out;
-}
+};
 
 struct PS_IN				// 픽셀쉐이더에서는 POSITION이란 시멘틱을 사용할 수 없다(현재 쉐이더 버전에서는 사용가능하도록 업그레이드 됨)
 {
@@ -53,31 +75,42 @@ PS_OUT		PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
-	
-	//Out.vColor.rb = 0.5f;
-
+	Out.vColor = tex2D(BaseSampler, In.vTexUV);
 	return Out;
-}
+};
 
-PS_OUT		PS_MAIN_TEMP(PS_IN In)
+PS_OUT		PS_SubTex1_MAIN(PS_IN In)
 {
+
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
-
-	Out.vColor.a = 0.5f;
+	vector Color = tex2D(BaseSampler, In.vTexUV);
+	Out.vColor = Color;
+	vector Color1 = tex2D(SubSampler1, In.vTexUV);
+	Out.vColor += Color1;
 
 	return Out;
-}
+};
 
+PS_OUT		PS_SubTex2_MAIN(PS_IN In)
+{
+
+	PS_OUT		Out = (PS_OUT)0;
+
+	vector Color = tex2D(BaseSampler, In.vTexUV);
+
+	vector Color1 = tex2D(SubSampler1, In.vTexUV);
+
+	vector Color2 = tex2D(SubSampler2, In.vTexUV);
+
+	Out.vColor = Color + Color1 + Color2;
+
+	return Out;
+};
 
 technique Default_Device
 {
-	// pass : 기능의 캡슐화를 위해 여러 개 생성할 수 있음, 진입점 함수 호출이 목적
-	// 패스의 이름은 있으나 없느나 상관없다. pass는 위쪽에 선언된 녀석부터 0번 인덱스로 지정된다.
-
-	pass Alphablend
+	pass Texture1
 	{
 		Alphablendenable = true;
 		srcblend = srcalpha;
@@ -88,15 +121,25 @@ technique Default_Device
 		
 	}
 
-	pass alphatest
+	pass Texture2
 	{
-		alphatestenable = true;
-		alphafunc = greater;
-		alpharef = 0xc0;
-		zwriteenable = true;
+		Alphablendenable = true;
+		srcblend = srcalpha;
+		destblend = invsrcalpha;
+
 
 		vertexshader = compile vs_3_0 VS_MAIN();
-		pixelshader = compile ps_3_0 PS_MAIN_TEMP();
+		pixelshader = compile ps_3_0 PS_SubTex1_MAIN();
+	}
 
+	pass Texture3
+	{
+		Alphablendenable = true;
+		srcblend = srcalpha;
+		destblend = invsrcalpha;
+
+
+		vertexshader = compile vs_3_0 VS_MAIN();
+		pixelshader = compile ps_3_0 PS_SubTex2_MAIN();
 	}
 };

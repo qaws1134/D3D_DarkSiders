@@ -35,7 +35,7 @@ HRESULT CPlayer::Ready_Object(void)
 	dAttackCheckFrame = 0.4;
 	dDashCheckFrame = 0.5;
 	dJumpLandCheckFrame = 0.7f;
-	m_pTransformCom->Get_INFO(INFO_POS,&m_vPreAniPos);
+
 
 	m_eElement = War::ELEMENT_EARTH;		//장착한 속성
 
@@ -138,8 +138,201 @@ void CPlayer::Render_Object(void)
 
 
 	Safe_Release(pEffect);
+}
+void CPlayer::Key_Input(const _float & fTimeDelta)
+{
+	m_pTransformCom->Get_INFO(INFO_LOOK, &m_vDir);
+
+	m_eDir = War::IDLE;
+
+	if (m_eMachineState != War::ATTACK && m_eMachineState != War::DASH&& m_eMachineState != War::JUMP&& m_eMachineState != War::JUMP_CB)
+	{
+		if (m_eCharState == War::CHAR_IDLE)
+			m_eMachineState = War::STATE_IDLE;
+		else if (m_eCharState == War::COMBAT)
+			m_eMachineState = War::STATE_IDLE_CB;
+	}
 
 
+	if (Key_Pressing(KEY_W))
+	{
+		m_eDir = War::UP;
+		m_eKeyState = War::WASD;
+	}
+	else if (Key_Pressing(KEY_S))
+	{
+		m_eDir = War::DOWN;
+		m_eKeyState = War::WASD;
+	}
+
+	if (Key_Pressing(KEY_A))
+	{
+		m_eDir = War::LEFT;
+		if (Key_Pressing(KEY_W))
+			m_eDir = War::UP_LEFT;
+		if (Key_Pressing(KEY_S))
+			m_eDir = War::DOWN_LEFT;
+		m_eKeyState = War::WASD;
+	}
+	else if (Key_Pressing(KEY_D))
+	{
+		m_eDir = War::RIGHT;
+		if (Key_Pressing(KEY_W))
+			m_eDir = War::UP_RIGHT;
+		if (Key_Pressing(KEY_S))
+			m_eDir = War::DOWN_RIGHT;
+		m_eKeyState = War::WASD;
+	}
+
+	//대시
+
+
+
+	if (m_eDir != War::IDLE)
+	{
+		if (m_eMachineState != War::ATTACK && m_eMachineState != War::DASH&& m_eMachineState != War::JUMP&& m_eMachineState != War::JUMP_CB)
+		{
+			DirSet(m_eDir, fTimeDelta, MOVEROTSPEED);
+			m_eMachineState = War::MOVE;
+
+
+			//네비매시 코드 
+			D3DXVec3Normalize(&m_vDir, &m_vDir);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+
+			//m_pTransformCom->Set_Pos(&m_pNaviCom->MoveOn_NaviMesh(&vPos, &m_vDir, 5.f, fTimeDelta));
+		}
+	}
+
+
+
+	if (Key_Down(KEY_SHIFT))
+	{
+		m_eMachineState = War::DASH;
+	}
+
+	if (!bUIOn)
+	{
+		if (Key_Down(KEY_LBUTTON))
+		{
+			m_eKeyState = War::LBUTTON;
+			m_eMachineState = War::ATTACK;
+			m_fCToISpeed = 0.f;
+
+		}
+		if (Key_Down(KEY_RBUTTON))
+		{
+			m_eKeyState = War::RBUTTON;
+			m_eMachineState = War::ATTACK;
+			m_fCToISpeed = 0.f;
+		}
+	}
+	//스킬
+	if (Key_Down(KEY_1))
+	{
+		m_eMachineState = War::ATTACK;
+		m_eKeyState = War::NUM1;
+	}
+	if (Key_Down(KEY_2))
+	{
+		m_eMachineState = War::ATTACK;
+		m_eKeyState = War::NUM2;
+	}
+	if (Key_Down(KEY_3))
+	{
+		m_eMachineState = War::ATTACK;
+		m_eKeyState = War::NUM3;
+	}
+
+	//점프
+	if (Key_Down(KEY_SPACE))
+	{
+		if (m_eMachineState != War::ATTACK)
+		{
+			if (m_eCharState == War::COMBAT)
+				m_eMachineState = War::JUMP_CB;
+			else if (m_eCharState == War::CHAR_IDLE)
+				m_eMachineState = War::JUMP;
+		}
+		m_eKeyState = War::SPACE;
+	}
+
+
+	//막기
+	if (Key_Pressing(KEY_MBUTTON))
+	{
+		m_eMachineState = War::BLOCK;
+		m_fCToISpeed = 0.f;
+	}
+
+
+
+
+	//속성 선택창
+	if (Key_Pressing(KEY_TAB))
+	{
+		CUIMgr::GetInstance()->SetActiveElementUI(true);
+		Stop_TimeDelta(L"Timer_Immediate", false);
+		bUIOn = true;
+	}
+	else
+	{
+		if (CUIMgr::GetInstance()->GetElemetUIActive())
+		{
+			CUIMgr::GetInstance()->SetActiveElementUI(false);
+			Stop_TimeDelta(L"Timer_Immediate", true);
+			bUIOn = false;
+		}
+	}
+
+	//코어트리 UI
+	if (Key_Down(KEY_O))
+	{
+		if (!bUIOn)
+		{
+			CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+			Stop_TimeDelta(L"Timer_Immediate",false);
+			bUIOn = true;
+		}
+		else
+		{
+			if (CUIMgr::GetInstance()->GetCoreTreeUIActive())
+			{
+				CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
+				Stop_TimeDelta(L"Timer_Immediate", true);
+				bUIOn = false;
+			}
+		}
+	}
+	
+	//스텟 돌 확인 UI
+	//if (Key_Down(KEY_P))
+	//{
+	//	if (!bUIOn)
+	//	{
+	//		CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+	//		Stop_TimeDelta(L"Timer_Immediate", false);
+	//		bUIOn = true;
+	//	}
+	//	else
+	//	{
+	//		if (CUIMgr::GetInstance()->GetCoreTreeUIActive())
+	//		{
+	//			CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
+	//			Stop_TimeDelta(L"Timer_Immediate", true);
+	//			bUIOn = false;
+	//		}
+	//	}
+	//}
+	//충돌체 상호작용
+	if (Key_Down(KEY_F))
+	{
+		
+	}
+	//m_pTransformCom->Move_Pos(&vDir, 5.f, fTimeDelta);
+
+}
 void CPlayer::StateChange()
 {
 	//플레이어 상태 전환 시 
@@ -349,6 +542,7 @@ void CPlayer::StateChange()
 		case War::War_Atk_Dash:
 			break;
 		case War::War_Atk_Earth_Start:
+			DirSet_Combo();
 			m_bBlend = true;
 			break;
 		case War::War_Atk_Earth_Loop:
@@ -358,14 +552,18 @@ void CPlayer::StateChange()
 			m_eKeyState = War::KEYSTATE_END;
 			break;
 		case War::War_Atk_Flamebrand:
+			DirSet_Combo();
 			break;
 		case War::War_Atk_Flamebrand_Start:
 			break;
 		case War::War_Atk_Flamebrand_End:
+			m_bBlend = false;
 			break;
 		case	War::War_Atk_LoomingDeath:
+			DirSet_Combo();
 			break;
 		case	War::War_Atk_Vamp_Start:
+			DirSet_Combo();
 			break;
 		case	War::War_Atk_Vamp_Loop:
 			break;
@@ -375,6 +573,7 @@ void CPlayer::StateChange()
 			m_bBlend = true;
 			break;
 		case	War::War_Atk_Wind_Start   :
+			DirSet_Combo();
 			break;
 		case	War::War_Atk_Wind_Loop    :
 			break;
@@ -786,6 +985,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 	case War::War_Atk_Earth_End:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame+0.2))
 		{
+			m_bBlend = true;
 			switch (m_eKeyState)
 			{
 			case War::LBUTTON:
@@ -805,9 +1005,10 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Flamebrand:
+		DirSet(m_eDir, fDeltaTime, MOVEROTSPEED);
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
-			if (Key_Up(KEY_LBUTTON))
+			if (Key_Up(KEY_RBUTTON))
 			{
 				m_eCurAniState = War::War_Atk_Flamebrand_End;
 			}
@@ -822,6 +1023,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 	case War::War_Atk_Flamebrand_End:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.2))
 		{
+			m_bBlend = true;
 			switch (m_eKeyState)
 			{
 			case War::LBUTTON:
@@ -843,6 +1045,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 	case War::War_Atk_Lightning:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.2))
 		{
+			m_bBlend = true;
 			switch (m_eKeyState)
 			{
 			case War::LBUTTON:
@@ -862,12 +1065,27 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case	War::War_Atk_Wind_Start:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = War::War_Atk_Wind_Loop;
+		}
+
 		break;
 	case	War::War_Atk_Wind_Loop:
+		DirSet(m_eDir, fDeltaTime, MOVEROTSPEED);
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
+		{
+			if (Key_Up(KEY_RBUTTON))
+			{
+				m_eCurAniState = War::War_Atk_Wind_End;
+			}
+		}
+
 		break;
 	case	War::War_Atk_Wind_End:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.2))
 		{
+			m_bBlend = true;
 			switch (m_eKeyState)
 			{
 			case War::LBUTTON:
@@ -889,6 +1107,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 	case	War::War_Atk_LoomingDeath:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.2))
 		{
+			m_bBlend = true;
 			switch (m_eKeyState)
 			{
 			case War::LBUTTON:
@@ -914,17 +1133,19 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case	War::War_Atk_Vamp_Loop:
+		DirSet(m_eDir, fDeltaTime, MOVEROTSPEED);
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
 		{
-			if (Key_Up(KEY_LBUTTON))
+			if (Key_Up(KEY_RBUTTON))
 			{
 				m_eCurAniState = War::War_Atk_Vamp_Finish;
 			}
 		}
 		break;
 	case	War::War_Atk_Vamp_Finish:
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.2))
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.3))
 		{
+			m_bBlend = true;
 			switch (m_eKeyState)
 			{
 			case War::LBUTTON:
@@ -1128,9 +1349,6 @@ void CPlayer::StateLinker(_float fDeltaTime)
 
 }
 
-
-
-
 //전투상태에서 일반상태로 전환
 _bool CPlayer::Combat_to_Idle_Timer(_float fDeltaTime)
 {
@@ -1139,168 +1357,11 @@ _bool CPlayer::Combat_to_Idle_Timer(_float fDeltaTime)
 	{
 		m_fCToISpeed = 0.f;
 		return true;
-		//m_eCharState = War::CHAR_IDLE;
 	}
 	return false;
 }
 
 
-void CPlayer::Key_Input(const _float & fTimeDelta)
-{
-	m_pTransformCom->Get_INFO(INFO_LOOK, &m_vDir);
-
-	m_eDir = War::IDLE;
-	
-	if (m_eMachineState != War::ATTACK && m_eMachineState != War::DASH&& m_eMachineState != War::JUMP&& m_eMachineState != War::JUMP_CB)
-	{
-		if(m_eCharState == War::CHAR_IDLE)
-			m_eMachineState = War::STATE_IDLE;
-		else if(m_eCharState == War::COMBAT)
-			m_eMachineState = War::STATE_IDLE_CB;
-	}
-
-
-	if (Key_Pressing(KEY_W))
-	{
-		m_eDir = War::UP;
-		m_eKeyState = War::WASD;
-	}
-	else if (Key_Pressing(KEY_S))
-	{
-		m_eDir = War::DOWN;
-		m_eKeyState = War::WASD;
-	}
-
-	if (Key_Pressing(KEY_A))
-	{
-		m_eDir = War::LEFT;
-		if (Key_Pressing(KEY_W))
-			m_eDir = War::UP_LEFT;
-		if(Key_Pressing(KEY_S))
-			m_eDir = War::DOWN_LEFT;
-		m_eKeyState = War::WASD;
-	}
-	else if (Key_Pressing(KEY_D))
-	{
-		m_eDir = War::RIGHT;
-		if (Key_Pressing(KEY_W))
-			m_eDir = War::UP_RIGHT;
-		if (Key_Pressing(KEY_S))
-			m_eDir = War::DOWN_RIGHT;
-		m_eKeyState = War::WASD;
-	}
-
-	//대시
-
-
-
-	if (m_eDir != War::IDLE)
-	{
-		if (m_eMachineState != War::ATTACK && m_eMachineState != War::DASH&& m_eMachineState != War::JUMP&& m_eMachineState != War::JUMP_CB)
-		{
-			DirSet(m_eDir, fTimeDelta, MOVEROTSPEED);
-			m_eMachineState = War::MOVE;
-
-
-			//네비매시 코드 
-			D3DXVec3Normalize(&m_vDir, &m_vDir);
-			_vec3	vPos;
-			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-
-			//m_pTransformCom->Set_Pos(&m_pNaviCom->MoveOn_NaviMesh(&vPos, &m_vDir, 5.f, fTimeDelta));
-		}
-	}
-
-
-	
-	if (Key_Down(KEY_SHIFT))
-	{
-		m_eMachineState = War::DASH;
-	}
-
-	if (Key_Down(KEY_LBUTTON))
-	{
-		m_eKeyState = War::LBUTTON;
-		m_eMachineState = War::ATTACK;
-		m_fCToISpeed = 0.f;
-
-	}
-	if (Key_Down(KEY_RBUTTON))
-	{
-		m_eKeyState = War::RBUTTON;
-		m_eMachineState = War::ATTACK;
-		m_fCToISpeed = 0.f;
-	}
-
-	//스킬
-	if (Key_Down(KEY_1))
-	{
-		m_eMachineState = War::ATTACK;
-		m_eKeyState = War::NUM1;
-	}
-	if (Key_Down(KEY_2))
-	{
-		m_eMachineState = War::ATTACK;
-		m_eKeyState = War::NUM2;
-	}
-	if (Key_Down(KEY_3))
-	{
-		m_eMachineState = War::ATTACK;
-		m_eKeyState = War::NUM3;
-	}
-
-	//점프
-	if (Key_Down(KEY_SPACE))
-	{
-		if (m_eMachineState != War::ATTACK)
-		{
-			if (m_eCharState == War::COMBAT)
-				m_eMachineState = War::JUMP_CB;
-			else if (m_eCharState == War::CHAR_IDLE)
-				m_eMachineState = War::JUMP;
-		}
-		m_eKeyState = War::SPACE;
-	}
-
-
-	//막기
-	if (Key_Pressing(KEY_MBUTTON))
-	{
-		m_eMachineState = War::BLOCK;
-		m_fCToISpeed = 0.f;
-	}
-
-
-
-
-	//속성 선택창
-	if (Key_Pressing(KEY_TAB))
-	{
-		CUIMgr::GetInstance()->SetActiveElementUI(true);
-	}
-	else
-	{
-		if(CUIMgr::GetInstance()->GetElemetUIActive())
-			CUIMgr::GetInstance()->SetActiveElementUI(false);
-	}
-	//충돌체 상호작용
-	if (Key_Down(KEY_F))
-	{
-		
-	}
-	//m_pTransformCom->Move_Pos(&vDir, 5.f, fTimeDelta);
-
-	//콤보상태가 아니면 달리기 
-
-
-	//RunState();
-
-
-
-	//if (true == m_pMeshCom->Is_AnimationsetFinish())
-	//	m_pMeshCom->Set_AnimationIndex(War::Ani::War_Idle);
-
-}
 
 
 void CPlayer::DirSet(War::DIR eDir, _float fTimeDelta,_float fAngleSpeed)
@@ -1540,7 +1601,7 @@ void CPlayer::ElementAniSet()
 		m_eCurAniState = War::War_Atk_Vamp_Start;
 		break;
 	case War::ELEMENT_WIND:
-		m_eCurAniState = War::War_Atk_Flamebrand_End;
+		m_eCurAniState = War::War_Atk_Wind_Start;
 		break;
 	case War::ELEMENT_DEATH:
 		m_eCurAniState = War::War_Atk_LoomingDeath;

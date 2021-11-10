@@ -40,6 +40,7 @@ inline HRESULT		Create_Management(LPDIRECT3DDEVICE9& pGraphicDev,CManagement** p
 inline HRESULT		Set_Scene(CScene* pScene);
 inline _int			Update_Scene(const _float& fTimeDelta);
 inline void			Render_Scene(LPDIRECT3DDEVICE9& pGraphicDev);
+inline void			Add_GameObject(const _tchar* pLayerTag, const _tchar* pObjTag, CGameObject* pInstance);
 
 // ProtoMgr
 inline HRESULT		Ready_Renderer(LPDIRECT3DDEVICE9& pGraphicDev);

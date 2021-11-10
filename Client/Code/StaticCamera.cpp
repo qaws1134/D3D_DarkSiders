@@ -65,18 +65,25 @@ void CStaticCamera::ReleaseTarget()
 void CStaticCamera::Move(_float fDeltaTime)
 {
 	_matrix matRot, matRotY;
-
 	_vec3 vTargetRight;
-	 m_pTargetTransform->Get_INFO(INFO_RIGHT,&vTargetRight);		// 플레이어 X축
-	_vec3 vTargetUp;
-	 m_pTargetTransform->Get_INFO(INFO_UP, &vTargetUp);		// 플레이어 Y축 
 	_vec3 vTargetLook;
-	m_pTargetTransform->Get_INFO(INFO_LOOK, &vTargetLook);		// 플레이어 Z축
+	_vec3 vTargetUp;
 	_vec3 vTargetPosition;
-	m_pTargetTransform->Get_INFO(INFO_POS, &vTargetPosition);  // 포지션
-
+	if (m_pTargetTransform)
+	{
+		m_pTargetTransform->Get_INFO(INFO_RIGHT, &vTargetRight);		// 플레이어 X축
+		m_pTargetTransform->Get_INFO(INFO_UP, &vTargetUp);		// 플레이어 Y축 
+		m_pTargetTransform->Get_INFO(INFO_LOOK, &vTargetLook);		// 플레이어 Z축
+		m_pTargetTransform->Get_INFO(INFO_POS, &vTargetPosition);  // 포지션
+	}
+	else
+	{
+		vTargetPosition = _vec3{ 0.f,0.f,0.f };
+		vTargetUp = _vec3{ 0.f,1.f,0.f };
+	}
 	vTargetRight = _vec3{ 1.f,0.f,0.f };
 	vTargetLook = _vec3{ 0.f,0.f,1.f };
+
 	_vec3 vPlayerCameraDistance;
 
 	if (GetAsyncKeyState(VK_ADD))

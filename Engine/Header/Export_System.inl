@@ -31,6 +31,10 @@ HRESULT		Ready_Timer(const _tchar* pTimerTag)
 {
 	return CTimerMgr::GetInstance()->Ready_Timer(pTimerTag);
 }
+void Stop_TimeDelta(const _tchar * pTimerTag, _bool bStop)
+{
+	CTimerMgr::GetInstance()->Stop_TimeDelta(pTimerTag,bStop);
+}
 // FrameMgr
 _bool				IsPermit_Call(const _tchar* pFrameTag, const _float& fTimeDelta)
 {

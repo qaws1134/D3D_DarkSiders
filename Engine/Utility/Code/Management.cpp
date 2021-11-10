@@ -133,3 +133,11 @@ CGameObject * CManagement::Get_GameObject(const _tchar * pLayerTag, const _tchar
 	return m_pScene->Get_GameObject(pLayerTag, pObjTag);
 }
 
+void CManagement::Add_GameObject(const _tchar * pLayerTag, const _tchar* pObjTag, CGameObject* pInstance)
+{
+	if (nullptr == m_pScene)
+		return ;
+
+	m_pScene->Add_GameObject(pLayerTag, pObjTag, pInstance);
+}
+

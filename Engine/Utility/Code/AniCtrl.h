@@ -18,7 +18,7 @@ public:
 	_uint GetMaxNumAnimationSets() { return m_pAniCtrl->GetMaxNumAnimationSets(); }
 public:
 	HRESULT			Ready_AniCtrl(void);
-	void			Set_AnimationIndex(const _uint& iIndex, _bool bBlend = true);
+	void			Set_AnimationIndex(const _uint& iIndex, _bool bBlend = true,_double dBlendTime = 0.25);
 	void			Play_Animation(const _float& fTimeDelta);
 	_bool			Is_AnimationsetFinish(void);
 	_bool			Is_Animationset(_double dRadius);

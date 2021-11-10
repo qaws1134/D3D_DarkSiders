@@ -3,7 +3,7 @@
 #include "Define.h"
 #include "Logo.h"
 #include "UIMgr.h"
-
+#include "GameMgr.h"
 CMainApp::CMainApp(void)
 {
 
@@ -60,7 +60,7 @@ HRESULT CMainApp::SetUp_DefaultSetting(LPDIRECT3DDEVICE9* ppGraphicDev)
 	(*ppGraphicDev)->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// Font Ãß°¡
-	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Default", L"¹ÙÅÁ", 15, 15, FW_NORMAL), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Default", L"¹ÙÅÁ", 18, 18, FW_NORMAL), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Jinji", L"±Ã¼­", 30, 30, FW_HEAVY), E_FAIL);
 
 
@@ -99,7 +99,9 @@ CMainApp* CMainApp::Create(void)
 
 void CMainApp::Free(void)
 {
+	
 	CUIMgr::GetInstance()->DestroyInstance();
+	CGameMgr::GetInstance()->DestroyInstance();
 	Safe_Release(m_pGraphicDev);
 
 	Safe_Release(m_pManagementClass);

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI.h"
 #include "Player.h"
+#include "GameMgr.h"
 #include "Export_Function.h"
 
 CUI::CUI(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -27,16 +28,34 @@ HRESULT CUI::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 
-	m_tRcUI.left	= (LONG)(m_tInfo.vPos.x - m_tInfo.vSize.x*0.8f);
-	m_tRcUI.top		= (LONG)(m_tInfo.vPos.y - m_tInfo.vSize.y*0.8f);
-	m_tRcUI.right	= (LONG)(m_tInfo.vPos.x + m_tInfo.vSize.x*0.8f);
-	m_tRcUI.bottom  = (LONG)(m_tInfo.vPos.y + m_tInfo.vSize.y*0.8f);
+	
 
+	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_StoneList_Sel")
+	{
+		m_tInfo.vPos.x += 300.f;
+		m_tInfo.vSize.x += 600.f;
+		m_tRcUI.left = (LONG)(m_tInfo.vPos.x - m_tInfo.vSize.x*0.5f);
+		m_tRcUI.top = (LONG)(m_tInfo.vPos.y - m_tInfo.vSize.y*0.5f);
+		m_tRcUI.right = (LONG)(m_tInfo.vPos.x + m_tInfo.vSize.x*0.5f);
+		m_tRcUI.bottom = (LONG)(m_tInfo.vPos.y + m_tInfo.vSize.y*0.5f);
+	
+	}
+	else
+	{
+		m_tRcUI.left	= (LONG)(m_tInfo.vPos.x - m_tInfo.vSize.x*0.5f);
+		m_tRcUI.top		= (LONG)(m_tInfo.vPos.y - m_tInfo.vSize.y*0.5f);
+		m_tRcUI.right	= (LONG)(m_tInfo.vPos.x + m_tInfo.vSize.x*0.5f);
+		m_tRcUI.bottom  = (LONG)(m_tInfo.vPos.y + m_tInfo.vSize.y*0.5f);
+	}
+	m_iPassIdx = 0;		//서브 텍스쳐가 늘어날 시 랜더 패스 변경 
 
-	m_pTransformCom->Set_Scale(0.1f, 0.1f, 0.1f);
+	m_pTransformCom->Set_Scale(&_vec3{ 1.f,1.f,1.f });
 	m_pTransformCom->Update_Component(0.f);
-	//m_pTarget = Engine::Get_GameObject(L"GameLogic",L"Player");
-	//NULL_CHECK_RETURN(m_pTarget, E_FAIL);
+	
+	if (m_tInfo.wstrTexture == L"Proto_Texture_Element")
+		m_pTarget = CGameMgr::GetInstance()->GetPlayer();
+	
+	m_fScaleSize = 1.f;
 	return S_OK;
 }
 
@@ -48,7 +67,8 @@ _int CUI::Update_Object(const _float& fTimeDelta)
 		D3DXMatrixOrthoLH(&m_matProj, WINCX, WINCY, 0.f, 1.f);
 
 		UI_ElementUpdate(fTimeDelta);
-
+		UI_CoreTreeUpdate(fTimeDelta);
+		UI_StoneListUpdate(fTimeDelta);
 		Add_RenderGroup(RENDER_UI, this);
 	}
 	return iExit;
@@ -67,7 +87,7 @@ void CUI::Render_Object(void)
 	pEffect->Begin(&iMaxPass, NULL);
 
 
-	pEffect->BeginPass(0);
+	pEffect->BeginPass(m_iPassIdx);
 
 	m_pBufferCom->Render_Buffer();
 
@@ -92,11 +112,12 @@ CUI* CUI::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 	return pInstance;
 }
 
-CUI * CUI::Create(LPDIRECT3DDEVICE9 pGraphicDev, UISET tInfo,_bool bActive)
+CUI * CUI::Create(LPDIRECT3DDEVICE9 pGraphicDev, UISET tInfo,_bool bActive, UI::TYPE eType)
 {
 	CUI*	pInstance = new CUI(pGraphicDev);
 	pInstance->SetUI(tInfo);
 	pInstance->SetActive(bActive);
+	pInstance->SetType(eType);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 
@@ -161,22 +182,72 @@ HRESULT CUI::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	matWorld._42 = -m_tInfo.vPos.y + WINCY * 0.5f;
 	
 
+	
+	//m_pTransformCom->Set_Pos(&_vec3{ m_tInfo.vPos.x,m_tInfo.vPos.y,m_fViewZ });
+	_matrix matTransformWorld = *m_pTransformCom->Get_WorldMatrix();
+	matWorld =  matTransformWorld*matWorld;
 
 	pEffect->SetMatrix("g_matWorld", &matWorld);
 	pEffect->SetMatrix("g_matView", &matView);
 	pEffect->SetMatrix("g_matProj", &m_matProj);
+	//pEffect->SetFloat("g_SizeX", m_tInfo.vSize.x);
+	//pEffect->SetFloat("g_SizeY", m_tInfo.vSize.y);
 
 	m_pTextureCom->Set_Texture(pEffect, "g_BaseTexture", m_tInfo.iTextureNum);
 
-	
+	if(m_bSubTex1)
+		m_pSubTextureCom1->Set_Texture(pEffect, "g_SubTexture1", m_iSubTexNum1);
+	if(m_bSubTex2)
+		m_pSubTextureCom2->Set_Texture(pEffect, "g_SubTexture2", m_iSubTexNum2);
+
 	return S_OK;
 }
 
 void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 {
+	if (m_tInfo.wstrTexture == L"Proto_Texture_Element_Arrow"|| m_tInfo.wstrTexture == L"Proto_Texture_Element_Arrow_Bg")
+	{
+		POINT		ptMouse{};
+
+		GetCursorPos(&ptMouse);
+		ScreenToClient(g_hWnd, &ptMouse);
+
+		_vec3 vMousPos = _vec3{ (_float)ptMouse.x, (_float)ptMouse.y ,0.f};
+		_vec3 vCenterPos = _vec3{ WINCX*0.5f,WINCY*0.5f,0.f };
+
+
+		_vec3 vDir = vMousPos - vCenterPos;
+		_vec3 vRight = _vec3{ 0.f,-1.f,0.f };
+		D3DXVec3Normalize(&vDir, &vDir);
+
+		_float fCos = D3DXVec3Dot(&vDir, &vRight);
+		_float fAngle = D3DXToDegree(acosf(fCos));	
+	
+		if (vMousPos.x < WINCX*0.5f)			
+			fAngle = 360.f-fAngle;
+
+		if (m_tInfo.wstrTexture == L"Proto_Texture_Element_Arrow_Bg")
+		{
+			for (_uint i = 0; i < 6; i++)
+			{
+				if (fAngle < _float(i + 1) * 60.f)
+				{
+					fAngle = (_float)i*60.f;
+					break;
+				}
+			}
+			fAngle += 30.f;
+		}
+		fAngle *= -1.f;
+		m_pTransformCom->Set_Rot(&_vec3{ 0.f,0.f,D3DXToRadian(fAngle) });
+
+	}
+
 	if (m_tInfo.wstrTexture == L"Proto_Texture_Element")
 	{
-	
+		////////////////////////////////////////////////
+		//선택되면 쉐이더로 강조효과 주고싶다 
+
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
 			switch (m_tInfo.iTextureNum)
@@ -187,6 +258,7 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				{
 					//UI창 닫고 속성 적용 
 					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_EARTH);
+					break;
 				}
 				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_EARTH);
 				
@@ -198,6 +270,7 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				{
 					//UI창 닫고 속성 적용 
 					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_FLAME);
+					break;
 				}
 				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_FLAME);
 			}
@@ -209,6 +282,7 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				{
 					//UI창 닫고 속성 적용 
 					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_LIGHTNING);
+					break;
 				}
 				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_LIGHTNING);
 			}
@@ -219,6 +293,7 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				{
 					//UI창 닫고 속성 적용 
 					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_DEATH);
+					break;
 				}
 				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_DEATH);
 			}
@@ -229,6 +304,7 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				{
 					//UI창 닫고 속성 적용 
 					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_WIND);
+					break;
 				}
 				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_WIND);
 			}
@@ -239,6 +315,7 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				{
 					//UI창 닫고 속성 적용 
 					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_VAMP);
+					break;
 				}
 				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_VAMP);
 			}
@@ -247,6 +324,67 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				break;
 			}
 		}
+	}
+}
+
+void CUI::UI_CoreTreeUpdate(const _float & fTimeDelta)
+{
+	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_Core")
+	{
+		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
+		{
+			dynamic_cast<CUI*>(Get_GameObject(L"UI", L"UI_CoreTree_Sel"))->SetUIPos(m_tInfo.vPos);
+
+			//이 UI 가 가지고 있는 돌에 접근해야됨 - > 장착된 돌UI 따로 만들어서 베이스 위에 올리자
+			//돌 UI는 따로 업데이트 ㄱㄱ 
+
+			if (Key_Down(KEY_LBUTTON))
+			{
+
+
+			}
+			if (Key_Down(KEY_RBUTTON))
+			{
+				//돌 삭제 
+
+			}
+
+		}
+	}
+
+	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_Sel")
+	{
+		//1.3이 되면 감소
+		//0.9가 되면 증가
+
+		if (m_fScaleSize < 0.9f)
+			m_bScale = true;
+		else if(m_fScaleSize > 1.1f)
+			m_bScale = false;
+
+		if (m_bScale)
+			m_fScaleSize += fTimeDelta;
+		else
+			m_fScaleSize -= fTimeDelta;
+
+		m_pTransformCom->Set_Scale(m_fScaleSize, m_fScaleSize, m_fScaleSize);
+
+	}
+
+
+}
+
+void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
+{
+	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_StoneList_Sel")
+	{
+		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
+		{
+			m_tInfo.iTextureNum = 1;
+		}
+		else
+			m_tInfo.iTextureNum = 0;
+
 	}
 }
 
@@ -264,5 +402,29 @@ void CUI::SetUI(UISET tInfo)
 	m_mapComponent[ID_STATIC].emplace(L"Com_Texture", pComponent);
 	
 
+}
+
+void CUI::SetSubTex1(wstring wstrProtoTag, _uint iTextureNum)
+{
+	m_bSubTex1 = true;
+	m_iSubTexNum1 = iTextureNum;
+
+	CComponent*		pComponent = nullptr;
+	pComponent = m_pSubTextureCom1 = dynamic_cast<CTexture*>(Clone_Prototype(wstrProtoTag.c_str()));
+	NULL_CHECK_RETURN(m_pTextureCom, );
+	m_mapComponent[ID_STATIC].emplace(L"Com_SubTexture1", pComponent);
+	m_iPassIdx++;
+}
+
+void CUI::SetSubTex2(wstring wstrProtoTag, _uint iTextureNum)
+{
+	m_bSubTex2 = true;
+	m_iSubTexNum2 = iTextureNum;
+
+	CComponent*		pComponent = nullptr;
+	pComponent = m_pSubTextureCom2 = dynamic_cast<CTexture*>(Clone_Prototype(wstrProtoTag.c_str()));
+	NULL_CHECK_RETURN(m_pTextureCom, );
+	m_mapComponent[ID_STATIC].emplace(L"Com_SubTexture2", pComponent);
+	m_iPassIdx++;
 }
 

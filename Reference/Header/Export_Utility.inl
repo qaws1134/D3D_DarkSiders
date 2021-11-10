@@ -39,6 +39,12 @@ void			Render_Scene(LPDIRECT3DDEVICE9& pGraphicDev)
 	CManagement::GetInstance()->Render_Scene(pGraphicDev);
 }
 
+ void Add_GameObject(const _tchar * pLayerTag, const _tchar * pObjTag, CGameObject * pInstance)
+{
+	 CManagement::GetInstance()->Add_GameObject(pLayerTag, pObjTag, pInstance);
+}
+
+
 
 HRESULT		Ready_Renderer(LPDIRECT3DDEVICE9& pGraphicDev)
 {

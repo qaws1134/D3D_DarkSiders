@@ -44,7 +44,10 @@ HRESULT Engine::CTexture::Ready_Texture(const _tchar* pPath,
 		{
 		case TEX_NORMAL:
 			if (FAILED(D3DXCreateTextureFromFile(m_pGraphicDev, szFileName, (LPDIRECT3DTEXTURE9*)&pTexture)))
+			{
+				NULL_CHECK_MSG(pTexture, L"ÅØ½ºÃÄ ºö");
 				return E_FAIL;
+			}
 			break;
 
 		case TEX_CUBE:

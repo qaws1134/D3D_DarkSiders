@@ -7,14 +7,16 @@
 #include "BackGround.h"
 
 #include "Player.h"
+#include "WaterBoss.h"
 //#include "Monster.h"
 #include "Terrain.h"
 #include "DynamicCamera.h"
 #include "StaticCamera.h"
-#include "UI_WeaponElement.h"
-
+#include "GameMgr.h"
 #include "UIMgr.h"
 #include "UI.h"
+
+
 
 //#include "SkyBox.h"
 //#include "Stone.h"
@@ -41,7 +43,14 @@ private:
 
 private:
 	_ulong					m_dwRenderCnt = 0;
-	_tchar					m_szFPS[256];
+
+	_long					m_dwPosX = 0;
+	_long					m_dwPosY = 0;
+
+
+	_tchar					m_szFPS[256] ;
+	_tchar					m_szPosX[256];
+	_tchar					m_szPosY[256];
 	_float					m_fTime = 0.f;
 
 public:

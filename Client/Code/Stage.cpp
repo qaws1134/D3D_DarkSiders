@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Stage.h"
-
+#include "GameMgr.h"
 #include "Export_Function.h"
 
 CStage::CStage(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -30,7 +30,21 @@ HRESULT CStage::Ready_Scene(void)
 Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 {
 	m_fTime += fTimeDelta;
+	POINT		ptMouse{};
 
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
+
+	m_dwPosX = ptMouse.x;
+	m_dwPosY = ptMouse.y;
+
+	if (Key_Down(KEY_L))
+	{
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::GOBLERIN);
+		CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev,tStone);
+		CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone.eCreature);
+	}
+	
 	return CScene::Update_Scene(fTimeDelta);
 }
 
@@ -47,6 +61,17 @@ void CStage::Render_Scene(void)
 	}
 
 	Render_Font(L"Font_Jinji", m_szFPS, &_vec2(400.f, 10.f), D3DXCOLOR(0.f, 1.f, 0.f, 1.f));
+
+
+
+	wsprintf(m_szPosX, L"X : %d", m_dwPosX);
+	wsprintf(m_szPosY, L"Y : %d", m_dwPosY);
+
+
+	Render_Font(L"Font_Default", m_szPosX, &_vec2(50.f, 15.f), D3DXCOLOR(1.f, 0.f, 1.f, 1.f));
+	Render_Font(L"Font_Default", m_szPosY, &_vec2(200.f, 15.f), D3DXCOLOR(1.f, 0.f, 1.f, 1.f));
+
+
 }
 
 HRESULT CStage::Ready_Layer_Environment(const _tchar* pLayerTag)
@@ -92,7 +117,8 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 	pGameObject = CTerrain::Create(m_pGraphicDev);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Terrain", pGameObject), E_FAIL);
-	//
+
+
 	//// Stone
 	//pGameObject = CStone::Create(m_pGraphicDev);
 	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
@@ -111,10 +137,16 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 
 //#pragma region PLAYER
 	// Player
-	pGameObject = CPlayer::Create(m_pGraphicDev);
-	NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Player", pGameObject), E_FAIL);
-//
+	//pGameObject = CPlayer::Create(m_pGraphicDev);
+	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	//CGameMgr::GetInstance()->SetPlayer(pGameObject);
+	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Player", pGameObject), E_FAIL);
+
+
+	//pGameObject = CWaterBoss::Create(m_pGraphicDev);
+	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"WaterBoss", pGameObject), E_FAIL);
+
 //	// Sword
 //	pGameObject = CSword::Create(m_pGraphicDev);
 //	NULL_CHECK_RETURN(pGameObject, E_FAIL);
@@ -135,19 +167,19 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
-	//CAMERA_DESC CameraDesc;
-	//CameraDesc.fFovY = D3DXToRadian(60.f);
-	//CameraDesc.fAspect = (_float)WINCX / WINCY;
-	//CameraDesc.fNear = 1.f;
-	//CameraDesc.fFar = 1000.f;
-	//CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
-	//CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
+	CAMERA_DESC CameraDesc;
+	CameraDesc.fFovY = D3DXToRadian(60.f);
+	CameraDesc.fAspect = (_float)WINCX / WINCY;
+	CameraDesc.fNear = 1.f;
+	CameraDesc.fFar = 1000.f;
+	CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
+	CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
 
 
 	pGameObject = CStaticCamera::Create(m_pGraphicDev, CameraDesc);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	auto iter_find = m_mapLayer.find(L"GameLogic");
-	pGameObject->SetTarget(iter_find->second->Get_GameObject(L"Player"));
+	//auto iter_find = m_mapLayer.find(L"GameLogic");
+	//pGameObject->SetTarget(iter_find->second->Get_GameObject(L"Player"));
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"StaticCamera", pGameObject), E_FAIL);
 
 
@@ -158,20 +190,26 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 	//매니져 돌면서 레이어 추가
 
 	//리스트를 반환 
+	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
 
 	
 	for (auto iter : CUIMgr::GetInstance()->InitCreateUI(m_pGraphicDev))
 	{
-		for (auto iter_second : iter)
+		for (auto iter_second : iter.second)
 		{
-			auto iter_find = m_mapLayer.find(L"GameLogic");
-			iter_second->SetTarget(iter_find->second->Get_GameObject(L"Player"));
-			NULL_CHECK_RETURN(iter_second, E_FAIL);
+			//auto iter_find = m_mapLayer.find(L"GameLogic");
+			//iter_second->SetTarget(iter_find->second->Get_GameObject(L"Player"));
+			//NULL_CHECK_RETURN(iter_second, E_FAIL);
 			//Obj 태그 반환 
 			FAILED_CHECK_RETURN(pLayer->Add_GameObject(dynamic_cast<CUI*>(iter_second)->GetObjTag().c_str(), iter_second), E_FAIL);
 		}
 	}
-
 
 	m_mapLayer.emplace(pLayerTag, pLayer);
 	return S_OK;

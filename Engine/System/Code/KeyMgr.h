@@ -52,6 +52,7 @@
 #define KEY_F2		0x0001000000000000
 #define KEY_MBUTTON	0x0002000000000000
 #define KEY_SHIFT	0x0004000000000000
+#define KEY_X		0x0008000000000000
 
 #include "Engine_Define.h"
 #include "Base.h"

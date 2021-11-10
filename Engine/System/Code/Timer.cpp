@@ -33,11 +33,15 @@ void Engine::CTimer::SetUp_TimeDelta(void)		// update
 		QueryPerformanceFrequency(&m_CpuTick);
 		m_FixTime = m_FrameTime;
 	}
-
-	m_fTimeDelta = (m_FrameTime.QuadPart - m_LastTime.QuadPart) / (_float)m_CpuTick.QuadPart;
+	if (m_bStop)
+		m_fTimeDelta = (m_FrameTime.QuadPart - m_LastTime.QuadPart) / (_float)m_CpuTick.QuadPart;
+	else
+		m_fTimeDelta = 0.f;
 
 	m_LastTime = m_FrameTime;
 }
+
+
 
 Engine::CTimer* Engine::CTimer::Create(void)
 {

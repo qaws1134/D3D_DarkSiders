@@ -94,6 +94,7 @@ HRESULT Engine::CStaticMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar*
 
 	m_pMesh->GetDeclaration(Decl);
 
+
 	_ubyte			byOffset = 0;
 
 	for (_ulong i = 0; i < MAX_FVF_DECL_SIZE; ++i)
