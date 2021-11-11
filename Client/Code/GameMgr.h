@@ -23,6 +23,7 @@ public:
 
 	vector<STONE> GetStoneVec() { return m_vecStone; }
 	STONE GetStone(UI::STONE eStone);
+
 private:
 	//플레이어 저장 
 	CGameObject* m_pPlayer = nullptr;

@@ -8,7 +8,7 @@ IMPLEMENT_SINGLETON(CUIMgr)
 
 CUIMgr::CUIMgr(void)
 {
-
+	m_fPreWheel = g_fWheel;
 }
 CUIMgr::~CUIMgr(void)
 {
@@ -31,8 +31,6 @@ void CUIMgr::InitWeaponElement(LPDIRECT3DDEVICE9 pGraphicDev)
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5), _float(WINCY*0.5)), _vec2(fBaseUISize, fBaseUISize), 0, L"Proto_Texture_Element_Base", L"UI_Element_Base"),false);
 	pGameObject->SetZPos(fBaseZ, ID_DYNAMIC);
 	m_listWeaponElement.emplace_back(pGameObject);
-
-
 
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5), _float(WINCY*0.5)), _vec2(fBaseUISize, fBaseUISize), 0, L"Proto_Texture_Element_Arrow", L"UI_Element_Arrow"), false);
 	pGameObject->SetZPos(fBaseZ, ID_DYNAMIC);
@@ -137,8 +135,8 @@ void CUIMgr::InitCoretree(LPDIRECT3DDEVICE9 pGraphicDev)
 		if (0 == i ||1 == i ||
 			8 == i || 16 == i || 17 == i  )
 		{
+			//레어돌
 			pGameObject = CUI::Create(pGraphicDev, Set_UISET(GetCoretreePos(i), _vec2(fStoneUISize, fStoneUISize), 1, L"Proto_Texture_CoreTree_Core", L"UI_CoreTree_Core" + to_wstring(i)), bActive);
-
 		}
 		else
 			pGameObject = CUI::Create(pGraphicDev, Set_UISET(GetCoretreePos(i), _vec2(fStoneUISize, fStoneUISize), 0, L"Proto_Texture_CoreTree_Core", L"UI_CoreTree_Core"+ to_wstring(i)), bActive);
@@ -170,7 +168,7 @@ void CUIMgr::InitCoreList(LPDIRECT3DDEVICE9 pGraphicDev)
 	_float fSelZ = 0.2f;
 	_float fCoreZ = 0.19f;
 
-	_bool bActive = true;
+	_bool bActive = false;
 
 	//배경 ㅇㅇ 
 	pGameObject = CUI::Create(pGraphicDev, 
@@ -270,7 +268,7 @@ void CUIMgr::InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 	_float fUIZ = 0.18f;
 	_float fInfoZ = 0.2f;
 	_float fBgUIZ = 0.3f;
-	_bool  bActive = true;
+	_bool  bActive = false;
 
 	//Bg 
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5), _float(WINCY*0.5) + 355.f), _vec2(_float(WINCX), _float(WINCY*0.4f)), 0, L"Proto_Texture_InfoBg", L"UI_Info_Bg"), bActive);
@@ -288,13 +286,39 @@ void CUIMgr::InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 	pGameObject->SetZPos(fUIZ, ID_DYNAMIC);
 	m_listPlayerInfo.emplace_back(pGameObject);
 
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal", L"W A R   P O W E R", _vec2(765.f, 615.f), D3DXCOLOR(0.7f, 0.7f, 0.7f, 0.7f) }, bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag( L"PlayerInfo_Font_L_Normal" + to_wstring(10));
+	m_listPlayerInfo.emplace_back(pGameObject);
 	//공격, 진노력, 체력 
 	for (_uint i = 0; i < 3; i++)
 	{
-		pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(780.f, 690.f+(40.f*i)), _vec2(fTypeSize, fTypeSize), (i*2)+1, L"Proto_Texture_CoreTree_StoneElement", L"UI_Info_Element"+ to_wstring(i)), bActive);
+		pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(780.f, 690.f+(40.f*i)), _vec2(fTypeSize, fTypeSize), (i*2), L"Proto_Texture_CoreTree_StoneElement", L"UI_Info_Element"+ to_wstring(i)), bActive);
 		pGameObject->SetZPos(fUIZ, ID_DYNAMIC);
 		m_listPlayerInfo.emplace_back(pGameObject);
+		wstring wstrType;
+		switch (i)
+		{
+		case 0:
+			wstrType = L"ATTACK";
+			break;
+		case 1:	
+			wstrType = L"WRATH";
+			break;
+		case 2:
+			wstrType = L"HEALTH";
+		default:
+			break;
+		}
+
+		pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal", wstrType.c_str(), _vec2(820.f,  680.f + (40.f*i)), D3DXCOLOR(0.7f, 0.7f, 0.7f, 0.7f) }, bActive);
+		dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"PlayerInfo_Font_L_Normal" + to_wstring(i));
+		m_listPlayerInfo.emplace_back(pGameObject);
+
+
 	}
+
+
+
 
 	//설명 추가 
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) - 220.f, _float(WINCY*0.5) + 305.f), _vec2(_float(WINCX*0.6f), fInfoUISize), 0, L"Proto_Texture_CoreTree_Info", L"UI_CoreTree_Info"), bActive);
@@ -315,6 +339,93 @@ void CUIMgr::InitStoneList(LPDIRECT3DDEVICE9 pGraphicDev)
 	}
 }
 
+void CUIMgr::InitStore()
+{
+	CGameObject* pGameObject = nullptr;
+	_float fBaseZ = 0.5f;
+	_float fInfoZ = 0.45f;
+
+	_bool  bActive = false;
+	//Bg 
+	pGameObject = CUI::Create(m_pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5)+300.f, _float(WINCY*0.5)), _vec2(_float(WINCX)*0.5f, _float(WINCY)), 0, L"Proto_Texture_Store_Base", L"UI_Store_Base"), bActive);
+	pGameObject->SetZPos(fBaseZ, ID_DYNAMIC);
+	m_listStoneActiveBase.emplace_back(pGameObject);
+	
+	//Info
+	pGameObject = CUI::Create(m_pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, _float(WINCY*0.5)-300.f), _vec2(_float(WINCX)*0.5f, _float(WINCY)*0.3f), 2, L"Proto_Texture_Store_Base", L"UI_Store_Info"), bActive);
+	pGameObject->SetZPos(fBaseZ, ID_DYNAMIC);
+	m_listStoneActiveBase.emplace_back(pGameObject);
+
+	m_mapHead.emplace(m_listStoneActiveBase);
+}
+
+void CUIMgr::InitStoreList()
+{
+	CGameObject* pGameObject = nullptr;
+
+	_float fListZ = 0.4f;
+	_float fSelZ = 0.39f;
+	_float fIconZ = 0.38f;
+
+	_bool  bActive = false;
+	
+	//리스트박스
+	pGameObject = CUI::Create(m_pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, _float(WINCY*0.5)), _vec2(_float(WINCX)*0.5f, _float(WINCY)), 0, L"Proto_Texture_List", L"UI_Store_List"+to_wstring(m_iStoreIdx)), bActive);
+	pGameObject->SetZPos(fListZ, ID_DYNAMIC);
+	m_listStoneActiveList.emplace_back(pGameObject);
+
+	//셀
+	_bool  bActive = false;
+	pGameObject = CUI::Create(m_pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, _float(WINCY*0.5)), _vec2(_float(WINCX)*0.5f, _float(WINCY)), 0, L"Proto_Texture_Store_Sel", L"UI_Store_Sel" + to_wstring(m_iStoreIdx)), bActive);
+	pGameObject->SetZPos(fSelZ, ID_DYNAMIC);
+	m_listStoneActiveList.emplace_back(pGameObject);
+	
+	//아이콘
+	_bool  bActive = false;
+	pGameObject = CUI::Create(m_pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, _float(WINCY*0.5)), _vec2(_float(WINCX)*0.5f, _float(WINCY)), 0, L"Proto_Texture_Store_Active", L"UI_Store_Active" + to_wstring(m_iStoreIdx)), bActive);
+	pGameObject->SetZPos(fSelZ, ID_DYNAMIC);
+	m_listStoneActiveList.emplace_back(pGameObject);
+
+	//폰트
+	pGameObject = CUI::Create(m_pGraphicDev, UIFONT{ L"Font_L_Normal", /*이름 */L"", _vec2(860.f, 220.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Normal" + to_wstring(m_iStoreIdx));
+	m_listStoneInfo.emplace_back(pGameObject);
+
+
+
+
+
+
+
+
+	m_mapStoreList.emplace(m_iStoreIdx, m_listStoneActiveList);
+	m_iStoreIdx++;
+	m_listStoneActiveList.clear();
+}
+
+void CUIMgr::MoveStoneList(_float fTimeDelta,_float fSpeed)
+{
+	for (auto iter : m_mapStoneList)
+	{
+		for (auto iter_second : iter.second)
+		{
+			_float fListCount = 7.f;
+			_vec2 vPos = dynamic_cast<CUI*>(iter_second)->GetUIPos();
+			if (fSpeed > 0.f)
+			{
+				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y+ fListCount*60.f < vPos.y + m_StoneListIdx*60.f)
+					vPos.y -= fSpeed*fTimeDelta;
+			}
+			else
+			{
+				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y > vPos.y)
+					vPos.y -= fSpeed*fTimeDelta;
+			}
+			dynamic_cast<CUI*>(iter_second)->SetUIPos(vPos);
+		}
+	}
+}
+
 //획득했을때 스톤이 있는지 확인하고 
 //-> 플레이어에서 vector enum으로 저장하자 
 // 없으면 추가하면서 UI Create 
@@ -322,32 +433,70 @@ void CUIMgr::InitStoneList(LPDIRECT3DDEVICE9 pGraphicDev)
 //리스트 스크롤에서 액티브 해주고 스크롤로 포지션 올리거나 내리기
 void CUIMgr::SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone) //순서대로 아래로 생성 열때마다 맨위로 조정 
 {
+	auto iter_find = m_mapStoneList.find(tStone.eCreature);
+	if (iter_find != m_mapStoneList.end())
+	{
+		return;
+	}
+
 	//2. 획득할때마다 셋팅-> 이게 맞는듯?
 	CGameObject* pGameObject = nullptr;
 
 	_float fStoneSize = 90.f;
 	_float fIconSize = 50.f;
 
-
 	_float fSelZ = 0.2f;
 	_float fStoneZ = 0.2f;
 	_float fCoreZ = 0.19f;
-	_bool bActive =true;
+	_bool bActive =false;
 	
-
 
 	//오른쪽 설명 리스트에 스톤 ->빤짝 쉐이더 먹인 스톤 
-	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(780.f, 150.f), _vec2(fStoneSize, fStoneSize), (_uint)tStone.eCreature, L"Proto_Texture_CoreTree_Creature", L"UI_Info_Element" + to_wstring(m_StoneListIdx)), bActive);
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(780.f, 180.f), _vec2(fStoneSize, fStoneSize), (_uint)tStone.eCreature, L"Proto_Texture_CoreTree_Creature", L"UI_Info_Stone" + to_wstring(tStone.eCreature)), bActive);
 	pGameObject->SetZPos(fStoneZ, ID_DYNAMIC);
 	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE);
-
 	m_listStoneInfo.emplace_back(pGameObject);
-	
+
+
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(840.f, 225.f), _vec2(fIconSize, fIconSize), tStone.iElementType, L"Proto_Texture_CoreTree_StoneElement", L"UI_Info_Element" + to_wstring(tStone.eCreature)), bActive);
+	pGameObject->SetZPos(fStoneZ, ID_DYNAMIC);
+	m_listStoneInfo.emplace_back(pGameObject);
+
 
 	//대문짝폰트
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Heavy", tStone.wstrName.c_str(), _vec2(830.f, 150.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) },bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoneInfo_Font_L_Heavy" + to_wstring(tStone.eCreature));
+	m_listStoneInfo.emplace_back(pGameObject);
+
+	wstring wstrStoneElement;
+
+	switch (tStone.iElementType)
+	{
+	case UI::STONE_ALL:
+		break;
+	case UI::STONE_SKILL:
+		wstrStoneElement = L"SKILL TYPE";
+		break;
+	case UI::STONE_ATK:
+		wstrStoneElement = L"ATK TYPE";
+		break;
+	case UI::STONE_HEALTH:
+		wstrStoneElement = L"HEALTH TYPE";
+		break;
+	case UI::STONE_ELEMENT_END:
+		break;
+	default:
+		break;
+	}
 	//미들폰트
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal", wstrStoneElement.c_str(), _vec2(860.f, 220.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoneInfo_Font_L_Normal" + to_wstring(tStone.eCreature));
+	m_listStoneInfo.emplace_back(pGameObject);
 
 	//스몰폰트
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Light", tStone.wstrInfo.c_str(), _vec2(830.f, 275.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoneInfo_Font_L_Light" + to_wstring(tStone.eCreature));
+	m_listStoneInfo.emplace_back(pGameObject);
 
 	//이름까지 
 
@@ -357,12 +506,18 @@ void CUIMgr::SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone) //순서대
 		Add_GameObject(L"UI", dynamic_cast<CUI*>(iter)->GetObjTag().c_str(), iter);
 	}
 
-	m_mapStoneList.emplace(m_StoneListIdx, m_listStoneInfo);
+	m_mapStoneInfo.emplace(tStone.eCreature, m_listStoneInfo);
 	m_listStoneInfo.clear();
 }
 
-void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, UI::STONE eStone)
+void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone)
 {
+	auto iter_find = m_mapStoneList.find(tStone.eCreature);
+	if (iter_find != m_mapStoneList.end())
+	{
+		//돌이 중복됨 -> 레벨기능? ㄱ? 
+		return;
+	}
 	CGameObject* pGameObject = nullptr;
 
 	_float fStoneSize = 90.f;
@@ -372,12 +527,12 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, UI::STONE eStone)
 	_float fSelZ = 0.2f;
 	_float fStoneZ = 0.2f;
 	_float fCoreZ = 0.19f;
-	_bool bActive = true;
+	_bool bActive = false;
 
 	//셀 bar
 	pGameObject = CUI::Create(pGraphicDev,
 		Set_UISET(_vec2(80.f, fPosy), _vec2(fIconSize, fIconSize),
-			0, L"Proto_Texture_CoreTree_StoneList_Sel", L"UI_CoreTree_StoneList_SelBar"+to_wstring(m_StoneListIdx)), bActive);
+			0, L"Proto_Texture_CoreTree_StoneList_Sel", L"UI_CoreTree_StoneList_SelBar"+to_wstring(tStone.eCreature)), bActive);
 	pGameObject->SetZPos(fSelZ, ID_DYNAMIC);
 	m_listStoneList.emplace_back(pGameObject);
 	//Add_GameObject();
@@ -388,15 +543,21 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, UI::STONE eStone)
 	//크리쳐
 	pGameObject = CUI::Create(pGraphicDev,
 		Set_UISET(_vec2(95.f, fPosy), _vec2(fIconSize, fIconSize),
-			(_uint)eStone, L"Proto_Texture_CoreTree_Creature", L"UI_CoreTree_StoneList_Creature" + to_wstring(m_StoneListIdx)), bActive);
+			(_uint)tStone.eCreature, L"Proto_Texture_CoreTree_Creature", L"UI_CoreTree_StoneList_Creature" + to_wstring(tStone.eCreature)), bActive);
 	pGameObject->SetZPos(fCoreZ, ID_DYNAMIC);
 	m_listStoneList.emplace_back(pGameObject);
 
 	//타입
 	pGameObject = CUI::Create(pGraphicDev,
 		Set_UISET(_vec2(600.f, fPosy), _vec2(fIconSize, fIconSize),
-			0, L"Proto_Texture_CoreTree_StoneElement", L"UI_CoreTree_StoneList_Element" + to_wstring(m_StoneListIdx)), bActive);
+			tStone.iElementType*2.f, L"Proto_Texture_CoreTree_StoneElement", L"UI_CoreTree_StoneList_Element" + to_wstring(tStone.eCreature)), bActive);
 	pGameObject->SetZPos(fCoreZ, ID_DYNAMIC);
+	m_listStoneList.emplace_back(pGameObject);
+
+	//미들폰트
+
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal",tStone.wstrName.c_str() , _vec2(145.f, fPosy-10.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoneList_Font_L_Normal" + to_wstring(tStone.eCreature));
 	m_listStoneList.emplace_back(pGameObject);
 
 	for (auto iter : m_listStoneList)
@@ -404,7 +565,7 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, UI::STONE eStone)
 		Add_GameObject(L"UI", dynamic_cast<CUI*>(iter)->GetObjTag().c_str(), iter);
 	}
 
-	m_mapStoneList.emplace(m_StoneListIdx, m_listStoneList);
+	m_mapStoneList.emplace(tStone.eCreature, m_listStoneList);
 	m_listStoneList.clear();
 	m_StoneListIdx++;
 }
@@ -412,8 +573,10 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, UI::STONE eStone)
 
 
 
+
 map<UI::LISTKEY,list<CGameObject*>> CUIMgr::InitCreateUI(LPDIRECT3DDEVICE9 pGraphicDev)
 {
+	m_pGraphicDev = pGraphicDev;
 	InitWeaponElement(pGraphicDev);
 	InitCoretree(pGraphicDev);
 	InitCoreList(pGraphicDev);
@@ -448,10 +611,70 @@ void CUIMgr::SetActiveCoreTreeUI(_bool bActive)
 	{
 		dynamic_cast<CUI*>(iter)->SetActive(bActive);
 	}
+
+}
+
+void CUIMgr::SetActivePlayerInfo(_bool bActive)
+{
 	for (auto iter : m_listPlayerInfo)
 	{
 		dynamic_cast<CUI*>(iter)->SetActive(bActive);
 	}
+}
+
+void CUIMgr::SetActiveStoneListUI(_bool bActive)
+{
+	for (auto iter : m_listCoreList)
+	{
+		dynamic_cast<CUI*>(iter)->SetActive(bActive);
+	}
+
+	for (auto iter : m_mapStoneList)
+	{
+		for(auto iter_second : iter.second)
+			dynamic_cast<CUI*>(iter_second)->SetActive(bActive);
+	}
+
+}
+
+void CUIMgr::SetActiveStoneInfoUI(_bool bActive, _uint iStoneIdx)
+{
+	auto iter_find = m_mapStoneInfo.find(iStoneIdx);
+
+	for (auto iter : iter_find->second)
+			dynamic_cast<CUI*>(iter)->SetActive(bActive);
+	
+}
+
+list<CGameObject*> CUIMgr::GetStoneSelIdxList(wstring wstrObjtag, _uint* iStoneIdx)
+{
+	for (auto iter : m_mapStoneList)
+	{
+		for (auto iter_second : iter.second)
+		{
+			if (wstrObjtag == dynamic_cast<CUI*>(iter_second)->GetObjTag())
+			{
+				*iStoneIdx = iter.first;
+				return iter.second;
+			}
+		}
+	}
+	return list<CGameObject*>();
+}
+
+_uint CUIMgr::GetWheelMove()
+{
+	if (m_fPreWheel < g_fWheel)
+	{
+		m_fPreWheel = g_fWheel;
+		return WHEEL::MOVE_UP;
+	}
+	else if(m_fPreWheel > g_fWheel)
+	{
+		m_fPreWheel = g_fWheel;
+		return WHEEL::MOVE_DOWN;
+	}
+	return WHEEL::MOVE_POS;
 }
 
 _bool CUIMgr::GetElemetUIActive()
@@ -462,6 +685,14 @@ _bool CUIMgr::GetElemetUIActive()
 _bool CUIMgr::GetCoreTreeUIActive()
 {
 	return m_listCoreTree.front()->GetActive();
+}
+
+_bool CUIMgr::GetStoneInfoUIActive(_uint iStoneIdx)
+{
+	auto iter_find = m_mapStoneInfo.find(iStoneIdx);
+
+	return iter_find->second.front()->GetActive();
+
 }
 
 
@@ -491,6 +722,8 @@ void CUIMgr::Free(void)
 		}
 	}
 }
+
+
 
 
 _vec2 CUIMgr::GetCoretreePos(_uint iIdx)
@@ -581,3 +814,5 @@ _vec2 CUIMgr::GetCoretreePos(_uint iIdx)
 
 	return vPos;
 }
+
+

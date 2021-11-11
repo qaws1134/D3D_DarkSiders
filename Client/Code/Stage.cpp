@@ -40,11 +40,22 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 
 	if (Key_Down(KEY_L))
 	{
-		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::GOBLERIN);
+		_uint i = rand() % 20;
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(i));
 		CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev,tStone);
-		CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone.eCreature);
+		CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
 	}
-	
+
+	if (Key_Down(KEY_K))
+	{
+		CGameObject*			pGameObject = nullptr;
+		pGameObject = CWaterBoss::Create(m_pGraphicDev);
+		NULL_CHECK_RETURN(pGameObject, E_FAIL);
+		Add_GameObject(L"GameLogic", L"WaterBoss", pGameObject);
+		//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"WaterBoss", pGameObject), E_FAIL);
+	}
+
+
 	return CScene::Update_Scene(fTimeDelta);
 }
 
@@ -137,10 +148,10 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 
 //#pragma region PLAYER
 	// Player
-	//pGameObject = CPlayer::Create(m_pGraphicDev);
-	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	//CGameMgr::GetInstance()->SetPlayer(pGameObject);
-	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Player", pGameObject), E_FAIL);
+	pGameObject = CPlayer::Create(m_pGraphicDev);
+	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	CGameMgr::GetInstance()->SetPlayer(pGameObject);
+	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Player", pGameObject), E_FAIL);
 
 
 	//pGameObject = CWaterBoss::Create(m_pGraphicDev);
@@ -191,14 +202,13 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 
 	//리스트를 반환 
 	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
-	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
-	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
-	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
-	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
-	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
-	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
 
-	
 	for (auto iter : CUIMgr::GetInstance()->InitCreateUI(m_pGraphicDev))
 	{
 		for (auto iter_second : iter.second)

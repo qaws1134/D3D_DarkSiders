@@ -29,6 +29,7 @@ public:
 
 public:
 	void		StateChange();
+	void		StateActer(_float fDeltaTime);
 	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
 	void		DirSet(War::DIR eDir, _float fTimeDelta, _float fAngleSpeed);	//키에 따른 방향 결정
 	void		DirSet_Combo();
@@ -93,6 +94,8 @@ private:
 	_bool bUIOn = false;//UI 상태시 다른 조작 키에 접근 못하도록 하는 변수 
 
 
+	//트랜스폼
+	_float m_fMoveSpeed = 5.f;
 
 
 public:

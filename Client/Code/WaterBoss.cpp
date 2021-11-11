@@ -27,7 +27,7 @@ HRESULT CWaterBoss::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
-	m_pTransformCom->Set_Rot(0.f, D3DXToRadian(90.f), 0.f);	//ÆÄ½ÌÇÏ¸é¼­ ¹Ù²Ü²¨ÀÓ 
+	m_pTransformCom->Set_Rot(0.f, D3DXToRadian(-90.f), 0.f);	//ÆÄ½ÌÇÏ¸é¼­ ¹Ù²Ü²¨ÀÓ 
 	m_pTransformCom->Update_Component(0.f);
 	m_pMeshCom->Set_AnimationIndex(WaterBoss::Idle);
 	m_fPatternTimer = 2.f;

@@ -1,15 +1,52 @@
 #ifndef ClientEnum_h__
 #define ClientEnum_h__
 
-
+namespace WHEEL
+{
+	enum MOVE {
+		MOVE_UP,
+		MOVE_POS,
+		MOVE_DOWN,
+		MOVE_END
+	};
+}
 
 
 namespace UI
 {
+
+	enum ACTIVE_ITEM
+	{
+		ACTIVE_AIR_SPIN,		//에어 스핀 가능
+		ACTIVE_LIGHTATTACK1UP,
+		ACTIVE_LIGHTATTACK2UP,
+		ACTIVE_HEAVYATTACK1UP,	//강공격1 이펙트 강화
+		ACTIVE_HEAVYATTACK2UP,	//강공격2 이펙트 강화
+		ACTIVE_DASHATTACK,		//대쉬공격
+		ACTIVE_REFLECT,		//반사
+		ACTIVE_REFLECTUP,		//반사 이펙트 강화
+		ACTIVE_AIR_DASH,		//공중 내려찍기
+		ACTIVE_COMBO_ELEMENT,	//기본공격 끝나고 오른쪽 버튼-> 속성공격
+		ACTIVE_ITEM_END
+	};
+	enum STONE_ITEM
+	{
+		ITEM_BOX1,
+		ITEM_BOX2,
+		ITEM_BOX3,
+		ITEM_GRINNER,
+		ITEM_SKULLMAGE,
+		ITEM_BROODI,
+		ITEM_BAT,
+		ITEM_END
+	}
+
+
 	enum TYPE
 	{
 		TYPE_DEFAULT,
 		TYPE_SELECT_BOX,
+		TYPE_FONT
 	};
 	enum SHADE
 	{
@@ -39,10 +76,10 @@ namespace UI
 	};
 	enum STONE_ELEMENT
 	{
-		STONE_ALL,
-		STONE_SKILL,
 		STONE_ATK,
+		STONE_SKILL,
 		STONE_HEALTH,
+		STONE_ALL,
 		STONE_ELEMENT_END
 	};
 	enum STONE
@@ -59,8 +96,8 @@ namespace UI
 		GREMLIN1,
 		GREMLIN2,
 		GREENGOBLE,
-		SKULLMAGE,
 		GRINNER,
+		SKULLMAGE,
 		BROODI,
 		BAT,
 		LEVIATHAN,

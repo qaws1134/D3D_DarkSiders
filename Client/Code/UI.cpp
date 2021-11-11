@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI.h"
 #include "Player.h"
+#include "UIMgr.h"
 #include "GameMgr.h"
 #include "Export_Function.h"
 
@@ -27,30 +28,29 @@ HRESULT CUI::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
-
 	
-
+	m_pTransformCom->Set_Scale(&_vec3{ 1.f,1.f,1.f });
+	m_pTransformCom->Update_Component(0.f);
+	m_vInitPos = m_tInfo.vPos;
+	if (m_eType == UI::TYPE_FONT)
+		return S_OK;
 	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_StoneList_Sel")
 	{
-		m_tInfo.vPos.x += 300.f;
-		m_tInfo.vSize.x += 600.f;
+		fOffset = 300.f;
+		m_tRcUI.left = (LONG)((m_tInfo.vPos.x+ fOffset) -( m_tInfo.vSize.x+ fOffset*2.f)*0.5f);
+		m_tRcUI.top = (LONG)(m_tInfo.vPos.y - m_tInfo.vSize.y*0.5f);
+		m_tRcUI.right = (LONG)((m_tInfo.vPos.x+ fOffset) + (m_tInfo.vSize.x+ fOffset*2.f)*0.5f);
+		m_tRcUI.bottom = (LONG)(m_tInfo.vPos.y + m_tInfo.vSize.y*0.5f);
+	}
+	else 
+	{
 		m_tRcUI.left = (LONG)(m_tInfo.vPos.x - m_tInfo.vSize.x*0.5f);
 		m_tRcUI.top = (LONG)(m_tInfo.vPos.y - m_tInfo.vSize.y*0.5f);
 		m_tRcUI.right = (LONG)(m_tInfo.vPos.x + m_tInfo.vSize.x*0.5f);
 		m_tRcUI.bottom = (LONG)(m_tInfo.vPos.y + m_tInfo.vSize.y*0.5f);
-	
-	}
-	else
-	{
-		m_tRcUI.left	= (LONG)(m_tInfo.vPos.x - m_tInfo.vSize.x*0.5f);
-		m_tRcUI.top		= (LONG)(m_tInfo.vPos.y - m_tInfo.vSize.y*0.5f);
-		m_tRcUI.right	= (LONG)(m_tInfo.vPos.x + m_tInfo.vSize.x*0.5f);
-		m_tRcUI.bottom  = (LONG)(m_tInfo.vPos.y + m_tInfo.vSize.y*0.5f);
 	}
 	m_iPassIdx = 0;		//서브 텍스쳐가 늘어날 시 랜더 패스 변경 
 
-	m_pTransformCom->Set_Scale(&_vec3{ 1.f,1.f,1.f });
-	m_pTransformCom->Update_Component(0.f);
 	
 	if (m_tInfo.wstrTexture == L"Proto_Texture_Element")
 		m_pTarget = CGameMgr::GetInstance()->GetPlayer();
@@ -61,14 +61,18 @@ HRESULT CUI::Ready_Object(void)
 
 _int CUI::Update_Object(const _float& fTimeDelta)
 {
-	_int iExit = CGameObject::Update_Object(fTimeDelta);
+
+	_float Timer_UI = Get_TimeDelta(L"Timer_UI");
+
+	_int iExit = CGameObject::Update_Object(Timer_UI);
+	//타임을 다른 타임으로 바꿔주자
 	if (m_bActive)
 	{
 		D3DXMatrixOrthoLH(&m_matProj, WINCX, WINCY, 0.f, 1.f);
-
-		UI_ElementUpdate(fTimeDelta);
-		UI_CoreTreeUpdate(fTimeDelta);
-		UI_StoneListUpdate(fTimeDelta);
+		UI_ElementUpdate(Timer_UI);
+		UI_CoreTreeUpdate(Timer_UI);
+		UI_StoneListUpdate(Timer_UI);
+		UpdateColRect();
 		Add_RenderGroup(RENDER_UI, this);
 	}
 	return iExit;
@@ -76,6 +80,13 @@ _int CUI::Update_Object(const _float& fTimeDelta)
 
 void CUI::Render_Object(void)
 {
+	if (m_eType == UI::TYPE_FONT)
+	{
+
+		Render_Font(m_tFont.wstrFont.c_str(), m_tFont.wstrText.c_str(), &_vec2(m_tFont.vPos.x+ m_tInfo.vPos.x, m_tFont.vPos.y + m_tInfo.vPos.y), D3DXCOLOR(m_tFont.vColor.x, m_tFont.vColor.y, m_tFont.vColor.z, m_tFont.vColor.w));
+		// 여기서 폰트 위치를 따로 잡아서 넘기는데
+		return;
+	}
 
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
@@ -90,10 +101,6 @@ void CUI::Render_Object(void)
 	pEffect->BeginPass(m_iPassIdx);
 
 	m_pBufferCom->Render_Buffer();
-
-
-	m_pGraphicDev->SetTransform(D3DTS_VIEW, &m_matOldView);
-	m_pGraphicDev->SetTransform(D3DTS_PROJECTION, &m_matOldProj);
 
 	pEffect->EndPass();
 
@@ -116,6 +123,18 @@ CUI * CUI::Create(LPDIRECT3DDEVICE9 pGraphicDev, UISET tInfo,_bool bActive, UI::
 {
 	CUI*	pInstance = new CUI(pGraphicDev);
 	pInstance->SetUI(tInfo);
+	pInstance->SetActive(bActive);
+	pInstance->SetType(eType);
+	if (FAILED(pInstance->Ready_Object()))
+		Safe_Release(pInstance);
+
+	return pInstance;
+}
+
+CUI * CUI::Create(LPDIRECT3DDEVICE9 pGraphicDev, UIFONT tFont, _bool bActive, UI::TYPE eType)
+{
+	CUI*	pInstance = new CUI(pGraphicDev);
+	pInstance->SetFont(tFont);
 	pInstance->SetActive(bActive);
 	pInstance->SetType(eType);
 	if (FAILED(pInstance->Ready_Object()))
@@ -169,11 +188,7 @@ HRESULT CUI::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	_matrix		matWorld, matView;
 
 
-	m_pGraphicDev->GetTransform(D3DTS_VIEW, &m_matOldView);
-	m_pGraphicDev->GetTransform(D3DTS_PROJECTION, &m_matOldProj);
-
 	D3DXMatrixIdentity(&matWorld);
-	D3DXMatrixIdentity(&matView);
 
 	matWorld._11 = m_tInfo.vSize.x;  
 	matWorld._22 = m_tInfo.vSize.y;
@@ -182,14 +197,12 @@ HRESULT CUI::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	matWorld._42 = -m_tInfo.vPos.y + WINCY * 0.5f;
 	
 
-	
-	//m_pTransformCom->Set_Pos(&_vec3{ m_tInfo.vPos.x,m_tInfo.vPos.y,m_fViewZ });
-	_matrix matTransformWorld = *m_pTransformCom->Get_WorldMatrix();
-	matWorld =  matTransformWorld*matWorld;
+	matWorld = *m_pTransformCom->Get_WorldMatrix()*matWorld;
 
 	pEffect->SetMatrix("g_matWorld", &matWorld);
-	pEffect->SetMatrix("g_matView", &matView);
+
 	pEffect->SetMatrix("g_matProj", &m_matProj);
+
 	//pEffect->SetFloat("g_SizeX", m_tInfo.vSize.x);
 	//pEffect->SetFloat("g_SizeY", m_tInfo.vSize.y);
 
@@ -340,7 +353,9 @@ void CUI::UI_CoreTreeUpdate(const _float & fTimeDelta)
 
 			if (Key_Down(KEY_LBUTTON))
 			{
-
+				CUIMgr::GetInstance()->SetCoreSelIdx(_wtoi(&m_tInfo.wstrObjTag.back()));
+				CUIMgr::GetInstance()->SetActiveStoneListUI(true);
+				CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
 
 			}
 			if (Key_Down(KEY_RBUTTON))
@@ -376,15 +391,120 @@ void CUI::UI_CoreTreeUpdate(const _float & fTimeDelta)
 
 void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 {
+	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_StoneList_Base")
+	{
+		//리스트 목록 배경일때 
+		if (m_tInfo.iTextureNum == 2)
+		{
+			if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
+			{
+				_uint iWheelState = CUIMgr::GetInstance()->GetWheelMove();
+				if (WHEEL::MOVE_UP== (WHEEL::MOVE) iWheelState)
+				{
+					
+					CUIMgr::GetInstance()->MoveStoneList(fTimeDelta, 600.f);
+				}
+				else if(WHEEL::MOVE_DOWN == (WHEEL::MOVE) iWheelState)
+				{
+					CUIMgr::GetInstance()->MoveStoneList(fTimeDelta, -600.f);
+				}
+			}
+		}
+	}
+
+
+	//_float f
 	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_StoneList_Sel")
 	{
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
 			m_tInfo.iTextureNum = 1;
+
+			if (!m_bStart)
+			{
+				m_tInfo.vSize.x += 600.f;
+				m_tInfo.vPos.x += 300.f;
+				m_bStart = true;
+			}
+			//선택되었을떄
+			//쉐이더로 왼쪽 위 아래 짤라 
+			_uint iStoneIdx;
+			list<CGameObject*> listSelStoneList = CUIMgr::GetInstance()->GetStoneSelIdxList(m_tInfo.wstrObjTag.c_str(), &iStoneIdx);
+
+			for (auto iter : listSelStoneList)
+			{
+				CTransform *pTransIter = dynamic_cast<CTransform*>(iter->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				_vec3 vScale = pTransIter->Get_Scale();
+				 if (vScale.x < 1.2f)
+				 {
+					 m_bScale = true;
+				 }
+				 else
+				 {
+					 m_bScale = false;
+				 }
+
+				 if (m_bScale)
+				 {
+					 vScale.x += fTimeDelta;
+					 vScale.y += fTimeDelta;
+				 }
+				 pTransIter->Set_Scale(&vScale);
+			}
+			_uint iPreIdx = CUIMgr::GetInstance()->GetPreStoneIdx();
+			if (CUIMgr::GetInstance()->GetStoneInfoUIActive(iPreIdx))
+				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iPreIdx);
+				
+			CUIMgr::GetInstance()->SetActiveStoneInfoUI(true, iStoneIdx);
+			CUIMgr::GetInstance()->SetPreStoneIdx(iStoneIdx);
+			if (Key_Down(KEY_LBUTTON))
+			{
+				CUIMgr::GetInstance()->SetActiveStoneListUI(false);
+				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iStoneIdx);
+				CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+			}
 		}
 		else
-			m_tInfo.iTextureNum = 0;
+		{
+			if (m_bStart)
+			{
+				m_tInfo.vSize.x -= 600.f;
+				m_tInfo.vPos.x -= 300.f;
+				m_bStart = false;
+			}
 
+			_uint iStoneIdx;
+			list<CGameObject*> listSelStoneList = CUIMgr::GetInstance()->GetStoneSelIdxList(m_tInfo.wstrObjTag.c_str(),&iStoneIdx);
+
+			for (auto iter : listSelStoneList)
+			{
+				dynamic_cast<CTransform*>(iter->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Scale(1.f,1.f,1.f);		
+			}
+			
+			m_tInfo.iTextureNum = 0;
+		}
+
+	}
+}
+
+void CUI::UpdateColRect()
+{
+	_vec3 vPos;
+	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+
+	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_StoneList_Sel")
+	{
+		fOffset = 300.f;
+		m_tRcUI.left = (LONG)((m_tInfo.vPos.x + fOffset) + vPos.x - (m_tInfo.vSize.x + fOffset*2.f)*0.5f);
+		m_tRcUI.top = (LONG)(m_tInfo.vPos.y + vPos.y - m_tInfo.vSize.y*0.5f);
+		m_tRcUI.right = (LONG)((m_tInfo.vPos.x + fOffset) + vPos.x + (m_tInfo.vSize.x + fOffset*2.f)*0.5f);
+		m_tRcUI.bottom = (LONG)(m_tInfo.vPos.y + vPos.y + m_tInfo.vSize.y*0.5f);
+	}
+	else {
+		m_tRcUI.left = (LONG)(m_tInfo.vPos.x   + vPos.x - m_tInfo.vSize.x*0.5f);
+		m_tRcUI.top = (LONG)(m_tInfo.vPos.y    + vPos.y - m_tInfo.vSize.y*0.5f);
+		m_tRcUI.right = (LONG)(m_tInfo.vPos.x  + vPos.x + m_tInfo.vSize.x*0.5f);
+		m_tRcUI.bottom = (LONG)(m_tInfo.vPos.y + vPos.y + m_tInfo.vSize.y*0.5f);
 	}
 }
 

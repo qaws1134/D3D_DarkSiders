@@ -75,7 +75,6 @@ Engine::_uint CLoading::Loading_ForStage(void)
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Base", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Bg_0%d.png", TEX_NORMAL, 3)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Sel", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Sel_0%d.png", TEX_NORMAL, 2)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_SelFill", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/SelFill_0%d.png", TEX_NORMAL, 2)), E_FAIL);
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Stone", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Item_Stone_0%d.png", TEX_NORMAL, 7)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Active", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Item_Active_0%d.png", TEX_NORMAL, 11)), E_FAIL);
@@ -150,7 +149,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 //	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Player", CDynamicMesh::Create(m_pGraphicDev, L"../Bin/Resource/Mesh/DynamicMesh/PlayerXfile/", L"Player.x")), E_FAIL);
 //	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Sword", CStaticMesh::Create(m_pGraphicDev, L"../Bin/Resource/Mesh/StaticMesh/Sword/", L"Sword.x")), E_FAIL);
 #pragma region DYNAMICMESH
-	//FAILED_CHECK_RETURN(Ready_Prototype(L"War", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/War/", L"War.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"War", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/War/", L"War.X")), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X")), E_FAIL);
 #pragma endregion DYNAMICMESH
 

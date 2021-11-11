@@ -13,6 +13,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 HWND		g_hWnd;
 
+float  g_fWheel;
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -53,6 +54,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	FAILED_CHECK_RETURN(Ready_Timer(L"Timer_Immediate"), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Timer(L"Timer_FPS60"), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Timer(L"Timer_UI"), E_FAIL);
+
 
 	// 프레임 설치
 	FAILED_CHECK_RETURN(Ready_Frame(L"Frame60", 60.f), E_FAIL);
@@ -74,8 +77,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else
 		{
+			Set_TimeDelta(L"Timer_UI");
 			Set_TimeDelta(L"Timer_Immediate");
 			_float Timer_Immediate = Get_TimeDelta(L"Timer_Immediate");
+	
 
 			//if (IsPermit_Call(L"Frame60", Timer_Immediate))
 			//{
@@ -216,7 +221,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 
 		break;
-
+	case WM_MOUSEWHEEL: //마우스 휠동작 메시지
+		if ((SHORT)HIWORD(wParam) > 0) //마우스휠을 올릴 경우
+		{
+			_float Timer_UI = Get_TimeDelta(L"Timer_UI");
+			g_fWheel += Timer_UI;
+		}
+		else  //마우스휠을 내릴 경우
+		{
+			_float Timer_UI = Get_TimeDelta(L"Timer_UI");
+			g_fWheel -= Timer_UI;
+		}
+		break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

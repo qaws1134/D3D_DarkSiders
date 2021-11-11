@@ -63,6 +63,11 @@ HRESULT CMainApp::SetUp_DefaultSetting(LPDIRECT3DDEVICE9* ppGraphicDev)
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Default", L"πŸ≈¡", 18, 18, FW_NORMAL), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_Jinji", L"±√º≠", 30, 30, FW_HEAVY), E_FAIL);
 
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_B", L"≥ÿΩº «≤∫º∞ÌµÒ B", 30, 35, FW_HEAVY), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Light",  L"≥ÿΩº «≤∫º∞ÌµÒ L", 10, 15, FW_LIGHT), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal", L"≥ÿΩº «≤∫º∞ÌµÒ L", 15, 20, FW_NORMAL), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Heavy",  L"≥ÿΩº «≤∫º∞ÌµÒ L", 25, 30, FW_HEAVY), E_FAIL);
 
 	// Input √ﬂ∞°
 	FAILED_CHECK_RETURN(Ready_InputDev(g_hInst, g_hWnd), E_FAIL);

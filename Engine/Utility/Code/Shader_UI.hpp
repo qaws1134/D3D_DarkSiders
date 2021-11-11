@@ -1,4 +1,4 @@
-matrix		g_matWorld, g_matView, g_matProj;		// 상수 테이블
+matrix		g_matWorld, /*g_matView, */g_matProj;		// 상수 테이블
 texture		g_BaseTexture;
 texture		g_SubTexture1;
 texture		g_SubTexture2;
@@ -51,8 +51,8 @@ VS_OUT			VS_MAIN(VS_IN In)
 
 	matrix		matWV, matWVP;
 
-	matWV	= mul(g_matWorld, g_matView);
-	matWVP	= mul(matWV, g_matProj);
+	//matWV	= mul(g_matWorld, g_matView);
+	matWVP	= mul(g_matWorld, g_matProj);
 
 	Out.vPosition = mul(vector(In.vPosition.xyz, 1.f), matWVP);
 	Out.vTexUV = In.vTexUV;
@@ -112,6 +112,7 @@ technique Default_Device
 {
 	pass Texture1
 	{
+		ZEnable = false;
 		Alphablendenable = true;
 		srcblend = srcalpha;
 		destblend = invsrcalpha;

@@ -50,6 +50,7 @@ void CPlayer::Late_Ready_Object()
 _int CPlayer::Update_Object(const _float& fTimeDelta)
 {
 	Key_Input(fTimeDelta);
+	StateActer(fTimeDelta);
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
 	Add_RenderGroup(RENDER_NONALPHA, this);
@@ -292,6 +293,8 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		if (!bUIOn)
 		{
 			CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+			CUIMgr::GetInstance()->SetActivePlayerInfo(true);
+
 			Stop_TimeDelta(L"Timer_Immediate",false);
 			bUIOn = true;
 		}
@@ -300,6 +303,8 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 			if (CUIMgr::GetInstance()->GetCoreTreeUIActive())
 			{
 				CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
+				CUIMgr::GetInstance()->SetActivePlayerInfo(false);
+
 				Stop_TimeDelta(L"Timer_Immediate", true);
 				bUIOn = false;
 			}
@@ -652,6 +657,71 @@ void CPlayer::StateChange()
 	}
 
 }
+void CPlayer::StateActer(_float fDeltaTime)
+{
+	
+	switch (m_eMachineState)
+	{
+	case War::STATE_IDLE:
+		m_pTransformCom->Move_Pos(&m_vDir, 0.f, fDeltaTime);
+		break;
+	case War::STATE_IDLE_CB:
+		m_pTransformCom->Move_Pos(&m_vDir, 0.f, fDeltaTime);
+		break;
+	case War::MOVE:
+		m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed, fDeltaTime);
+		break;
+	case War::ATTACK:
+		//공격에 따른 이동량 
+		break;
+	case War::BLOCK:
+		//if(//충돌 -> 넉백)
+		//{
+
+		//}
+		break;
+	case War::JUMP:
+	case War::JUMP_CB:
+		//점프상태 판단 
+		break;
+	case War::JUMPATTACK:
+		//안내려오는 판단 
+		break;
+	case War::DASH:
+		//속도 증가 후 감소 
+		break;
+	case War::HIT:
+		//막았을 때는 넉백
+		if (m_ePreMachineState == War::BLOCK)
+		{
+
+		}
+		else
+		{
+
+		}
+		break;
+	case War::STATE_END:
+		break;
+	default:
+		break;
+	}
+	switch (m_eCharState)
+	{
+	case War::CHAR_IDLE:
+		break;
+	case War::COMBAT:
+		break;
+	case War::AIR:
+		break;
+	case War::AIR_COMBAT:
+		break;
+	case War::CHAR_END:
+		break;
+	default:
+		break;
+	}
+}
 //다음 동작으로 자동으로 연결 
 void CPlayer::StateLinker(_float fDeltaTime)
 {
@@ -911,8 +981,12 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Air_Light_01:
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame+0.3))
 		{
+			if (m_eKeyState == War::WASD)
+			{
+				m_eMachineState = War::MOVE;
+			}
 			//키 상태가 확인되면 
 			if (m_eKeyState == War::LBUTTON)
 			{

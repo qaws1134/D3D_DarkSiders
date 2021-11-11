@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "StaticCamera.h"
-
+#include "GameMgr.h"
 #include "Export_Function.h"
 
 CStaticCamera::CStaticCamera(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -35,6 +35,7 @@ HRESULT CStaticCamera::Ready_Object(const CAMERA_DESC& tCameraDesc)
 	//{
 	//	return E_FAIL;
 	//}
+	m_pTarget = CGameMgr::GetInstance()->GetPlayer();
 	FAILED_CHECK_RETURN(CCamera::Ready_Object(), E_FAIL);
 
 	return S_OK;

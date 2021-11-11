@@ -21,6 +21,14 @@ typedef struct Stone
 	_bool	bRare;
 }STONE;
 
+typedef struct Font
+{
+	wstring wstrFont;
+	wstring wstrText;
+	_vec2 vPos;
+	_vec4 vColor;
+
+}UIFONT;
 
 
 
