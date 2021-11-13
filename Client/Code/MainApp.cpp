@@ -67,7 +67,7 @@ HRESULT CMainApp::SetUp_DefaultSetting(LPDIRECT3DDEVICE9* ppGraphicDev)
 
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Light",  L"³Ø½¼ Ç²º¼°íµñ L", 10, 15, FW_LIGHT), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal_Small", L"³Ø½¼ Ç²º¼°íµñ L", 8, 15, FW_NORMAL), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal", L"³Ø½¼ Ç²º¼°íµñ L", 10, 20, FW_NORMAL), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal", L"³Ø½¼ Ç²º¼°íµñ L", 10, 20, FW_HEAVY), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal_Big", L"³Ø½¼ Ç²º¼°íµñ L", 17, 25, FW_NORMAL), E_FAIL);
 
 
@@ -78,7 +78,7 @@ HRESULT CMainApp::SetUp_DefaultSetting(LPDIRECT3DDEVICE9* ppGraphicDev)
 
 	// Input Ãß°¡
 	FAILED_CHECK_RETURN(Ready_InputDev(g_hInst, g_hWnd), E_FAIL);
-
+	
 
 
 	return S_OK;

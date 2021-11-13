@@ -49,14 +49,14 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 		CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
 	}
 
-	if (Key_Down(KEY_K))
-	{
-		CGameObject*			pGameObject = nullptr;
-		pGameObject = CWaterBoss::Create(m_pGraphicDev);
-		NULL_CHECK_RETURN(pGameObject, E_FAIL);
-		Add_GameObject(L"GameLogic", L"WaterBoss", pGameObject);
-		//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"WaterBoss", pGameObject), E_FAIL);
-	}
+	//if (Key_Down(KEY_K))
+	//{
+	//	CGameObject*			pGameObject = nullptr;
+	//	pGameObject = CWaterBoss::Create(m_pGraphicDev);
+	//	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	//	Add_GameObject(L"GameLogic", L"WaterBoss", pGameObject);
+	//	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"WaterBoss", pGameObject), E_FAIL);
+	//}
 
 
 	return CScene::Update_Scene(fTimeDelta);

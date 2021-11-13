@@ -3,7 +3,7 @@
 USING(Engine)
 
 Engine::CTransform::CTransform(LPDIRECT3DDEVICE9 pGraphicDev)
-	:	CComponent(pGraphicDev)
+	: CComponent(pGraphicDev)
 	, m_vAngle(0.f, 0.f, 0.f)
 	, m_vScale(1.f, 1.f, 1.f)
 {
@@ -26,12 +26,30 @@ Engine::CTransform::~CTransform(void)
 
 }
 
-
-void CTransform::MoveStep(const _vec3 * vDir, const _float & fSpeed, _float* fStepSpeed,const _float& fStepTime, const _float & fTimeDelta)
+_bool CTransform::MoveStep(MOVETYPE eMoveType,  _float* fSpeed, const _float& fPower, const _float& fMaxSpeed, const _vec3* vDir, const _float& fTimeDelta)
 {
-	*fStepSpeed += fTimeDelta;
-
-
+	switch (eMoveType)
+	{
+	case Engine::MOVETYPE_ACC:
+		if (*fSpeed < fMaxSpeed)
+			*fSpeed += fTimeDelta*fPower;
+		else
+			return true;
+		break;
+	case Engine::MOVETYPE_DEFAULT:
+		break;
+	case Engine::MOVETYPE_BREAK:
+		if (*fSpeed > fMaxSpeed)
+			*fSpeed -= fTimeDelta*fPower;
+		else
+			return true;
+		break;
+	case Engine::MOVETYPE_END:
+		break;
+	}
+	Move_Pos(vDir, *fSpeed, fTimeDelta);
+	
+	return false;
 }
 
 HRESULT Engine::CTransform::Ready_Transform(void)
@@ -114,6 +132,7 @@ const Engine::_matrix* Engine::CTransform::Compute_LookAtTarget(const _vec3* pTa
 		acosf(D3DXVec3Dot(D3DXVec3Normalize(&vUp, &m_vInfo[INFO_UP]),
 			D3DXVec3Normalize(&vDirection, &vDirection))));
 }
+
 
 void Engine::CTransform::Get_WorldMatrix(_matrix * pMatrix) const
 {

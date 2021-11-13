@@ -96,6 +96,24 @@ private:
 	_bool m_bUIShowing = false;
 	//트랜스폼
 	_float m_fMoveSpeed = 5.f;
+	_float m_fInitDashSpeed ;
+	_float m_fDashSpeed;
+	_bool m_bDashMoveEnd = false;
+	//공격 이동 조작
+	_float m_fInitAttackMoveSpeed ;
+	_float m_fAttackMoveSpeed;
+
+	_bool m_bAttackMoveEnd = false;
+	_bool m_bNexAni = false;;
+	_float m_fAddPower = 0.f;
+
+	//점프
+	_float m_fJumpTime = 0.f;
+	_float m_fJumpPower = 0.f;
+	_float m_fInitJumpPower = 0.f;
+	_float m_fJumpY = 0.f;
+	_bool	m_bJumpEnd = false;
+	_bool	m_bJumpAniEnd = false;
 
 
 public:

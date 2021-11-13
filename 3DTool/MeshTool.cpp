@@ -991,8 +991,8 @@ void CMeshTool::OnBnClickedSave()
 			{
 				CTransform* pMeshTransform = dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", ID_STATIC));
 				pMeshTransform->Get_INFO(INFO_POS, &tMesh.vPos);
-				tMesh.vScale=pMeshTransform->Get_Scale();
-				tMesh.vRot = pMeshTransform->Get_Rot();
+				tMesh.vScale =pMeshTransform->Get_Scale();
+				tMesh.vRot   = pMeshTransform->Get_Rot();
 				WriteFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
 			}
 		}
@@ -1097,11 +1097,12 @@ void CMeshTool::OnBnClickedLoad()
 			for (_uint i = 0; i < dwMapSize; i ++)
 			{
 				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
-				wstring wstrKey = pBuf + i;
-				CGameObject* pStaticMesh = SpawnStaticMesh(wstrKey);
+				wstring wstrKey = pBuf + to_wstring(i);
+				CGameObject* pStaticMesh = SpawnStaticMesh(pBuf);
 				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Pos(&tMesh.vPos);
 				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Scale(&tMesh.vScale);
 				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Rot(&tMesh.vRot);
+				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Update_Component(0.f);
 				mapStaticObj.emplace(wstrKey, pStaticMesh);
 			}
 
@@ -1120,11 +1121,12 @@ void CMeshTool::OnBnClickedLoad()
 			for (_uint i = 0; i < dwMapSize; i++)
 			{
 				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
-				wstring wstrKey = pBuf + i;
-				CGameObject* pDynamicMesh = SpawnDynamicMesh(wstrKey);
+				wstring wstrKey = pBuf + to_wstring(i);
+				CGameObject* pDynamicMesh = SpawnDynamicMesh(pBuf);
 				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Pos(&tMesh.vPos);
 				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Scale(&tMesh.vScale);
 				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Rot(&tMesh.vRot);
+				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Update_Component(0.f);
 				mapDynamicObj.emplace(wstrKey, pDynamicMesh);
 			}
 			m_mapDynamicMesh.emplace(pBuf, mapDynamicObj);

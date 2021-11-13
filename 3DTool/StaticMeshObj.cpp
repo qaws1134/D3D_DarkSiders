@@ -93,7 +93,7 @@ HRESULT CStaticMeshObj::Add_Component()
 {
 	CComponent*		pComponent = nullptr;
 
-	// Mesh
+		// Mesh
 	pComponent = m_pMeshCom = dynamic_cast<CStaticMesh*>(Clone_Prototype(m_wstrProtoMesh.c_str()));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);

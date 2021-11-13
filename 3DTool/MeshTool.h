@@ -72,6 +72,7 @@ private:
 	map<wstring, map<wstring, CGameObject*>>m_mapReadyMesh;
 
 	map<wstring, map<wstring, CGameObject*>>m_mapStaticMesh;
+
 	map<wstring, map<wstring, CGameObject*>>m_mapDynamicMesh;
 
 	list<CGameObject*>m_listCtrlNavi;

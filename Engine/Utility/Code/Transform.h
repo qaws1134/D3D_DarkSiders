@@ -33,15 +33,16 @@ public:
 	_vec3				Get_CenterPos() { return m_vCenterPos; }
 	_vec3				Get_Rot() { return m_vAngle; }
 	_vec3				Get_Scale() { return m_vScale; }
-
+	_float				Get_PosY() { return m_vInfo[INFO_POS].y; }
 
 	void				Set_ParentMatrix(_matrix* pParent);
 
 	void				Chase_Target(const _vec3* pTargetPos, const _float& fSpeed, const _float& fTimeDelta);
 	const _matrix*		Compute_LookAtTarget(const _vec3* pTargetPos);
 
+	//속도 ,증감량, 지속시간
+	_bool				MoveStep(MOVETYPE eMoveType, _float* fSpeed, const _float& fPower,const _float& fMaxSpeed, const _vec3* vDir, const _float& fTimeDelta);
 
-	void				MoveStep(const _vec3* vDir,const _float& fSpeed, _float* fStepSpeed,const _float& fStepTime,const _float& fTimeDelta);
 public:
 	HRESULT				Ready_Transform(void);
 	virtual _int		Update_Component(const _float& fTimeDelta);
@@ -52,6 +53,8 @@ public:
 	_vec3			m_vAngle;
 	_matrix			m_matWorld;
 	_vec3			m_vCenterPos;
+
+
 public:
 	static CTransform*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	virtual	CComponent*		Clone(void);
