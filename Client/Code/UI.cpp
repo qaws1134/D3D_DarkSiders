@@ -72,7 +72,9 @@ _int CUI::Update_Object(const _float& fTimeDelta)
 		UI_ElementUpdate(Timer_UI);
 		UI_CoreTreeUpdate(Timer_UI);
 		UI_StoneListUpdate(Timer_UI);
+		UI_StoreListUpdate(Timer_UI);
 		UpdateColRect();
+
 		Add_RenderGroup(RENDER_UI, this);
 	}
 	return iExit;
@@ -88,6 +90,7 @@ void CUI::Render_Object(void)
 		return;
 	}
 
+	
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
 
@@ -451,17 +454,14 @@ void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 				 }
 				 pTransIter->Set_Scale(&vScale);
 			}
-			_uint iPreIdx = CUIMgr::GetInstance()->GetPreStoneIdx();
-			if (CUIMgr::GetInstance()->GetStoneInfoUIActive(iPreIdx))
-				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iPreIdx);
-				
-			CUIMgr::GetInstance()->SetActiveStoneInfoUI(true, iStoneIdx);
-			CUIMgr::GetInstance()->SetPreStoneIdx(iStoneIdx);
-			if (Key_Down(KEY_LBUTTON))
+	
+
+
+			//인포 온오프
+
+			if (Key_Down(KEY_SPACE))
 			{
-				CUIMgr::GetInstance()->SetActiveStoneListUI(false);
-				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iStoneIdx);
-				CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+
 			}
 		}
 		else
@@ -487,6 +487,112 @@ void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 	}
 }
 
+void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
+{
+	if (m_tInfo.wstrTexture == L"Proto_Texture_List")
+	{
+		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
+		{
+	
+
+
+
+			_uint iSelIdx;
+			list<CGameObject*> listSelActiveList = CUIMgr::GetInstance()->GetItemActiveSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
+			list<CGameObject*> listSelStoneList = CUIMgr::GetInstance()->GetItemStoneSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
+
+			for (auto iter : listSelStoneList)
+			{
+				if (L"Proto_Texture_Store_Sel" == dynamic_cast<CUI*>(iter)->GetProtoTag())
+				{
+					dynamic_cast<CUI*>(iter)->SetTextureNum(1);
+				}
+				CTransform *pTransIter = dynamic_cast<CTransform*>(iter->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				_vec3 vScale = pTransIter->Get_Scale();
+				if (vScale.x < 1.1f)
+				{
+					m_bScale = true;
+				}
+				else
+				{
+					m_bScale = false;
+				}
+
+				if (m_bScale)
+				{
+					vScale.x += fTimeDelta;
+					vScale.y += fTimeDelta;
+				}
+				pTransIter->Set_Scale(&vScale);
+			}
+		
+
+			for (auto iter : listSelActiveList)
+			{
+				if (L"Proto_Texture_Store_Sel" == dynamic_cast<CUI*>(iter)->GetProtoTag())
+				{
+					dynamic_cast<CUI*>(iter)->SetTextureNum(1);
+				}
+				CTransform *pTransIter = dynamic_cast<CTransform*>(iter->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				_vec3 vScale = pTransIter->Get_Scale();
+				if (vScale.x < 1.1f)
+				{
+					m_bScale = true;
+				}
+				else
+				{
+					m_bScale = false;
+				}
+
+				if (m_bScale)
+				{
+					vScale.x += fTimeDelta;
+					vScale.y += fTimeDelta;
+				}
+				pTransIter->Set_Scale(&vScale);
+			}
+
+			//인포
+	/*		if (CUIMgr::GetInstance()->GetStoneInfoUIActive(iPreIdx))
+				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iPreIdx);
+
+			CUIMgr::GetInstance()->SetActiveStoneInfoUI(true, iSelIdx);
+			CUIMgr::GetInstance()->SetPreStoneIdx(iSelIdx);*/
+
+			if (Key_Down(KEY_SPACE))
+			{
+				//CUIMgr::GetInstance()->SetActiveStoneListUI(false);
+				//CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iSelIdx);
+				//CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+			}
+		}
+		else
+		{
+
+			_uint iSelIdx;
+			list<CGameObject*> listSelActiveList = CUIMgr::GetInstance()->GetItemActiveSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
+			list<CGameObject*> listSelStoneList = CUIMgr::GetInstance()->GetItemStoneSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
+
+			for (auto iter : listSelStoneList)
+			{
+				if (L"Proto_Texture_Store_Sel" == dynamic_cast<CUI*>(iter)->GetProtoTag())
+				{
+					dynamic_cast<CUI*>(iter)->SetTextureNum(0);
+				}
+				dynamic_cast<CTransform*>(iter->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Scale(1.f, 1.f, 1.f);
+			}
+			for (auto iter : listSelActiveList)
+			{
+				if (L"Proto_Texture_Store_Sel" == dynamic_cast<CUI*>(iter)->GetProtoTag())
+				{
+					dynamic_cast<CUI*>(iter)->SetTextureNum(0);
+				}
+				dynamic_cast<CTransform*>(iter->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Scale(1.f, 1.f, 1.f);
+			}
+		}
+	}
+}
+
 void CUI::UpdateColRect()
 {
 	_vec3 vPos;
@@ -500,7 +606,8 @@ void CUI::UpdateColRect()
 		m_tRcUI.right = (LONG)((m_tInfo.vPos.x + fOffset) + vPos.x + (m_tInfo.vSize.x + fOffset*2.f)*0.5f);
 		m_tRcUI.bottom = (LONG)(m_tInfo.vPos.y + vPos.y + m_tInfo.vSize.y*0.5f);
 	}
-	else {
+	else 
+	{
 		m_tRcUI.left = (LONG)(m_tInfo.vPos.x   + vPos.x - m_tInfo.vSize.x*0.5f);
 		m_tRcUI.top = (LONG)(m_tInfo.vPos.y    + vPos.y - m_tInfo.vSize.y*0.5f);
 		m_tRcUI.right = (LONG)(m_tInfo.vPos.x  + vPos.x + m_tInfo.vSize.x*0.5f);

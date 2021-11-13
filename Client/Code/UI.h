@@ -33,9 +33,10 @@ public:
 	void UI_ElementUpdate(const _float& fTimeDelta);
 	void UI_CoreTreeUpdate(const _float& fTimeDelta);
 	void UI_StoneListUpdate(const _float& fTimeDelta);
+	void UI_StoreListUpdate(const _float& fTimeDelta);
 	void UpdateColRect();
 
-
+	void		SetTextureNum(_uint iTextureIdx) { m_tInfo.iTextureNum = iTextureIdx; }
 	void		SetFont(UIFONT tFont) { m_tFont = tFont; }
 	void		SetUIPos(_vec2 vPos) { m_tInfo.vPos = vPos; }
 	void		SetUI(UISET tInfo);
@@ -85,6 +86,9 @@ private:
 	_bool	m_bStart = false;;
 	//폰트 정의 
 	UIFONT		m_tFont;
+
+	_bool m_bIsPicking = false;
+
 private:
 	CRcTex*		m_pBufferCom = nullptr;
 	CTexture*	m_pTextureCom = nullptr;

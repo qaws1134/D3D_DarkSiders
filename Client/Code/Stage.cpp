@@ -29,6 +29,9 @@ HRESULT CStage::Ready_Scene(void)
 
 Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 {
+	
+	Begin_Scene();
+
 	m_fTime += fTimeDelta;
 	POINT		ptMouse{};
 
@@ -83,6 +86,16 @@ void CStage::Render_Scene(void)
 	Render_Font(L"Font_Default", m_szPosY, &_vec2(200.f, 15.f), D3DXCOLOR(1.f, 0.f, 1.f, 1.f));
 
 
+}
+
+void CStage::Begin_Scene()
+{
+	if (m_bBegin)
+		return;
+	CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
+
+
+	CScene::Begin_Scene();
 }
 
 HRESULT CStage::Ready_Layer_Environment(const _tchar* pLayerTag)

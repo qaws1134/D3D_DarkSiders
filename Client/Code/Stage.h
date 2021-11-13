@@ -34,6 +34,7 @@ public:
 	virtual HRESULT Ready_Scene(void) override;
 	virtual _int Update_Scene(const _float& fTimeDelta) override;
 	virtual void Render_Scene(void) override;
+	virtual void Begin_Scene() override;
 
 private:
 	HRESULT				Ready_Layer_Environment(const _tchar* pLayerTag);

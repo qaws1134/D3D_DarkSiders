@@ -231,7 +231,6 @@ void Engine::CDynamicMesh::SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame)
 		{
 			const char* pBoneName = pDerivedMeshContainer->pSkinInfo->GetBoneName(i);
 			//wstrBoneName = A2W(pBoneName);
-
 			D3DXFRAME_DERIVED* pDerivedFrame = (D3DXFRAME_DERIVED*)D3DXFrameFind(m_pRootFrame, pBoneName);
 
 			pDerivedMeshContainer->ppCombinedTransformMatrix[i] = &pDerivedFrame->CombinedTransformMatrix;

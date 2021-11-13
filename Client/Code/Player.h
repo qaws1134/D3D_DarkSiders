@@ -91,9 +91,9 @@ private:
 	_float m_fCToISpeed = 0.f;
 
 
-	_bool bUIOn = false;//UI 상태시 다른 조작 키에 접근 못하도록 하는 변수 
+	_bool m_bUIOn = false;//UI 상태시 다른 조작 키에 접근 못하도록 하는 변수 
 
-
+	_bool m_bUIShowing = false;
 	//트랜스폼
 	_float m_fMoveSpeed = 5.f;
 

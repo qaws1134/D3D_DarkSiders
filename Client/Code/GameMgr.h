@@ -24,13 +24,17 @@ public:
 	vector<STONE> GetStoneVec() { return m_vecStone; }
 	STONE GetStone(UI::STONE eStone);
 
+
+
+
+
 private:
 	//플레이어 저장 
 	CGameObject* m_pPlayer = nullptr;
 
 	_float m_fSoul;
 	vector<STONE> m_vecStone;
-
+	vector<ITEM>m_vecItemInfo;
 
 private:
 	virtual void Free(void) override;

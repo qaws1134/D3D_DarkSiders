@@ -21,9 +21,9 @@ public:
 	void	InitCoretree(LPDIRECT3DDEVICE9 pGraphicDev);
 	void	InitCoreList(LPDIRECT3DDEVICE9 pGraphicDev);
 	void	InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev);
-	void	InitStoneList(LPDIRECT3DDEVICE9 pGraphicDev);
-	void	InitStore();
-	void	InitStoreList();
+	void	InitStore(LPDIRECT3DDEVICE9 pGraphicDev);
+	void	InitStoreList(LPDIRECT3DDEVICE9 pGraphicDev,list<CGameObject*> listStore, UI::ITEM eItemIdx);
+
 
 #pragma region Init
 
@@ -37,33 +37,52 @@ public:
 public :
 	void MoveStoneList(_float fTimeDelta, _float fSpeed);
 public:
-	void SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone);
-	void SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone);
 
 
 	//void EquipStone(_uint iStone);
 public:
-#pragma region Set
+#pragma region Set Active
 	void SetActiveElementUI(_bool bActive);
 	void SetActiveCoreTreeUI(_bool bActive);
 	void SetActivePlayerInfo(_bool bActive);
 	void SetActiveStoneListUI(_bool bActive);
 	void SetActiveStoneInfoUI(_bool bActive, _uint iStoneIdx);
+	void SetActiveStoreStoneUI(_bool bActive);
+	void SetActiveStoreActiveUI(_bool bActive);
 
 
+#pragma region Set Active
+
+#pragma region Set
 	void SetCoreSelIdx(_uint iCoreIdx) { m_iCoreIdx = iCoreIdx; }
 	void SetPreStoneIdx(_uint iPreIdx) { m_iPreStoneIdx = iPreIdx; }
+#pragma region Set
+
+	//아이템 정보 셋팅
+	void SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, list<CGameObject*>& listItemInsert);
+
+	void SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone);
+	void SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone);
 
 	//void Set_SelIndex(_uint iIdx) { m_iSelIdx = iIdx; }
-#pragma region Set
 public:
 #pragma region Get
 	_bool GetElemetUIActive();
 	_bool GetCoreTreeUIActive();
 	_bool GetStoneInfoUIActive(_uint iStoneIdx);
+	_bool GetStoreUIActive();
+
 	list<CGameObject*> GetStoneSelIdxList(wstring wstrObjtag,_uint* iStoneIdx);
+	list<CGameObject*> GetItemActiveSelIdxList(wstring wstrObjtag, _uint* iStoneIdx);
+	list<CGameObject*> GetItemStoneSelIdxList(wstring wstrObjtag, _uint* iStoneIdx);
+
+
 	_uint GetWheelMove();
+
 	_uint GetPreStoneIdx() { return m_iPreStoneIdx; }
+
+
+
 #pragma endregion Get
 
 
@@ -87,10 +106,15 @@ private:
 	map<_uint, list<CGameObject*>>m_mapStoneInfo;
 
 	//상점
-	list<CGameObject*>	m_listStoneActiveBase;
-	list<CGameObject*>	m_listStoneActiveList;
+	list<CGameObject*>	m_listStoreBase;
+	list<CGameObject*>	m_listStoreActiveList;
+	list<CGameObject*>	m_listStoreStoneList;
 
-	map<_uint, list<CGameObject*>>m_mapStoreList;
+
+
+
+	map<_uint, list<CGameObject*>> m_mapStoreActiveList;
+	map<_uint, list<CGameObject*>> m_mapStoreStoneList;
 
 
 
@@ -107,7 +131,7 @@ private:
 	_float m_fPreWheel = 0.f;
 	_uint		m_iPreStoneIdx = 0;
 
-	LPDIRECT3DDEVICE9 m_pGraphicDev;
+	//LPDIRECT3DDEVICE9 m_pGraphicDev;
 
 
 

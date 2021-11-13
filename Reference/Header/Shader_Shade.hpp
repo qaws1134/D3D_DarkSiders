@@ -45,7 +45,7 @@ PS_OUT		PS_DIRECTIONAL(PS_IN In)
 	vector vDepth = tex2D(DepthSampler, In.vTexUV);
 
 	// depth 타겟의 g값에 viewz 보관했었다. 텍스쳐 uv 저장하기 위해 far값으로 나눠줬으니 다시 사용할 때는 far값을 곱해서 제대도 된 viewz값으로 복원해야 한다.
-	float  fViewZ = vDepth.y * 300.f;
+	float  fViewZ = vDepth.y * 1000.f;
 	
 	// 텍스쳐 uv상태의 노말 값을 월드 좌표로 변환 시켜줘야 함(0 ~ 1 => -1 ~ 1)
 	vNormal = vector(vNormal.xyz * 2.f - 1.f, 0.f);

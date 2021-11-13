@@ -27,6 +27,13 @@ Engine::CTransform::~CTransform(void)
 }
 
 
+void CTransform::MoveStep(const _vec3 * vDir, const _float & fSpeed, _float* fStepSpeed,const _float& fStepTime, const _float & fTimeDelta)
+{
+	*fStepSpeed += fTimeDelta;
+
+
+}
+
 HRESULT Engine::CTransform::Ready_Transform(void)
 {
 	D3DXMatrixIdentity(&m_matWorld);

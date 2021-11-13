@@ -41,7 +41,7 @@ public:
 	const _matrix*		Compute_LookAtTarget(const _vec3* pTargetPos);
 
 
-
+	void				MoveStep(const _vec3* vDir,const _float& fSpeed, _float* fStepSpeed,const _float& fStepTime,const _float& fTimeDelta);
 public:
 	HRESULT				Ready_Transform(void);
 	virtual _int		Update_Component(const _float& fTimeDelta);

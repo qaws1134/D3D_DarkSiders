@@ -39,6 +39,11 @@ void Engine::CScene::Render_Scene(void)
 		iter.second->Render_Layer();
 }
 
+void CScene::Begin_Scene(void)
+{
+	m_bBegin = true;
+}
+
 void Engine::CScene::Free(void)
 {
 	for_each(m_mapLayer.begin(), m_mapLayer.end(), CDeleteMap());

@@ -19,11 +19,12 @@ public:
 	virtual HRESULT		Ready_Scene(void);
 	virtual _int		Update_Scene(const _float& fTimeDelta);
 	virtual void		Render_Scene(void);
+	virtual void		Begin_Scene(void);
 
 protected:
 	LPDIRECT3DDEVICE9				m_pGraphicDev;
 	map<const _tchar*, CLayer*>		m_mapLayer;
-
+	_bool							m_bBegin =false;
 public:
 	virtual void Free(void);
 };

@@ -75,11 +75,12 @@ Engine::_uint CLoading::Loading_ForStage(void)
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Base", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Bg_0%d.png", TEX_NORMAL, 3)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Sel", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Sel_0%d.png", TEX_NORMAL, 2)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_SelFill", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/SelFill.png", TEX_NORMAL, 1)), E_FAIL);
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Stone", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Item_Stone_0%d.png", TEX_NORMAL, 7)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Active", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Item_Active_0%d.png", TEX_NORMAL, 11)), E_FAIL);
 	
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Active_Info", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Active_Info_0%d.png", TEX_NORMAL, 2)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Active_Info", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Active_Info_0%d.png", TEX_NORMAL, 5)), E_FAIL);
 	
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Soul", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Soul.png", TEX_NORMAL, 1)), E_FAIL);
 
@@ -111,18 +112,10 @@ Engine::_uint CLoading::Loading_ForStage(void)
 
 
 
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Base",
-		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/ListBase_0%d.png",
-			TEX_NORMAL, 5)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Sel",
-		CTexture::Create(m_pGraphicDev, 
-			L"../../Resource/Texture/UI/Stone/Sel_0%d.png", TEX_NORMAL, 2)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Seg", 
-		CTexture::Create(m_pGraphicDev, 
-			L"../../Resource/Texture/UI/Stone/Seg_0%d.png", TEX_NORMAL, 3)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Icon",
-		CTexture::Create(m_pGraphicDev,
-			L"../../Resource/Texture/UI/Stone/Icon_0%d.png", TEX_NORMAL, 2)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Base",CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/ListBase_0%d.png",TEX_NORMAL, 5)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Sel",CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Sel_0%d.png", TEX_NORMAL, 2)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Seg", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Seg_0%d.png", TEX_NORMAL, 3)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Icon",CTexture::Create(m_pGraphicDev,L"../../Resource/Texture/UI/Stone/Icon_0%d.png", TEX_NORMAL, 2)), E_FAIL);
 
 	
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneBase",	CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Base_0%d.png", TEX_NORMAL, 4)), E_FAIL);

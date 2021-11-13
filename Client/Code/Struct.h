@@ -12,14 +12,6 @@ typedef struct UISet
 	wstring	wstrObjTag;		//직접 지정해준 ObjTag값 저장 
 }UISET;
 
-typedef struct Stone
-{
-	UI::STONE eCreature;
-	wstring wstrName;
-	wstring wstrInfo;
-	_uint	iElementType;
-	_bool	bRare;
-}STONE;
 
 typedef struct Font
 {
@@ -29,6 +21,23 @@ typedef struct Font
 	_vec4 vColor;
 
 }UIFONT;
+
+
+typedef struct Stone
+{
+	UI::STONE eCreature;
+	wstring wstrName;
+	wstring wstrInfo;
+	_uint	iElementType;
+	_bool	bRare;
+}STONE;
+
+typedef struct Item
+{
+	UI::ITEM eItem;
+	wstring wstrName;
+	_uint	iPrice;
+}ITEM;
 
 
 

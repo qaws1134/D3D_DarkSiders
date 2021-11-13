@@ -66,8 +66,15 @@ HRESULT CMainApp::SetUp_DefaultSetting(LPDIRECT3DDEVICE9* ppGraphicDev)
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_B", L"³Ø½¼ Ç²º¼°íµñ B", 30, 35, FW_HEAVY), E_FAIL);
 
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Light",  L"³Ø½¼ Ç²º¼°íµñ L", 10, 15, FW_LIGHT), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal", L"³Ø½¼ Ç²º¼°íµñ L", 15, 20, FW_NORMAL), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal_Small", L"³Ø½¼ Ç²º¼°íµñ L", 8, 15, FW_NORMAL), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal", L"³Ø½¼ Ç²º¼°íµñ L", 10, 20, FW_NORMAL), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Normal_Big", L"³Ø½¼ Ç²º¼°íµñ L", 17, 25, FW_NORMAL), E_FAIL);
+
+
+	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Heavy_Small", L"³Ø½¼ Ç²º¼°íµñ B", 10, 20, FW_HEAVY), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Font(*ppGraphicDev, L"Font_L_Heavy",  L"³Ø½¼ Ç²º¼°íµñ L", 25, 30, FW_HEAVY), E_FAIL);
+
+
 
 	// Input Ãß°¡
 	FAILED_CHECK_RETURN(Ready_InputDev(g_hInst, g_hWnd), E_FAIL);
@@ -105,11 +112,11 @@ CMainApp* CMainApp::Create(void)
 void CMainApp::Free(void)
 {
 	
-	CUIMgr::GetInstance()->DestroyInstance();
 	CGameMgr::GetInstance()->DestroyInstance();
 	Safe_Release(m_pGraphicDev);
 
 	Safe_Release(m_pManagementClass);
+	CUIMgr::GetInstance()->DestroyInstance();
 	Safe_Release(m_pDeviceClass);
 
 	Release_Utility();

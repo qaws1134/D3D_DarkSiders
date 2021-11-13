@@ -213,7 +213,7 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		m_eMachineState = War::DASH;
 	}
 
-	if (!bUIOn)
+	if (!m_bUIOn)
 	{
 		if (Key_Down(KEY_LBUTTON))
 		{
@@ -273,9 +273,13 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	//속성 선택창
 	if (Key_Pressing(KEY_TAB))
 	{
-		CUIMgr::GetInstance()->SetActiveElementUI(true);
-		Stop_TimeDelta(L"Timer_Immediate", false);
-		bUIOn = true;
+		if (!m_bUIOn)
+		{
+			CUIMgr::GetInstance()->SetActiveElementUI(true);
+			Stop_TimeDelta(L"Timer_Immediate", false);
+			m_bUIShowing = true;
+			m_bUIOn = true;
+		}
 	}
 	else
 	{
@@ -283,20 +287,21 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		{
 			CUIMgr::GetInstance()->SetActiveElementUI(false);
 			Stop_TimeDelta(L"Timer_Immediate", true);
-			bUIOn = false;
+			m_bUIShowing = false;
+			m_bUIOn = false;
 		}
 	}
 
 	//코어트리 UI
 	if (Key_Down(KEY_O))
 	{
-		if (!bUIOn)
+		if (!m_bUIOn)
 		{
 			CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
 			CUIMgr::GetInstance()->SetActivePlayerInfo(true);
 
 			Stop_TimeDelta(L"Timer_Immediate",false);
-			bUIOn = true;
+			m_bUIOn = true;
 		}
 		else
 		{
@@ -306,11 +311,55 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 				CUIMgr::GetInstance()->SetActivePlayerInfo(false);
 
 				Stop_TimeDelta(L"Timer_Immediate", true);
-				bUIOn = false;
+				m_bUIOn = false;
+			}
+		}
+	}
+
+	//상점 키 
+	if (Key_Down(KEY_P))
+	{
+		if (!m_bUIOn)
+		{
+			CUIMgr::GetInstance()->SetActiveStoreActiveUI(true);
+
+			Stop_TimeDelta(L"Timer_Immediate", false);
+			m_bUIOn = true;
+		}
+		else
+		{
+			if (CUIMgr::GetInstance()->GetStoreUIActive())
+			{
+				CUIMgr::GetInstance()->SetActiveStoreActiveUI(false);
+
+				Stop_TimeDelta(L"Timer_Immediate", true);
+				m_bUIOn = false;
+			}
+		}
+	}
+
+	if (Key_Down(KEY_I))
+	{
+		if (!m_bUIOn)
+		{
+			CUIMgr::GetInstance()->SetActiveStoreStoneUI(true);
+
+			Stop_TimeDelta(L"Timer_Immediate", false);
+			m_bUIOn = true;
+		}
+		else
+		{
+			if (CUIMgr::GetInstance()->GetStoreUIActive())
+			{
+				CUIMgr::GetInstance()->SetActiveStoreStoneUI(false);
+
+				Stop_TimeDelta(L"Timer_Immediate", true);
+				m_bUIOn = false;
 			}
 		}
 	}
 	
+
 	//스텟 돌 확인 UI
 	//if (Key_Down(KEY_P))
 	//{
