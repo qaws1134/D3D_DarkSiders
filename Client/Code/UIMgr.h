@@ -21,6 +21,8 @@ public:
 	void	InitCoretree(LPDIRECT3DDEVICE9 pGraphicDev);
 	void	InitCoreList(LPDIRECT3DDEVICE9 pGraphicDev);
 	void	InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev);
+	void	InitToast(LPDIRECT3DDEVICE9 pGraphicDev);
+	void	InitToastInfo(LPDIRECT3DDEVICE9 pGraphicDev);
 	void	InitStore(LPDIRECT3DDEVICE9 pGraphicDev);
 	void	InitStoreList(LPDIRECT3DDEVICE9 pGraphicDev,list<CGameObject*> listStore, UI::ITEM eItemIdx);
 
@@ -36,6 +38,9 @@ public:
 
 public :
 	void MoveStoneList(_float fTimeDelta, _float fSpeed);
+	void MoveStoreActiveList(_float fTimeDelta, _float fSpeed);
+	void MoveStoreStoneList(_float fTimeDelta, _float fSpeed);
+
 public:
 
 
@@ -49,6 +54,9 @@ public:
 	void SetActiveStoneInfoUI(_bool bActive, _uint iStoneIdx);
 	void SetActiveStoreStoneUI(_bool bActive);
 	void SetActiveStoreActiveUI(_bool bActive);
+	void SetActiveToastBoxUI(_bool bActive);
+	void SetActiveToastInfoUI(_bool bActive,_uint iStoneIdx);
+	void SetActiveToastMsgItemInfo(_uint iSelIdx);
 
 
 #pragma region Set Active
@@ -56,6 +64,7 @@ public:
 #pragma region Set
 	void SetCoreSelIdx(_uint iCoreIdx) { m_iCoreIdx = iCoreIdx; }
 	void SetPreStoneIdx(_uint iPreIdx) { m_iPreStoneIdx = iPreIdx; }
+	void SetStoreGetIdx(_uint iStoreGetIdx) { m_iStoreGetIdx = iStoreGetIdx; }
 #pragma region Set
 
 	//아이템 정보 셋팅
@@ -63,14 +72,16 @@ public:
 
 	void SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone);
 	void SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone);
-
+	
 	//void Set_SelIndex(_uint iIdx) { m_iSelIdx = iIdx; }
 public:
 #pragma region Get
 	_bool GetElemetUIActive();
 	_bool GetCoreTreeUIActive();
+	
 	_bool GetStoneInfoUIActive(_uint iStoneIdx);
 	_bool GetStoreUIActive();
+	_bool GetToastUIActive();
 
 	list<CGameObject*> GetStoneSelIdxList(wstring wstrObjtag,_uint* iStoneIdx);
 	list<CGameObject*> GetItemActiveSelIdxList(wstring wstrObjtag, _uint* iStoneIdx);
@@ -78,7 +89,6 @@ public:
 
 
 	_uint GetWheelMove();
-
 	_uint GetPreStoneIdx() { return m_iPreStoneIdx; }
 
 
@@ -105,6 +115,12 @@ private:
 	map<_uint, list<CGameObject*>>m_mapStoneList;
 	map<_uint, list<CGameObject*>>m_mapStoneInfo;
 
+
+	//토스메시지
+	list<CGameObject*>	m_listToastMsg;
+	list<CGameObject*>	m_listToastInfo;
+	map <_uint, list<CGameObject*>>m_mapToastInfo;
+
 	//상점
 	list<CGameObject*>	m_listStoreBase;
 	list<CGameObject*>	m_listStoreActiveList;
@@ -115,7 +131,7 @@ private:
 
 	map<_uint, list<CGameObject*>> m_mapStoreActiveList;
 	map<_uint, list<CGameObject*>> m_mapStoreStoneList;
-
+	
 
 
 
@@ -126,10 +142,10 @@ private:
 	
 	//선택한 코어값 저장 
 	_uint m_iCoreIdx = 0;
+	_uint m_iStoreGetIdx = 0;
 
-
-	_float m_fPreWheel = 0.f;
-	_uint		m_iPreStoneIdx = 0;
+	_float	m_fPreWheel = 0.f;
+	_uint	m_iPreStoneIdx = 0;
 
 	//LPDIRECT3DDEVICE9 m_pGraphicDev;
 

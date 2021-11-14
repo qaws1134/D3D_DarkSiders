@@ -93,7 +93,7 @@ void CStage::Begin_Scene()
 	if (m_bBegin)
 		return;
 	CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
-
+	CUIMgr::GetInstance()->InitToastInfo(m_pGraphicDev);
 
 	CScene::Begin_Scene();
 }

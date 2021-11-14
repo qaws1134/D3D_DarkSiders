@@ -15,6 +15,7 @@ CUI::CUI(const CUI& rhs)
 	: CGameObject(rhs)
 	,m_tInfo(rhs.m_tInfo)
 	,m_tRcUI(rhs.m_tRcUI)
+	
 {
 
 }
@@ -32,6 +33,8 @@ HRESULT CUI::Ready_Object(void)
 	m_pTransformCom->Set_Scale(&_vec3{ 1.f,1.f,1.f });
 	m_pTransformCom->Update_Component(0.f);
 	m_vInitPos = m_tInfo.vPos;
+	m_fUVTimer = 2.f;		
+
 	if (m_eType == UI::TYPE_FONT)
 		return S_OK;
 	if (m_tInfo.wstrTexture == L"Proto_Texture_CoreTree_StoneList_Sel")
@@ -489,13 +492,36 @@ void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 
 void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 {
+
+	
+	if (m_tInfo.wstrTexture == L"Proto_Texture_Store_Base")
+	{
+		//리스트 목록 배경일때 
+		if (m_tInfo.iTextureNum == 0)
+		{
+			if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
+			{
+				_uint iWheelState = CUIMgr::GetInstance()->GetWheelMove();
+				if (WHEEL::MOVE_UP == (WHEEL::MOVE) iWheelState)
+				{
+					CUIMgr::GetInstance()->MoveStoreActiveList(fTimeDelta, 600.f);
+					CUIMgr::GetInstance()->MoveStoreStoneList(fTimeDelta, 600.f);
+				}
+				else if (WHEEL::MOVE_DOWN == (WHEEL::MOVE) iWheelState)
+				{
+					CUIMgr::GetInstance()->MoveStoreActiveList(fTimeDelta, -600.f);
+					CUIMgr::GetInstance()->MoveStoreStoneList(fTimeDelta, -600.f);
+				}
+			}
+		}
+	}
+
+
 	if (m_tInfo.wstrTexture == L"Proto_Texture_List")
 	{
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
 	
-
-
 
 			_uint iSelIdx;
 			list<CGameObject*> listSelActiveList = CUIMgr::GetInstance()->GetItemActiveSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
@@ -552,18 +578,27 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 				pTransIter->Set_Scale(&vScale);
 			}
 
-			//인포
-	/*		if (CUIMgr::GetInstance()->GetStoneInfoUIActive(iPreIdx))
-				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iPreIdx);
 
-			CUIMgr::GetInstance()->SetActiveStoneInfoUI(true, iSelIdx);
-			CUIMgr::GetInstance()->SetPreStoneIdx(iSelIdx);*/
-
-			if (Key_Down(KEY_SPACE))
+			if (Key_Pressing(KEY_SPACE))
 			{
-				//CUIMgr::GetInstance()->SetActiveStoneListUI(false);
-				//CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iSelIdx);
-				//CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+				//필모드 채우기
+				//쉐이더 처리
+				//타이머 
+				
+				if (!CUIMgr::GetInstance()->GetToastUIActive())
+				{
+					m_fUVSpeed += fTimeDelta;
+					if (m_fUVTimer < m_fUVSpeed)
+					{
+						CUIMgr::GetInstance()->SetStoreGetIdx(iSelIdx);
+						CUIMgr::GetInstance()->SetActiveToastMsgItemInfo(iSelIdx);
+
+					}
+				}
+			}
+			else
+			{
+				m_fUVSpeed = 0.f;
 			}
 		}
 		else

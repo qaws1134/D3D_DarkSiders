@@ -51,9 +51,9 @@ void Engine::CFont::Render_Font(const _tchar* pString, const _vec2* pPos, D3DXCO
 	m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
 
 	m_pFont->DrawTextW(m_pSprite, pString, lstrlen(pString), &rc, DT_NOCLIP, Color);
-
 	m_pSprite->End();
 }
+
 
 CFont* Engine::CFont::Create(LPDIRECT3DDEVICE9 pGraphicDev, 
 							const _tchar* pFontType,

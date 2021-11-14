@@ -71,6 +71,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_List", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/List.png", TEX_NORMAL, 1)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_UnderBar", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/UnderBar.png", TEX_NORMAL, 1)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_ToastBox", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/ToastBox.png", TEX_NORMAL, 1)), E_FAIL);
 
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Store_Base", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Store/Bg_0%d.png", TEX_NORMAL, 3)), E_FAIL);

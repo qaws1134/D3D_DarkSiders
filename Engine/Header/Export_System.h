@@ -35,6 +35,8 @@ inline HRESULT	Ready_Font(LPDIRECT3DDEVICE9 pGraphicDev,
 	const _uint& iHeight,
 	const _uint& iWeight);
 
+
+
 inline void	Render_Font(const _tchar* pFontTag,
 	const _tchar* pString,
 	const _vec2* pPos,

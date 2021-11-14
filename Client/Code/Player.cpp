@@ -143,10 +143,14 @@ void CPlayer::Render_Object(void)
 void CPlayer::Key_Input(const _float & fTimeDelta)
 {
 	m_pTransformCom->Get_INFO(INFO_LOOK, &m_vDir);
-
+	m_pTransformCom->Get_INFO(INFO_RIGHT, &m_vRight);
 	m_eDir = War::IDLE;
 
-	if (m_eMachineState != War::ATTACK && m_eMachineState != War::DASH&& m_eMachineState != War::JUMP&& m_eMachineState != War::JUMP_CB)
+	if (m_eMachineState != War::ATTACK && 
+		m_eMachineState != War::DASH&& 
+		m_eMachineState != War::JUMP&& 
+		m_eMachineState != War::JUMP_CB&&
+		m_eMachineState != War::HIT)
 	{
 		if (m_eCharState == War::CHAR_IDLE)
 			m_eMachineState = War::STATE_IDLE;
@@ -191,7 +195,11 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 
 	if (m_eDir != War::IDLE)
 	{
-		if (m_eMachineState != War::ATTACK && m_eMachineState != War::DASH&& m_eMachineState != War::JUMP&& m_eMachineState != War::JUMP_CB)
+		if (m_eMachineState != War::ATTACK &&
+			m_eMachineState != War::DASH&&
+			m_eMachineState != War::JUMP&&
+			m_eMachineState != War::JUMP_CB&&
+			m_eMachineState != War::HIT)
 		{
 			DirSet(m_eDir, fTimeDelta, MOVEROTSPEED);
 			m_eMachineState = War::MOVE;
@@ -264,6 +272,7 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	if (Key_Pressing(KEY_MBUTTON))
 	{
 		m_eMachineState = War::BLOCK;
+		m_eCharState = War::COMBAT;
 		m_fCToISpeed = 0.f;
 	}
 
@@ -389,6 +398,24 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	}
 	//m_pTransformCom->Move_Pos(&vDir, 5.f, fTimeDelta);
 
+	if (Key_Down(KEY_NUM1))
+	{
+		Set_PlayerState(War::HIT);
+		Take_Dmg(4.f);
+	}
+
+	if (Key_Down(KEY_NUM2))
+	{
+		Set_PlayerState(War::HIT);
+		Take_Dmg(6.f);
+	}
+
+
+	if (Key_Down(KEY_NUM3))
+	{
+		Set_PlayerState(War::HIT);
+		Take_Dmg(11.f);
+	}
 }
 void CPlayer::StateChange()
 {
@@ -403,7 +430,7 @@ void CPlayer::StateChange()
 				m_eCurAniState = War::War_Idle_Combat_to_Idle;
 				m_bBlend = false;
 			}
-			else if (m_ePreMachineState == War::JUMP)
+			else if (m_ePreMachineState == War::JUMP || m_ePreMachineState == War::HIT)
 			{
 				m_eCurAniState = War::War_Idle;
 				m_bBlend = false;
@@ -440,17 +467,27 @@ void CPlayer::StateChange()
 			{
 				m_eCurAniState = War::War_Run_F_Combat;
 			}
+
 			m_bBlend = true;
 			break;
 
 		case War::ATTACK:
 			if (m_eKeyState == War::LBUTTON)
 			{
-				m_eCurAniState = War::War_Atk_Light_01;
+				if (m_eCharState == War::AIR)
+				{
+					m_eCharState = War::AIR_COMBAT;
+					m_eCurAniState = War::War_Atk_Air_Light_01;
+				}
+				else
+					m_eCurAniState = War::War_Atk_Light_01;
 			}
 			if (m_eKeyState == War::RBUTTON)
 			{
-				m_eCurAniState = War::War_Atk_Heavy_01;
+				if (m_eCharState != War::AIR)
+				{
+					m_eCurAniState = War::War_Atk_Heavy_01;
+				}
 			}
 			if (m_eKeyState == War::NUM1)
 			{
@@ -469,12 +506,18 @@ void CPlayer::StateChange()
 				m_eCurAniState = War::War_Atk_Dash;
 			}
 
-			m_eCharState = War::COMBAT;
+			if (m_eCharState == War::AIR )
+			{
+				m_eCharState = War::AIR_COMBAT;
+			}
+			else
+				m_eCharState = War::COMBAT;
+
 			m_bBlend = false;
 			break;
 		case War::BLOCK:
+			if(m_ePreMachineState!=War::HIT)
 			m_eCurAniState = War::War_Block_Start;
-			m_bBlend = false;
 			break;
 		case War::JUMP:
 			m_eCurAniState = War::War_Jump;
@@ -485,8 +528,10 @@ void CPlayer::StateChange()
 			m_bJumpEnd = false;
 			m_bJumpAniEnd = false;
 			m_bNexAni = false;
+			m_eCharState = War::AIR;
 			break;
 		case War::JUMP_CB:
+			m_eCharState = War::AIR;
 			m_eCurAniState = War::War_Jump_Combat;
 			m_bBlend = false;
 			m_fJumpPower = 15.f;
@@ -497,7 +542,13 @@ void CPlayer::StateChange()
 			m_bNexAni = false;
 			break;
 		case War::JUMPATTACK:
-
+			//m_eCharState = War::AIR;
+			//m_bBlend = false;
+			//m_fJumpPower = 15.f;
+			//m_fInitJumpPower = m_fJumpPower;
+			//m_bJumpEnd = false;
+			//m_bJumpAniEnd = false;
+			//m_bNexAni = false;
 			break;
 		case War::DASH:
 			m_eCurAniState = War::War_Dash;
@@ -506,6 +557,46 @@ void CPlayer::StateChange()
 			m_bBlend = false;
 			break;
 		case War::HIT:
+			if (m_ePreMachineState == War::BLOCK)
+			{
+				//막기상태일떄
+				if(m_fDmg < 5.f)
+					m_eCurAniState = War::War_Block_Impact_Light;
+				else if(m_fDmg <10.f)
+					m_eCurAniState = War::War_Block_Impact_Medium;
+				else if (m_fDmg < 15.f)
+					m_eCurAniState = War::War_Block_Impact_Heavy;
+
+				m_fDmg = 0.f;
+			}
+			else
+			{
+				//일반 상태일떄
+				if (m_fDmg < 10.f)
+				{
+					//10보다 작으면 일반 임팩트
+			
+					//왼팔 충돌, 오른팔 충돌, 앞몸통 충돌, 뒷몸통 충돌-> 먼저 충돌한 애로 ㄱㄱ 
+					//충돌 시 애니메이션 끝나기 전까지(or IDLE 상태로 다시 가기 전 까지 ) 충돌용 컬라이더는 false 상태
+					m_eCurAniState = War::War_Impack_From_Front;
+					m_fCToISpeed = 0.f;
+				}
+				else
+				{
+					m_eCurAniState = War::War_Knockback_Start;
+					//날라가기 
+					m_bBlend = true;
+					m_fJumpPower = 30.f;
+					m_fInitJumpPower = m_fJumpPower;
+					m_fJumpY = m_pTransformCom->Get_PosY();
+					m_bJumpEnd = false;
+					m_bJumpAniEnd = false;
+					m_bNexAni = false;
+					m_eCharState = War::AIR;
+	
+					
+				}
+			}
 			break;
 		case War::STATE_END:
 			break;
@@ -558,7 +649,6 @@ void CPlayer::StateChange()
 		case War::War_Jump_Double:
 			break;
 		case War::War_Jump_Fall:
-
 			break;
 		case War::War_Jump_Fall_Combat:
 			break;
@@ -621,6 +711,7 @@ void CPlayer::StateChange()
 			break;
 		case War::War_Atk_Air_Light_01:
 			m_eKeyState = War::KEYSTATE_END;
+			
 			break;
 		case War::War_Atk_Air_Light_02:
 			m_eKeyState = War::KEYSTATE_END;
@@ -633,6 +724,13 @@ void CPlayer::StateChange()
 			m_bBlend = false;
 			break;
 		case War::War_Atk_Air_Filpsaw_Land:
+			m_eKeyState = War::KEYSTATE_END;
+			//DirSet_Combo();
+			m_fInitAttackMoveSpeed = 500.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			
 			break;
 		case War::War_Atk_Dash:
 			m_fInitDashSpeed = 1500.f;
@@ -649,6 +747,20 @@ void CPlayer::StateChange()
 			break;
 		case War::War_Atk_Earth_End:
 			m_eKeyState = War::KEYSTATE_END;
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			break;
+		case War::War_Atk_Lightning:
+			m_eKeyState = War::KEYSTATE_END;
+			DirSet_Combo();
+
+			m_fInitAttackMoveSpeed = 500.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+
 			break;
 		case War::War_Atk_Flamebrand:
 			DirSet_Combo();
@@ -657,19 +769,47 @@ void CPlayer::StateChange()
 			break;
 		case War::War_Atk_Flamebrand_End:
 			m_bBlend = false;
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case	War::War_Atk_LoomingDeath:
+			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
+			m_fInitAttackMoveSpeed = 500.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			m_bNexAni2 = false;
+
 			break;
 		case	War::War_Atk_Vamp_Start:
 			DirSet_Combo();
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case	War::War_Atk_Vamp_Loop:
 			break;
 		case	War::War_Atk_Vamp_Finish:
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case	War::War_Atk_Launch_A:
-			m_bBlend = true;
+		case	War::War_Atk_Launch_B:
+			DirSet_Combo();
+			m_bBlend = true;					
+			m_fJumpPower = 15.f;
+			m_fInitJumpPower = m_fJumpPower;
+			m_fJumpY = m_pTransformCom->Get_PosY();
+			m_bJumpEnd = false;
+			m_bJumpAniEnd = false;
+			m_bNexAni = false;
+			m_eCharState = War::AIR;
 			break;
 		case	War::War_Atk_Wind_Start   :
 			DirSet_Combo();
@@ -677,55 +817,112 @@ void CPlayer::StateChange()
 		case	War::War_Atk_Wind_Loop    :
 			break;
 		case	War::War_Atk_Wind_End :
-			break;
-		case	War::War_Atk_Launch_B:
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Chest_Open:
 			break;
 		case War::War_Death:
 			break;
 		case War::War_Block_Idle:
+			m_bBlend = false;
 			break;
 		case War::War_Block_Impact_Heavy:
+			m_bBlend = true;
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Block_Impact_Light:
+			m_bBlend = true;
+			m_fInitAttackMoveSpeed = 500.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Block_Impact_Medium:
+			m_bBlend = true;
+			m_fInitAttackMoveSpeed = 650.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Block_Start:
+			m_bBlend = false;
 			break;
 		case War::War_Knockback_Fall:
 			break;
 		case War::War_Knockback_Land:
+			m_bBlend = true;
 			break;
 		case War::War_Knockback_Loop:
+			m_bBlend = false;
 			break;
 		case War::War_Knockback_Start:
+			m_bBlend = false;
 			break;
 		case War::War_Impack_From_Back:
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Impack_From_Front:
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Impack_From_Left:
+					m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Impack_From_Right:
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Skill_01:
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Skill_02_Start:
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			m_bSkill2End = false;
 			break;
 		case War::War_Skill_02_Strike:
 			m_bBlend = true;
 			break;
 		case War::War_Skill_02_Run:
+			DirSet_Combo();
+			//m_fInitAttackMoveSpeed = 800.f;
+		//	m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+		//	m_bNexAni = false;
+		//	m_bAttackMoveEnd = false;
 			break;
 		case War::War_Skill_03:
 			m_eKeyState = War::KEYSTATE_END;
 			m_bBlend = true;
+			DirSet_Combo();
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Glide:
 			break;
@@ -777,12 +974,21 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::MOVE:
 		break;
 	case War::ATTACK:
+	{		
 		if (m_bAttackMoveEnd)
 		{
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed +m_fAddPower;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed + m_fAddPower;
 			m_bAttackMoveEnd = false;
 			m_fAddPower = 0.f;
+
 		}
+		_vec3 vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		if (vPos.y < m_fJumpY)
+		{
+			m_bJumpEnd = true;
+		}
+	}
 		//공격에 따른 이동량 
 		break;
 	case War::BLOCK:
@@ -811,6 +1017,14 @@ void CPlayer::StateActer(_float fDeltaTime)
 	}
 		break;
 	case War::JUMPATTACK:
+	{		
+		_vec3 vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		if (vPos.y < m_fJumpY)
+		{
+			m_bJumpEnd = true;
+		}
+	}
 		//안내려오는 판단 
 		break;
 	case War::DASH:
@@ -830,7 +1044,19 @@ void CPlayer::StateActer(_float fDeltaTime)
 		}
 		else
 		{
-
+			if (m_bJumpAniEnd)
+			{
+				m_fJumpPower = m_fInitJumpPower + m_fAddPower;
+				m_bJumpAniEnd = false;
+				m_fAddPower = 0.f;
+			}
+			//점프상태 판단 
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			if (vPos.y < m_fJumpY)
+			{
+				m_bJumpEnd = true;
+			}
 		}
 		break;
 	case War::STATE_END:
@@ -964,10 +1190,28 @@ void CPlayer::StateActer(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Air_Filpsaw_Start:
-		break;
 	case War::War_Atk_Air_Filpsaw_Loop:
+		if (!m_bJumpEnd)
+		{
+			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 40.f, 70.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
+			m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*150.f, fDeltaTime);
+		}
 		break;
 	case War::War_Atk_Air_Filpsaw_Land:
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
+		{
+			if (!m_bNexAni)
+			{
+				m_bAttackMoveEnd = true;
+				m_bNexAni = true;
+			}
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+		}
+		//if (!m_bJumpEnd)
+		//{
+		//	m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 40.f, 70.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
+		//	//m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
+		//}
 		break;
 	case War::War_Atk_Dash:
 		if (!m_pMeshCom->Is_Animationset(dDashCheckFrame-0.35))
@@ -992,32 +1236,120 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::War_Atk_Earth_Loop:
 		break;
 	case War::War_Atk_Earth_End:
+		//if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.39))
+		//{
+		//}
+
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.1))
+		{
+			if (!m_bNexAni)
+			{
+				m_bAttackMoveEnd = true;
+				m_bNexAni = true;
+			}
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
+		}
+		else
+		{
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
+
+		}
 		break;
 	case War::War_Atk_Flamebrand:
+		m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
 		break;
 	case War::War_Atk_Flamebrand_Start:
 		break;
 	case War::War_Atk_Flamebrand_End:
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
 		break;
 	case War::War_Atk_Lightning:
+		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame -0.3))
+		{
+			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime);
+		}
+		else
+		{
+			if (!m_bNexAni)
+			{
+				m_bAttackMoveEnd = true;
+				m_bNexAni = true;
+			}
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2200.f, &m_vDir, fDeltaTime);
+		}
 		break;
 	case War::War_Atk_Wind_Start:
 		break;
 	case War::War_Atk_Wind_Loop:
 		break;
 	case War::War_Atk_Wind_End:
+
+		if (!m_bNexAni)
+		{
+			m_bAttackMoveEnd = true;
+			m_bNexAni = true;
+		}
+		//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime);
+		
 		break;
 	case War::War_Atk_LoomingDeath:
+		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
+		{
+			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+		}
+		else 	if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame+0.19))
+		{	//0.3~1.0
+			if (!m_bNexAni)
+			{
+				m_bAttackMoveEnd = true;
+				m_bNexAni = true;
+			}
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime);
+		}
+		else
+		{
+			if (!m_bNexAni2)
+			{
+				m_bAttackMoveEnd = true;
+				m_bNexAni2 = true;
+			}
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1400.f, 0.f, &m_vDir, fDeltaTime);
+		}
 		break;
 	case War::War_Atk_Vamp_Start:
+		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.07))
+		{
+			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+		}
 		break;
 	case War::War_Atk_Vamp_Loop:
 		break;
 	case War::War_Atk_Vamp_Finish:
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
+		{
+			if (!m_bNexAni)
+			{
+				m_bAttackMoveEnd = true;
+				m_bNexAni = true;
+			}
+			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2200.f, 0.f, &m_vDir, fDeltaTime);
+		}
 		break;
-	case War::War_Atk_Launch_A:
-		break;
+	case War::War_Atk_Launch_A:		
 	case War::War_Atk_Launch_B:
+		if (!m_bJumpEnd)
+		{
+			if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
+			{
+				m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fJumpPower, 30.f, 0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime);
+				//m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
+			}
+		}
 		break;
 	case War::War_Atk_Air_Light_01:
 		break;
@@ -1030,36 +1362,83 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::War_Block_Idle:
 		break;
 	case War::War_Block_Impact_Heavy:
-		break;
 	case War::War_Block_Impact_Light:
-		break;
 	case War::War_Block_Impact_Medium:
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &-m_vDir, fDeltaTime);
 		break;
 	case War::War_Block_Start:
 		break;
 	case War::War_Knockback_Fall:
+		//빅데미지는 넉백 뒤로점프
+
 		break;
 	case War::War_Knockback_Land:
 		break;
 	case War::War_Knockback_Loop:
+		if (!m_bJumpEnd)
+		{
+			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 150.f, 200.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
+			m_pTransformCom->Move_Pos(&-m_vDir, m_fMoveSpeed*150.f, fDeltaTime);
+		}
 		break;
 	case War::War_Knockback_Start:
+		if (!m_bJumpEnd)
+		{
+			if (!m_bNexAni)
+			{
+				m_bJumpAniEnd = true;
+				m_bNexAni = true;
+			}
+			m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fJumpPower, 300.f,0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime);
+			m_pTransformCom->Move_Pos(&-m_vDir, m_fMoveSpeed*150.f, fDeltaTime);
+		}
 		break;
 	case War::War_Impack_From_Back:
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &m_vDir, fDeltaTime);
 		break;
 	case War::War_Impack_From_Front:
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &-m_vDir, fDeltaTime);
 		break;
 	case War::War_Impack_From_Left:
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &m_vRight, fDeltaTime);
 		break;
 	case War::War_Impack_From_Right:
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &-m_vRight, fDeltaTime);
 		break;
 	case War::War_Skill_01:
+		if (!m_bNexAni)
+		{
+			m_bAttackMoveEnd = true;
+			m_bNexAni = true;
+			m_fAddPower = 0.f;
+		}
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 3000.f, &m_vDir, fDeltaTime);	
 		break;
 	case War::War_Skill_02_Start:
+		//if (!m_bNexAni)
+		//{
+		//	m_bAttackMoveEnd = true;
+		//	m_bNexAni = true;
+		//}
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 4000.f, &m_vDir, fDeltaTime);
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 6000.f, &m_vDir, fDeltaTime);
+
 		break;
 	case War::War_Skill_02_Strike:
+		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 30000.f, 300.f, &m_vDir, fDeltaTime);
 		break;
 	case War::War_Skill_02_Run:
+		//if (!m_bNexAni)
+		//{
+		//	m_bAttackMoveEnd = true;
+		//	m_bNexAni = true;
+		//}
+		if (m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 6000.f, &m_vDir, fDeltaTime))
+			m_bSkill2End = true;
+		/*	if (m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 10000.f, 800.f, &m_vDir, fDeltaTime))
+			{
+
+			}*/
 		break;
 	case War::War_Skill_03:
 		break;
@@ -1103,7 +1482,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 600.f, 0.f, &m_vDir, fDeltaTime);
+			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
@@ -1111,7 +1490,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 			{
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
-				m_fAddPower = -300.f;
+				m_fAddPower = 0.f;
 			}
 			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 7000.f, 1700.f, &m_vDir, fDeltaTime);
 		}
@@ -1175,10 +1554,10 @@ void CPlayer::StateLinker(_float fDeltaTime)
 			{
 				m_eCurAniState = War::War_Jump_Double;
 			}
-			else if (m_eKeyState == War::LBUTTON)
-			{
-				m_eCurAniState = War::War_Atk_Air_Light_01;
-			}
+			//else if (m_eKeyState == War::LBUTTON)
+			//{
+			//	m_eCurAniState = War::War_Atk_Air_Light_01;
+			//}
 		}
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
@@ -1193,10 +1572,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 			{
 				m_eCurAniState = War::War_Jump_Double;
 			}
-			else if (m_eKeyState == War::LBUTTON)
-			{
-				m_eCurAniState = War::War_Atk_Air_Light_01;
-			}
+
 		}
 		
 		if (m_pMeshCom->Is_AnimationsetFinish())
@@ -1230,7 +1606,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		{
 			if (m_eKeyState == War::WASD)
 			{
-				if (m_eCharState == War::CHAR_IDLE)
+				if (m_eCharState == War::AIR)
 					m_eCurAniState = War::War_Jump_Land_Run;
 				else if (m_eCharState == War::COMBAT)
 					m_eCurAniState = War::War_Jump_Combat_Land_Run;
@@ -1372,7 +1748,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Light_04:
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame+0.1))
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
 		{
 
 			//키 상태가 확인되면 
@@ -1393,12 +1769,8 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Air_Light_01:
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame+0.3))
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.3))
 		{
-			if (m_eKeyState == War::WASD)
-			{
-				m_eMachineState = War::MOVE;
-			}
 			//키 상태가 확인되면 
 			if (m_eKeyState == War::LBUTTON)
 			{
@@ -1415,9 +1787,12 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Air_Light_02:
-		if (m_eKeyState == War::LBUTTON)
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.2))
 		{
-			m_eCurAniState = War::War_Atk_Air_Filpsaw_Start;
+			if (m_eKeyState == War::LBUTTON)
+			{
+				m_eCurAniState = War::War_Atk_Air_Filpsaw_Start;
+			}
 		}
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
@@ -1431,17 +1806,38 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Air_Filpsaw_Loop:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_bJumpEnd)
 		{
-			//땅에 닿으면if()
 			m_eCurAniState = War::War_Atk_Air_Filpsaw_Land;
+			
 		}
+		
 		break;
 	case War::War_Atk_Air_Filpsaw_Land:
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame ))
+		{
+			m_bBlend = true;
+			switch (m_eKeyState)
+			{
+			case War::LBUTTON:
+				m_eCurAniState = War::War_Atk_Light_01;
+				break;
+			case War::RBUTTON:
+				m_eCurAniState = War::War_Atk_Heavy_01;
+				break;
+			case War::WASD:
+				m_eMachineState = War::MOVE;
+				break;
+			case War::KEYSTATE_END:
+				break;
+				
+			}
+		}
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			m_eMachineState = War::STATE_IDLE_CB;
 		}
+		m_eCharState = War::COMBAT;
 		break;
 	case War::War_Atk_Dash:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.1))
@@ -1577,14 +1973,11 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		break;
 	case	War::War_Atk_Wind_Loop:
 		DirSet(m_eDir, fDeltaTime, MOVEROTSPEED);
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
-		{
-			if (Key_Up(KEY_RBUTTON))
-			{
-				m_eCurAniState = War::War_Atk_Wind_End;
-			}
-		}
 
+		if (Key_Up(KEY_RBUTTON))
+		{
+			m_eCurAniState = War::War_Atk_Wind_End;
+		}
 		break;
 	case	War::War_Atk_Wind_End:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.2))
@@ -1712,41 +2105,62 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			m_eCurAniState = War::War_Block_Idle;
+			m_eMachineState = War::BLOCK;
 		}
 		break;
 	case War::War_Block_Impact_Light:
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			m_eCurAniState = War::War_Block_Idle;
+			m_eMachineState = War::BLOCK;
 		}
 		break;
 	case War::War_Block_Impact_Medium:
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			m_eCurAniState = War::War_Block_Idle;
+			m_eMachineState = War::BLOCK;
 		}
 		break;
 	case War::War_Block_Start:
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			m_eCurAniState = War::War_Block_Idle;
+
 		}
 		break;
 	case War::War_Knockback_Fall:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = War::War_Knockback_Land;
+		}
 		break;
 	case War::War_Knockback_Land:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = War::STATE_IDLE;
+		}
 		break;
 	case War::War_Knockback_Loop:
+		if (m_bJumpEnd)
+		{
+			m_eCurAniState = War::War_Knockback_Land;
+		}
 		break;
 	case War::War_Knockback_Start:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = War::War_Knockback_Loop;
+		}
 		break;
 	case War::War_Impack_From_Back:
-		break;
 	case War::War_Impack_From_Front:
-		break;
 	case War::War_Impack_From_Left:
-		break;
 	case War::War_Impack_From_Right:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = War::STATE_IDLE;
+		}
 		break;
 	case War::War_Skill_01:
 		if (m_pMeshCom->Is_AnimationsetFinish())
@@ -1767,7 +2181,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Skill_02_Run:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_bSkill2End)
 		{
 			m_eCurAniState = War::War_Skill_02_Strike;
 		}
@@ -1827,7 +2241,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Heavy_03:
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.1))
 		{
 			//키 상태가 확인되면 
 			if (m_eKeyState == War::LBUTTON)

@@ -89,6 +89,11 @@ private:
 
 	_bool m_bIsPicking = false;
 
+
+	_float m_fUVTimer;
+	_float m_fUVSpeed;
+	
+
 private:
 	CRcTex*		m_pBufferCom = nullptr;
 	CTexture*	m_pTextureCom = nullptr;

@@ -268,6 +268,69 @@ void CUIMgr::InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 	m_mapHead.emplace(UI::LISTKEY_PLAYERINFO,m_listPlayerInfo);
 }
 
+void CUIMgr::InitToast(LPDIRECT3DDEVICE9 pGraphicDev)
+{
+	CGameObject* pGameObject = nullptr;
+
+	_float fInfoUISize = 200.f;
+	_float fIconSize = 100.f;
+	_float fBgZ = 0.15f;
+	_float fIconZ = 0.14f;
+
+	_bool  bActive = false;
+
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(600.f, 650.f), _vec2(1100.f, 300.f), 0, L"Proto_Texture_ToastBox", L"UI_Info_Bg"), bActive);
+	pGameObject->SetZPos(fBgZ, ID_DYNAMIC);
+	m_listToastMsg.emplace_back(pGameObject);
+
+
+	m_mapHead.emplace(UI::LISTKEY_TOASTMSG, m_listToastMsg);
+}
+
+void CUIMgr::InitToastInfo(LPDIRECT3DDEVICE9 pGraphicDev)
+{
+
+	CGameObject* pGameObject = nullptr;
+
+	//_float fInfoUISize = 200.f;
+	_float fIconSize = 100.f;
+	//_float fBgZ = 0.15f;
+	_float fIconZ = 0.14f;
+
+	_bool  bActive = false;
+
+
+	for (_uint i = 0; i < UI::STONE_END; i++)
+	{
+		STONE tStone = CGameMgr::GetInstance()->GetStone((UI::STONE)i);
+		//스톤
+		pGameObject = CUI::Create(pGraphicDev,
+			Set_UISET(_vec2(600.f, 500.f), _vec2(fIconSize, fIconSize),
+			(_uint)tStone.eCreature, L"Proto_Texture_CoreTree_Creature", L"UI_CoreTree_StoneList_Creature" + to_wstring(tStone.eCreature)), bActive);
+		pGameObject->SetZPos(fIconZ, ID_DYNAMIC);
+		m_listToastInfo.emplace_back(pGameObject);
+
+		//이름
+		pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Heavy",tStone.wstrName.c_str() , _vec2(540.f, 615.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+		dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"Toast_Font_L_Normal_Name" + to_wstring(tStone.eCreature));
+		m_listToastInfo.emplace_back(pGameObject);
+
+		//내용
+		pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal_Small",tStone.wstrInfo.c_str() , _vec2(550.f, 700.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+		dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"Toast_Font_L_Normal_Info" + to_wstring(tStone.eCreature));
+		m_listToastInfo.emplace_back(pGameObject);
+
+
+		for (auto iter : m_listToastInfo)
+		{
+			Add_GameObject(L"UI", dynamic_cast<CUI*>(iter)->GetObjTag().c_str(), iter);
+		}
+
+		m_mapToastInfo.emplace(i, m_listToastInfo);
+		m_listToastInfo.clear();
+	}
+}
+
 
 
 void CUIMgr::InitStore(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -559,15 +622,15 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 	case UI::ACTIVE_COMBO_ELEMENT: {
 		iPrice = 1700;
 		tNameFont.wstrText = L"속성 공격";
-		tInfoFont.wstrText = L"       후      ";
+		tInfoFont.wstrText = L"       후        누르기 ";
 
 		tInfo.iTextureNum = 0;
-		tInfo.vPos = _vec2(740.f + (30.f*listInfo.size()), 165.f + (m_iStoreIdx*90.f));
+		tInfo.vPos = _vec2(740.f + (30.f*listInfo.size()*2.f), 165.f + (m_iStoreIdx*90.f));
 		tInfo.wstrObjTag = L"UI_Store_Active_Info" + wstrListIdx + to_wstring(listInfo.size());
 		listInfo.emplace_back(tInfo);
 
 		tInfo.iTextureNum = 1;
-		tInfo.vPos = _vec2(740.f + (30.f*listInfo.size()), 165.f + (m_iStoreIdx*90.f));
+		tInfo.vPos = _vec2(740.f + (30.f*listInfo.size()*2.f), 165.f + (m_iStoreIdx*90.f));
 		tInfo.wstrObjTag = L"UI_Store_Active_Info" + wstrListIdx + to_wstring(listInfo.size());
 		listInfo.emplace_back(tInfo);
 
@@ -672,11 +735,6 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal_Small",to_wstring(iPrice), _vec2(1065, 160.f + (m_iStoreIdx*90.f)), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Light_Price" + wstrListIdx);
 	listItemInsert.emplace_back(pGameObject);
-
-
-
-
-
 }
 
 void CUIMgr::MoveStoneList(_float fTimeDelta,_float fSpeed)
@@ -689,7 +747,53 @@ void CUIMgr::MoveStoneList(_float fTimeDelta,_float fSpeed)
 			_vec2 vPos = dynamic_cast<CUI*>(iter_second)->GetUIPos();
 			if (fSpeed > 0.f)
 			{
-				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y+ fListCount*60.f < vPos.y + m_StoneListIdx*60.f)
+				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y+ fListCount*90.f < vPos.y + m_StoneListIdx*90.f)
+					vPos.y -= fSpeed*fTimeDelta;
+			}
+			else
+			{
+				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y > vPos.y)
+					vPos.y -= fSpeed*fTimeDelta;
+			}
+			dynamic_cast<CUI*>(iter_second)->SetUIPos(vPos);
+		}
+	}
+}
+
+void CUIMgr::MoveStoreActiveList(_float fTimeDelta, _float fSpeed)
+{
+	for (auto iter : m_mapStoreActiveList)
+	{
+		for (auto iter_second : iter.second)
+		{
+			_float fListCount = 5.f;
+			_vec2 vPos = dynamic_cast<CUI*>(iter_second)->GetUIPos();
+			if (fSpeed > 0.f)
+			{
+				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y + fListCount*90.f < vPos.y + m_mapStoreActiveList.size()*90.f)
+					vPos.y -= fSpeed*fTimeDelta;
+			}
+			else
+			{
+				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y > vPos.y)
+					vPos.y -= fSpeed*fTimeDelta;
+			}
+			dynamic_cast<CUI*>(iter_second)->SetUIPos(vPos);
+		}
+	}
+}
+
+void CUIMgr::MoveStoreStoneList(_float fTimeDelta, _float fSpeed)
+{
+	for (auto iter : m_mapStoreStoneList)
+	{
+		for (auto iter_second : iter.second)
+		{
+			_float fListCount = 5.f;
+			_vec2 vPos = dynamic_cast<CUI*>(iter_second)->GetUIPos();
+			if (fSpeed > 0.f)
+			{
+				if (dynamic_cast<CUI*>(iter_second)->GetInitPos().y + fListCount*60.f < vPos.y + m_mapStoreStoneList.size()*60.f)
 					vPos.y -= fSpeed*fTimeDelta;
 			}
 			else
@@ -846,6 +950,35 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone)
 	m_StoneListIdx++;
 }
 
+void CUIMgr::SetActiveToastMsgItemInfo(_uint iSelIdx)
+{
+	//iSelIdx->맵에서 꺼내가
+	iSelIdx += UI::ITEM_BOX1;
+	//구매 -> 인덱스 정보  -> 해당 정보에 따른 토스트 매시지 출력
+
+	switch (iSelIdx)
+	{
+	case UI::ITEM_BOX1:
+		SetActiveToastBoxUI(true);
+		SetActiveToastInfoUI(true, rand() % 3);
+		break;
+	case UI::ITEM_BOX2:
+		break;
+	case UI::ITEM_BOX3:
+		break;
+	case UI::ITEM_GRINNER:
+		break;
+	case UI::ITEM_SKULLMAGE:
+		break;
+	case UI::ITEM_BROODI:
+		break;
+	case UI::ITEM_BAT:
+		break;
+	case UI::ITEM_END:
+		break;
+	}
+}
+
 
 
 
@@ -857,7 +990,7 @@ map<UI::LISTKEY,list<CGameObject*>> CUIMgr::InitCreateUI(LPDIRECT3DDEVICE9 pGrap
 	InitCoretree(pGraphicDev);
 	InitCoreList(pGraphicDev);
 	InitPlayerInfo(pGraphicDev);
-
+	InitToast(pGraphicDev);
 	//InitStore(pGraphicDev);
 
 
@@ -952,6 +1085,23 @@ void CUIMgr::SetActiveStoreActiveUI(_bool bActive)
 	}
 }
 
+void CUIMgr::SetActiveToastBoxUI(_bool bActive)
+{
+	for (auto iter : m_listToastMsg)
+	{
+		dynamic_cast<CUI*>(iter)->SetActive(bActive);
+	}
+}
+
+void CUIMgr::SetActiveToastInfoUI(_bool bActive, _uint iStoneIdx)
+{
+	auto iter_find = m_mapToastInfo.find(iStoneIdx);
+
+	for (auto iter : iter_find->second)
+		dynamic_cast<CUI*>(iter)->SetActive(bActive);
+
+}
+
 list<CGameObject*> CUIMgr::GetStoneSelIdxList(wstring wstrObjtag, _uint* iStoneIdx)
 {
 	for (auto iter : m_mapStoneList)
@@ -1032,7 +1182,10 @@ _bool CUIMgr::GetStoneInfoUIActive(_uint iStoneIdx)
 	return iter_find->second.front()->GetActive();
 
 }
-
+_bool CUIMgr::GetToastUIActive()
+{
+	return m_listToastMsg.front()->GetActive();
+}
 _bool CUIMgr::GetStoreUIActive()
 {
 	return m_listStoreBase.front()->GetActive();
@@ -1042,48 +1195,6 @@ _bool CUIMgr::GetStoreUIActive()
 
 void CUIMgr::Free(void)
 {
-
-	//for (auto iter : m_listWeaponElement)
-	//	Safe_Release(iter);
-	//for (auto iter : m_listCoreTree)
-	//	Safe_Release(iter);
-	//for (auto iter : m_listPlayerInfo)
-	//	Safe_Release(iter);
-	//for (auto iter : m_listStoneInfo)
-	//	Safe_Release(iter);
-
-	//for (auto iter : m_listStoreBase)
-	//	Safe_Release(iter);
-
-	//for (auto iter : m_mapStoneList)
-	//{
-	//	for (auto iter_second : iter.second)
-	//	{
-	//		Safe_Release(iter_second);
-	//	}
-	//}
-	//for (auto iter : m_mapStoneInfo)
-	//{
-	//	for (auto iter_second : iter.second)
-	//	{
-	//		Safe_Release(iter_second);
-	//	}
-	//}
-
-	//for (auto iter : m_mapStoreActiveList)
-	//{
-	//	for (auto iter_second : iter.second)
-	//	{
-	//		Safe_Release(iter_second);
-	//	}
-	//}
-	//for (auto iter : m_mapStoreStoneList)
-	//{
-	//	for (auto iter_second : iter.second)
-	//	{
-	//		Safe_Release(iter_second);
-	//	}
-	//}
 
 }
 

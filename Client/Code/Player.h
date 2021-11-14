@@ -42,6 +42,8 @@ public:
 #pragma region Set 함수
 public:
 	void		Set_Element(War::WEAPON_ELEMENT eElement) { m_eElement = eElement; }
+	void		Set_PlayerState(War::STATE eState) { m_eMachineState = eState; }
+	void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
 #pragma  endregion Set 함수
 #pragma region Get 함수
 
@@ -62,6 +64,7 @@ private:
 private:
 
 	_vec3 m_vDir;
+	_vec3 m_vRight;
 
 	War::DIR		m_eDir;			//방향값 저장
 	War::KeyState	m_eKeyState;	//콤보 키 상태 저장 
@@ -104,17 +107,22 @@ private:
 	_float m_fAttackMoveSpeed;
 
 	_bool m_bAttackMoveEnd = false;
-	_bool m_bNexAni = false;;
+	_bool m_bNexAni = false;
+	_bool m_bNexAni2 = false;
 	_float m_fAddPower = 0.f;
 
+	_bool  m_bSkill2End = false;
 	//점프
-	_float m_fJumpTime = 0.f;
-	_float m_fJumpPower = 0.f;
-	_float m_fInitJumpPower = 0.f;
-	_float m_fJumpY = 0.f;
+	_float	m_fJumpTime = 0.f;
+	_float	m_fJumpPower = 0.f;
+	_float	m_fInitJumpPower = 0.f;
+	_float	m_fJumpY = 0.f;
 	_bool	m_bJumpEnd = false;
 	_bool	m_bJumpAniEnd = false;
+	
 
+
+	_float m_fDmg=0.f;
 
 public:
 	static CPlayer*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
