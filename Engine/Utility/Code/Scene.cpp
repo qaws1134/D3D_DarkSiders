@@ -44,11 +44,18 @@ void CScene::Begin_Scene(void)
 	m_bBegin = true;
 }
 
+void CScene::Release_SaveLayer()
+{
+	//for_each(m_mapSaveLayer.begin(), m_mapSaveLayer.end(), CDeleteMap());
+	//m_mapSaveLayer.clear();
+}
+
 void Engine::CScene::Free(void)
 {
 	for_each(m_mapLayer.begin(), m_mapLayer.end(), CDeleteMap());
-	m_mapLayer.clear();
 
+	m_mapLayer.clear();
+	m_mapSaveLayer.clear();
 	Safe_Release(m_pGraphicDev);
 }
 

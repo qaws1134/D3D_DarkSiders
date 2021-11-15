@@ -459,12 +459,20 @@ void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 			}
 	
 
+			_uint iPreIdx = CUIMgr::GetInstance()->GetPreStoneIdx();
+			if (CUIMgr::GetInstance()->GetStoneInfoUIActive(iPreIdx))
+				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iPreIdx);
 
+			CUIMgr::GetInstance()->SetActiveStoneInfoUI(true, iStoneIdx);
+ 			CUIMgr::GetInstance()->SetPreStoneIdx(iStoneIdx);
+			//if (Key_Down(KEY_LBUTTON))
 			//인포 온오프
 
-			if (Key_Down(KEY_SPACE))
+			if (Key_Down(KEY_LBUTTON))
 			{
-
+				CUIMgr::GetInstance()->SetActiveStoneListUI(false);
+				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iStoneIdx);
+				CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
 			}
 		}
 		else

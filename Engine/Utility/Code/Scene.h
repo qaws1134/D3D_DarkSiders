@@ -21,9 +21,15 @@ public:
 	virtual void		Render_Scene(void);
 	virtual void		Begin_Scene(void);
 
+	void Release_SaveLayer();
+	//map<const _tchar*, CLayer*> GetSaveLayer() { return m_mapSaveLayer; }
+	void SetSaveLayer(map<const _tchar*, CLayer*> mapSaveLayer) { m_mapSaveLayer = mapSaveLayer; }
+
 protected:
 	LPDIRECT3DDEVICE9				m_pGraphicDev;
 	map<const _tchar*, CLayer*>		m_mapLayer;
+	map<const _tchar*, CLayer*>		m_mapSaveLayer;
+
 	_bool							m_bBegin =false;
 public:
 	virtual void Free(void);

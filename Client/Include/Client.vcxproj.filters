@@ -46,12 +46,6 @@
     <Filter Include="02. GameObject\01. Character\01. WaterBoss">
       <UniqueIdentifier>{6d4ee4bd-727f-49c9-9175-2265a4943f07}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Scene\99. LoadMgr">
-      <UniqueIdentifier>{2bcc4c30-1061-4256-81ae-842c3c33eec4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Scene\98. SpawnMgr">
-      <UniqueIdentifier>{4384acaf-40c5-49e2-b063-6544d08174e9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="98.Headers">
       <UniqueIdentifier>{77d4be1d-8203-48a5-bd41-d04d66323aca}</UniqueIdentifier>
     </Filter>
@@ -81,6 +75,15 @@
     </Filter>
     <Filter Include="02. GameObject\05. Item">
       <UniqueIdentifier>{f47eeb95-ce5e-42fd-a4d4-25d717a75800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. LoadMgr">
+      <UniqueIdentifier>{2bcc4c30-1061-4256-81ae-842c3c33eec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. SpawnMgr">
+      <UniqueIdentifier>{4384acaf-40c5-49e2-b063-6544d08174e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\99. Colider">
+      <UniqueIdentifier>{214f2117-eaee-4e34-9618-bbcbe8c74f3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -112,10 +115,10 @@
       <Filter>02. GameObject\01. Character\00. Player</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\LoadMgr.h">
-      <Filter>01. Scene\99. LoadMgr</Filter>
+      <Filter>96. LoadMgr</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\SpawnMgr.h">
-      <Filter>01. Scene\98. SpawnMgr</Filter>
+      <Filter>95. SpawnMgr</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Loading.h">
       <Filter>01. Scene\02.Loading</Filter>
@@ -150,6 +153,9 @@
     <ClInclude Include="..\Code\WaterBoss.h">
       <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\ColMesh.h">
+      <Filter>02. GameObject\99. Colider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -171,10 +177,10 @@
       <Filter>02. GameObject\01. Character\00. Player</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\LoadMgr.cpp">
-      <Filter>01. Scene\99. LoadMgr</Filter>
+      <Filter>96. LoadMgr</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\SpawnMgr.cpp">
-      <Filter>01. Scene\98. SpawnMgr</Filter>
+      <Filter>95. SpawnMgr</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Loading.cpp">
       <Filter>01. Scene\02.Loading</Filter>
@@ -202,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\WaterBoss.cpp">
       <Filter>02. GameObject\01. Character\01. WaterBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ColMesh.cpp">
+      <Filter>02. GameObject\99. Colider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

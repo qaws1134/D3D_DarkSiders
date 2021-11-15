@@ -4,6 +4,8 @@
 #include "Logo.h"
 #include "UIMgr.h"
 #include "GameMgr.h"
+#include "LoadMgr.h"
+#include "SpawnMgr.h"
 CMainApp::CMainApp(void)
 {
 
@@ -20,6 +22,8 @@ HRESULT CMainApp::Ready_MainApp(void)
 
 	FAILED_CHECK_RETURN(Ready_Renderer(m_pGraphicDev), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Scene(m_pGraphicDev, &m_pManagementClass), E_FAIL);
+	
+	CGameMgr::GetInstance()->SetDevice(m_pGraphicDev);
 
 	return S_OK;
 }
@@ -114,10 +118,12 @@ void CMainApp::Free(void)
 {
 	
 	CGameMgr::GetInstance()->DestroyInstance();
+	CUIMgr::GetInstance()->DestroyInstance();
+	CLoadMgr::GetInstance()->DestroyInstance();
+	CSpawnMgr::GetInstance()->DestroyInstance();
 	Safe_Release(m_pGraphicDev);
 
 	Safe_Release(m_pManagementClass);
-	CUIMgr::GetInstance()->DestroyInstance();
 	Safe_Release(m_pDeviceClass);
 
 	Release_Utility();

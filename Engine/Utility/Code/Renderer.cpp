@@ -38,10 +38,12 @@ _bool		Compare_Z(CGameObject* pDest, CGameObject* pSrc)
 {
 	return pDest->Get_ViewZ() > pSrc->Get_ViewZ();
 }
+
 _bool		Compare_WorldZ(CGameObject* pDest, CGameObject* pSrc)
 {
 	return pDest->GetWorldZ(ID_DYNAMIC) > pSrc->GetWorldZ(ID_DYNAMIC);
 }
+
 void Engine::CRenderer::Render_Alpha(LPDIRECT3DDEVICE9& pGraphicDev)
 {
 	pGraphicDev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);

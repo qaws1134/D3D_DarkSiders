@@ -1,5 +1,5 @@
-#ifndef ColSphereMesh_h__
-#define ColSphereMesh_h__
+#ifndef ColMesh_h__
+#define ColMesh_h__
 
 #include "GameObject.h"
 #include "Define.h"
@@ -13,12 +13,12 @@ class CColliderSphere;
 
 END
 
-class CColSphereMesh : public CGameObject
+class CColMesh : public CGameObject
 {
 private:
-	explicit CColSphereMesh(LPDIRECT3DDEVICE9 pGraphicDev);
-	explicit CColSphereMesh(const CColSphereMesh& rhs);
-	virtual ~CColSphereMesh(void);
+	explicit CColMesh(LPDIRECT3DDEVICE9 pGraphicDev);
+	explicit CColMesh(const CColMesh& rhs);
+	virtual ~CColMesh(void);
 
 public:
 	virtual HRESULT Ready_Object( );
@@ -32,10 +32,9 @@ public:
 	void SetRadius(_float fRadius) { m_fRadius = fRadius; }
 	//void SetCol(_bool bCol) { m_bCol = bCol; }
 	void SetColSphere(COLLIDERSPHERE tColSphere) {m_fRadius = tColSphere.fRadius; m_vPos = tColSphere.vCenterPos;}
-
 	wstring GetBone() { return m_wstrBone; }
 	_float GetRadius() { return m_fRadius; }
-	_vec3 Get_CenterPos() { return m_vPos; }
+
 	void SetParantBoneMatrix(_matrix* pParantBone) { m_pParentBoneMatrix = pParantBone; }
 	void SetParantWorldMatrix(_matrix* pParantWorld) { m_pParentWorldMatrix = pParantWorld; }
 private:
@@ -53,7 +52,7 @@ private:
 	_vec3		m_vPos = {0.f,0.f,0.f};
 	_float		m_fRadius = 0.f;
 	wstring		m_wstrBone;
-//	_bool		m_bCol = false;;
+//	_bool		m_bCol = false;
 	COLLIDERSPHERE	m_tColSphere;
 
 	const _matrix* m_pParentBoneMatrix;	//충돌체가 따라 붙을 Bone 메트릭스
@@ -62,8 +61,8 @@ private:
 	
 
 public:
-	static CColSphereMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _float fRadius=1.f , wstring pBone = L"");
-	static CColSphereMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev,COLLIDERSPHERE tColSphere, wstring pBone = L"");
+	static CColMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _float fRadius=1.f , wstring pBone = L"");
+	static CColMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev,COLLIDERSPHERE tColSphere, wstring pBone = L"");
 	virtual void			Free(void);
 };
 

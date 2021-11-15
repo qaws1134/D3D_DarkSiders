@@ -160,13 +160,10 @@ void CUIMgr::InitCoreList(LPDIRECT3DDEVICE9 pGraphicDev)
 	_float fListSize = 450.f;
 	_float fSize = 50.f;
 
-	_float fBgZ = 0.6f;
-	_float fBaseZ = 0.5f;
-	_float flistBgZ = 0.4f;
-	_float flistZ = 0.3f;
-	_float fSelMaskZ = 0.25f;
-	_float fSelZ = 0.2f;
-	_float fCoreZ = 0.19f;
+	_float fBgZ = 0.31f;
+	_float fBaseZ = 0.3f;
+	_float flistBgZ = 0.29f;
+	_float flistZ = 0.28f;
 
 	_bool bActive = false;
 
@@ -283,13 +280,11 @@ void CUIMgr::InitToast(LPDIRECT3DDEVICE9 pGraphicDev)
 	pGameObject->SetZPos(fBgZ, ID_DYNAMIC);
 	m_listToastMsg.emplace_back(pGameObject);
 
-
 	m_mapHead.emplace(UI::LISTKEY_TOASTMSG, m_listToastMsg);
 }
 
 void CUIMgr::InitToastInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 {
-
 	CGameObject* pGameObject = nullptr;
 
 	//_float fInfoUISize = 200.f;
@@ -707,11 +702,13 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 	//이름
 	pGameObject = CUI::Create(pGraphicDev, tNameFont, bActive);
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Normal_Name" + wstrListIdx);
+	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
 	listItemInsert.emplace_back(pGameObject);
 
 	//내용 폰트
 	pGameObject = CUI::Create(pGraphicDev, tInfoFont, bActive);
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Light_Info" + wstrListIdx);
+	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
 	listItemInsert.emplace_back(pGameObject);
 
 
@@ -734,6 +731,8 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 
 	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal_Small",to_wstring(iPrice), _vec2(1065, 160.f + (m_iStoreIdx*90.f)), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Light_Price" + wstrListIdx);
+	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+
 	listItemInsert.emplace_back(pGameObject);
 }
 
@@ -825,9 +824,9 @@ void CUIMgr::SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone) //순서대
 	_float fStoneSize = 90.f;
 	_float fIconSize = 50.f;
 
-	_float fSelZ = 0.2f;
-	_float fStoneZ = 0.2f;
-	_float fCoreZ = 0.19f;
+	_float fSelZ = 0.22f;
+	_float fStoneZ = 0.22f;
+	_float fCoreZ = 0.21f;
 	_bool bActive =false;
 	
 
@@ -904,9 +903,9 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone)
 	_float fIconSize = 50.f;
 
 	_float fPosy = 180.f + (60.f*m_StoneListIdx);
-	_float fSelZ = 0.2f;
-	_float fStoneZ = 0.2f;
-	_float fCoreZ = 0.19f;
+	_float fSelZ = 0.22f;
+	_float fStoneZ = 0.22f;
+	_float fCoreZ = 0.21f;
 	_bool bActive = false;
 
 	//셀 bar

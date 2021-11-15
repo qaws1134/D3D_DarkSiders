@@ -16,16 +16,17 @@ private:
 	virtual ~CGameMgr();
 
 public:
-	CGameObject* GetPlayer() { return m_pPlayer; }
-	void SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer; }
+	void				SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer; }
+	void				SetDevice(LPDIRECT3DDEVICE9 pGraphicDev) { m_pGraphicDev = pGraphicDev; }
 	
+
+	CGameObject*		GetPlayer() { return m_pPlayer; }
+	vector<STONE>		GetStoneVec() { return m_vecStone; }
+	STONE				GetStone(UI::STONE eStone);
+	LPDIRECT3DDEVICE9	GetDevice() { return m_pGraphicDev; }
+
+
 	void TakeStone(UI::STONE eStone);
-
-	vector<STONE> GetStoneVec() { return m_vecStone; }
-	STONE GetStone(UI::STONE eStone);
-
-
-
 
 
 private:
@@ -35,7 +36,7 @@ private:
 	_float m_fSoul;
 	vector<STONE> m_vecStone;
 	vector<ITEM>m_vecItemInfo;
-
+	LPDIRECT3DDEVICE9 m_pGraphicDev;
 private:
 	virtual void Free(void) override;
 

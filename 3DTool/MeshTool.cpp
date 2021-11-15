@@ -452,6 +452,11 @@ void CMeshTool::PickMove(RAY tRayMouse)
 		m_pCtrlTransform->Get_INFO(INFO_POS, &vCtrlPos);
 
 		m_pCtrlTransform->Set_Pos(vPickPos.x, vCtrlPos.y, vPickPos.z);
+		m_fPositionX = vCtrlPos.x;
+		m_fPositionY = vCtrlPos.y;
+		m_fPositionZ = vCtrlPos.x;
+		UpdateData(false);
+
 	}
 
 
@@ -557,8 +562,13 @@ _bool CMeshTool::MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapM
 			dynamic_cast<CTransform*>(iter_second.second->Get_Component(L"Com_Transform", eID))->Get_INFO(INFO_POS, &vPos);
 			const _float* fRadius = dynamic_cast<CColliderSphere*>(iter_second.second->Get_Component(L"Com_Collider",ID_STATIC))->Get_Radius();
 			_float fSrcRadius = 0.1f;
-
-			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay, vPos,*fRadius))
+			_float fOffSet = 1.f;
+			m_pCheck = (CButton*)GetDlgItem(IDC_RADIO6);
+			if (m_pCheck->GetCheck())
+			{
+				fOffSet = 0.01f; //다이나믹일경우 100배줄임
+			}
+			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay, vPos,*fRadius*fOffSet))
 			{
 					if(m_pCtrlObject)
 						(m_pCtrlObject)->SetCol(false);
@@ -572,6 +582,21 @@ _bool CMeshTool::MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapM
 					m_pCtrlObject = iter_second.second;
 					m_pCtrlTransform = dynamic_cast<CTransform*>(m_pCtrlObject->Get_Component(L"Com_Transform", eID));
 					m_pCtrlObject->GetCol() ? m_pCtrlObject->SetCol(false) : m_pCtrlObject->SetCol(true);
+					_vec3 vPos;
+					m_pCtrlTransform->Get_INFO(INFO_POS, &vPos);
+					_vec3 vScale = m_pCtrlTransform->Get_Scale();
+					_vec3 vRot = m_pCtrlTransform->Get_Rot();
+
+					m_fPositionX = vPos.x;
+					m_fPositionY = vPos.y;
+					m_fPositionZ = vPos.x;
+					m_fScaleX = vScale.x;
+					m_fScaleY = vScale.y;
+					m_fScaleZ = vScale.z;
+					m_fRotationX = vRot.x;
+					m_fRotationY = vRot.y;
+					m_fRotationZ = vRot.z;
+					UpdateData(false);
 
 				return true;
 			}
@@ -904,6 +929,8 @@ void CMeshTool::OnBnClickedNaviDelete()
 {
 	m_pCtrlObject = nullptr;
 	m_pCtrlTransform = nullptr;
+	if (!m_hParentItem)
+		return;
 	CString wstrIdxKey = m_TreeNavi.GetItemText(m_hParentItem);
 	_uint iKey = stoi(wstrIdxKey.GetString());
 
@@ -1121,7 +1148,8 @@ void CMeshTool::OnBnClickedLoad()
 			for (_uint i = 0; i < dwMapSize; i++)
 			{
 				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
-				wstring wstrKey = pBuf + to_wstring(i);
+				wstring Token = L"_";
+				wstring wstrKey = pBuf + Token+ to_wstring(i);
 				CGameObject* pDynamicMesh = SpawnDynamicMesh(pBuf);
 				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Pos(&tMesh.vPos);
 				dynamic_cast<CTransform*>(pDynamicMesh->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_Scale(&tMesh.vScale);

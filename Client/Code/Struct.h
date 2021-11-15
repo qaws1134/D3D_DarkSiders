@@ -40,5 +40,12 @@ typedef struct Item
 }ITEM;
 
 
+typedef	struct tagLoadColData
+{
+	wstring wstrBoneName;
+	COLLIDERSPHERE tCol;
+}LOAD_DATA_COL;
+
+
 
 #endif 

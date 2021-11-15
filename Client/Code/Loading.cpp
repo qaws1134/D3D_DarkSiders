@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "Loading.h"
-
+#include "LoadMgr.h"
 #include "Export_Function.h"
+
+
 
 CLoading::CLoading(LPDIRECT3DDEVICE9 pGraphicDev)
 	: m_pGraphicDev(pGraphicDev)
@@ -61,6 +63,8 @@ Engine::_uint CLoading::Loading_ForStage(void)
 		
 	lstrcpy(m_szLoading, L"Loading Texture...............");
 	
+	CLoadMgr::GetInstance()->LoadData(L"../../Data/");
+
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Terrain", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Terrain/Grass_%d.tga", TEX_NORMAL, 2)), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_SkyBox", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/SkyBox/burger%d.dds", TEX_CUBE, 4)), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Explosion/Explosion%d.png", TEX_NORMAL, 90)), E_FAIL);
@@ -144,13 +148,18 @@ Engine::_uint CLoading::Loading_ForStage(void)
 //	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Mesh_Sword", CStaticMesh::Create(m_pGraphicDev, L"../Bin/Resource/Mesh/StaticMesh/Sword/", L"Sword.x")), E_FAIL);
 #pragma region DYNAMICMESH
 	FAILED_CHECK_RETURN(Ready_Prototype(L"War", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/War/", L"War.X")), E_FAIL);
-	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X")), E_FAIL);
 #pragma endregion DYNAMICMESH
 
 #pragma region STATICMESH	
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"TombStone", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/TombStone/", L"TombStone.x")), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Tree01", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Tree/", L"Tree01.X")), E_FAIL);
 #pragma region STATICMESH
+
+
+
+
+
 
 	lstrcpy(m_szLoading, L"Loading Complete!!!!");
 

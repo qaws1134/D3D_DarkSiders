@@ -15,6 +15,10 @@ Engine::CManagement::~CManagement(void)
 
 HRESULT Engine::CManagement::Set_Scene(CScene* pScene)
 {
+	//씬에서 넘겨줄 로드 데이터를 따로 저장 ?
+	//새로운 씬에 넘겨줌 
+	//pScene->SetSaveLayer(m_pScene->GetSaveLayer());
+
 	Safe_Release(m_pScene);	// 주의합시다!!!!!!!!!!!!
 
 	Clear_RenderGroup();
@@ -114,6 +118,7 @@ HRESULT Engine::CManagement::Ready_Shader(LPDIRECT3DDEVICE9 & pGraphicDev)
 
 void Engine::CManagement::Free(void)
 {
+	//m_pScene->Release_SaveLayer();
 	Safe_Release(m_pScene);
 }
 

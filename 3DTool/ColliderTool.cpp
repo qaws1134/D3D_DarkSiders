@@ -37,9 +37,9 @@ void CColliderTool::Release_Tools()
 {
 
 	DeleteMultiMap(m_mapReadyMesh);
-
 	for_each(m_mapCollider.begin(), m_mapCollider.end(), CDeleteMap());
 
+	DeleteMultiMap(m_mapMeshCollider);
 	Safe_Release(m_pSelectedGameObject);
 	KillTimer(COLLIDERTOOL_TIMER);
 	Safe_Release(m_pToolCam);
@@ -403,9 +403,10 @@ void CColliderTool::OnLbnSelchangeSaveList()
 	_uint iIdx = m_ListSave.GetCurSel();
 	CString cstrSaveKey;
 	m_ListSave.GetText(iIdx, cstrSaveKey);
-
+	m_TreeAttached.DeleteAllItems();
 	auto iter_find = m_mapMeshCollider.find(cstrSaveKey.GetString());
 	m_mapCollider = iter_find->second;
+
 	Set_TreeCollider(&m_TreeAttached, NULL);
 	UpdateData(FALSE);
 
@@ -437,10 +438,13 @@ void CColliderTool::OnBnClickedDeleteSaveList()
 	m_ListSave.GetText(iIdx, cstrSaveKey);
 	
 	auto iter_find = m_mapMeshCollider.find(cstrSaveKey.GetString());
-	for_each(iter_find->second.begin(), iter_find->second.end(), CDeleteMap());
 
-	m_mapMeshCollider.erase(cstrSaveKey.GetString());
+	if (iter_find->second != m_mapCollider)
+	{
+		for_each(iter_find->second.begin(), iter_find->second.end(), CDeleteMap());
+	}
 	
+	m_mapMeshCollider.erase(cstrSaveKey.GetString());
 	m_ListSave.DeleteString(iIdx);
 	UpdateData(FALSE);
 }
@@ -592,6 +596,7 @@ void CColliderTool::OnBnClickedLoad()
 				m_pColliderObj = CColSphereMesh::Create(m_pDevice
 					, tCol
 					,pBoneBuf);
+				dynamic_cast<CTransform*>(m_pColliderObj->Get_Component(L"Com_Transform", ID_DYNAMIC))->Set_CenterPos(&tCol.vCenterPos);
 
 				m_mapCollider.emplace(pTagBuf, m_pColliderObj);
 				Safe_Delete(pTagBuf);
@@ -698,6 +703,10 @@ void CColliderTool::OnNMClickAttachedColList(NMHDR *pNMHDR, LRESULT *pResult)
 	m_wstrColTag = wstrColKey.GetString();
 	m_bSelect = true;
 	UpdateData(FALSE);
+	OnEnChangePositionX();
+	OnEnChangePositionY();
+	OnEnChangePositionZ();
+
 	*pResult = 0;
 }
 

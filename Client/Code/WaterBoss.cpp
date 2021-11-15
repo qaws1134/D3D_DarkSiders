@@ -147,6 +147,8 @@ void CWaterBoss::StateChange()
 		case WaterBoss::STATE_IDLE:
 			m_fPatternSpeed = 0.f;
 			m_eCurAniState = WaterBoss::Idle;
+			m_bBlend = true;
+
 			break;
 		case WaterBoss::STATE_CALL_LIGHTNING:
 			m_eCurAniState = WaterBoss::Atk_CallLightning_Start;
@@ -184,12 +186,13 @@ void CWaterBoss::StateChange()
 		switch (m_eCurAniState)
 		{
 		case WaterBoss::Atk_CallLightning_Start:
+			m_bBlend = true;
 			break;
 		case WaterBoss::Atk_CallLightning:
-			m_bBlend = false;
+			m_bBlend = true;
 			break;
 		case WaterBoss::Atk_SummonOrb:
-			m_bBlend = false;
+			m_bBlend = true;
 			break;
 		case WaterBoss::Atk_Tentade_Pummel:	
 		case WaterBoss::Atk_TentadeSlam_FL:	
@@ -199,23 +202,28 @@ void CWaterBoss::StateChange()
 		case WaterBoss::Atk_TentadeSlam_L_02:
 		case WaterBoss::Atk_TentadeSlam_R:
 		case WaterBoss::Atk_TentadeSlam_R_02:
-			m_bBlend = true;
+			m_bBlend = false;
 			break;
 		case WaterBoss::Atk_WhirlPool:
-			m_bBlend = false;
+			m_bBlend = true;
 			break;
 		case WaterBoss::Impact_Stun:
+			m_bBlend = true;
 			break;
 		case WaterBoss::Impact_Stun_Loop:
+			m_bBlend = true;
 			break;
 		case WaterBoss::TidalWave:
-			m_bBlend = false;
+			m_bBlend = true;
 			break;
 		case WaterBoss::TidalWave_Impact:
+			m_bBlend = true;
 			break;
 		case WaterBoss::TidalWave_Loop:
+			m_bBlend = true;
 			break;
 		case WaterBoss::Idle:
+
 			break;
 		case WaterBoss::End:
 			break;
@@ -233,14 +241,14 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 	switch (m_eCurAniState)
 	{
 	case WaterBoss::Atk_CallLightning_Start:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eCurAniState = WaterBoss::Atk_CallLightning;
 		}
 
 		break;
 	case WaterBoss::Atk_CallLightning:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = WaterBoss::STATE_IDLE;
 			m_fPatternTimer = 2.f;
@@ -248,7 +256,7 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case WaterBoss::Atk_SummonOrb:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = WaterBoss::STATE_IDLE;
 			m_fPatternTimer = 2.f;
@@ -263,21 +271,21 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 	case WaterBoss::Atk_TentadeSlam_L_02:
 	case WaterBoss::Atk_TentadeSlam_R:
 	case WaterBoss::Atk_TentadeSlam_R_02:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = WaterBoss::STATE_IDLE;
 			m_fPatternTimer = 1.f;
 		}
 		break;
 	case WaterBoss::Atk_WhirlPool:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = WaterBoss::STATE_IDLE;
 			m_fPatternTimer = 5.f;
 		}
 		break;
 	case WaterBoss::Impact_Stun:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eCurAniState = WaterBoss::Impact_Stun_Loop;
 		}
@@ -289,7 +297,7 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case WaterBoss::TidalWave:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = WaterBoss::STATE_IDLE;
 		}

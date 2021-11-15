@@ -36,16 +36,19 @@ public:
 public :
 	CGameObject* GetTarget() { return m_pTarget; }
 	_bool GetActive() { return m_bActive; }
+	wstring& GetObjTag() { return m_wstrObjTag; }
 
-
+	void SetObjTag(wstring& wstrObjTag) { m_wstrObjTag = wstrObjTag; }
 	void SetTarget(CGameObject* pTarget) { m_pTarget = pTarget; }
 	void SetActive(_bool bActive) { m_bActive = bActive; }
-
+	void EmplaceCol(wstring ObjTag, CGameObject* pGameObject) { m_mapColider.emplace(ObjTag, pGameObject); }
 protected:
 	LPDIRECT3DDEVICE9					m_pGraphicDev;
 	map<const _tchar*, CComponent*>		m_mapComponent[ID_END];
 	CGameObject* m_pTarget;
 	_float								m_fViewZ;
+
+	wstring m_wstrObjTag = L""; 
 
 	_bool					m_bActive;
 private:
@@ -53,6 +56,8 @@ private:
 
 protected:
 	_bool	m_bCol = false;
+	map<wstring, CGameObject*>m_mapColider;
+
 public:
 	virtual void	Free(void);
 };

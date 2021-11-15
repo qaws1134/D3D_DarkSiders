@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Stage.h"
 #include "GameMgr.h"
+#include "LoadMgr.h"
 #include "Export_Function.h"
 
 CStage::CStage(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -142,6 +143,18 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Terrain", pGameObject), E_FAIL);
 
+	USES_CONVERSION;
+
+	for (auto& iter : CLoadMgr::GetInstance()->SpawnData())
+	{
+		 const _tchar* pObjKEy = W2BSTR(iter.first.c_str());
+
+		FAILED_CHECK_RETURN(pLayer->Add_GameObject(pObjKEy,iter.second), E_FAIL);
+		
+	}
+
+
+
 
 	//// Stone
 	//pGameObject = CStone::Create(m_pGraphicDev);
@@ -161,10 +174,10 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 
 //#pragma region PLAYER
 	// Player
-	pGameObject = CPlayer::Create(m_pGraphicDev);
-	NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	CGameMgr::GetInstance()->SetPlayer(pGameObject);
-	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Player", pGameObject), E_FAIL);
+	//pGameObject = CPlayer::Create(m_pGraphicDev);
+	//NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	//CGameMgr::GetInstance()->SetPlayer(pGameObject);
+	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Player", pGameObject), E_FAIL);
 
 
 	//pGameObject = CWaterBoss::Create(m_pGraphicDev);
@@ -173,7 +186,7 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 
 //	// Sword
 //	pGameObject = CSword::Create(m_pGraphicDev);
-//	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+//	NULL_CHECK_RETURN(pGameObject, E_FAIL);Z
 //	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Sword", pGameObject), E_FAIL);
 //
 //#pragma endregion PLAYER

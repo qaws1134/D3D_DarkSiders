@@ -75,7 +75,8 @@ PS_OUT		PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = tex2D(BaseSampler, In.vTexUV);
+	vector vColor = tex2D(BaseSampler, In.vTexUV);
+	Out.vColor = vColor;
 	return Out;
 };
 
@@ -112,7 +113,7 @@ technique Default_Device
 {
 	pass Texture1
 	{
-		ZEnable = false;
+		//ZEnable = false;
 		Alphablendenable = true;
 		srcblend = srcalpha;
 		destblend = invsrcalpha;

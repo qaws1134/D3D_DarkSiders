@@ -20,6 +20,7 @@ HRESULT CLogo::Ready_Scene(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(), E_FAIL);
 
 	FAILED_CHECK_RETURN(Ready_Layer_Environment(L"Environment"), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Layer_GameLogic(L"GameLogic"), E_FAIL);
 
 	m_pLoading = CLoading::Create(m_pGraphicDev, CLoading::LOADING_STAGE);
 	NULL_CHECK_RETURN(m_pLoading, E_FAIL);
@@ -69,6 +70,23 @@ HRESULT CLogo::Ready_Layer_Environment(const _tchar* pLayerTag)
 	return S_OK;
 }
 
+HRESULT CLogo::Ready_Layer_GameLogic(const _tchar* pLayerTag)
+{
+	CLayer*		pLayer = CLayer::Create();
+	NULL_CHECK_RETURN(pLayer, E_FAIL);
+
+	CGameObject*			pGameObject = nullptr;
+
+	//BackGround
+	pGameObject = CBackGround::Create(m_pGraphicDev);
+	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"BackGround", pGameObject), E_FAIL);
+
+
+	m_mapLayer.emplace(pLayerTag, pLayer);
+
+	return S_OK;
+}
 HRESULT CLogo::Ready_Prototype(void)
 {
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_TriCol", CTriCol::Create(m_pGraphicDev)), E_FAIL);
