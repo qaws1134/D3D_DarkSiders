@@ -22,6 +22,7 @@ HRESULT Engine::CLayer::Add_GameObject(const _tchar* pObjTag, CGameObject* pInst
 	return S_OK;
 }
 
+
 HRESULT Engine::CLayer::Ready_Layer(void)
 {
 	return S_OK;

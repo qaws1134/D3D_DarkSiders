@@ -55,12 +55,20 @@ HRESULT CUI::Ready_Object(void)
 	m_iPassIdx = 0;		//서브 텍스쳐가 늘어날 시 랜더 패스 변경 
 
 	
-	if (m_tInfo.wstrTexture == L"Proto_Texture_Element")
-		m_pTarget = CGameMgr::GetInstance()->GetPlayer();
+	//if (m_tInfo.wstrTexture == L"Proto_Texture_Element")
+	//	m_pTarget = CGameMgr::GetInstance()->GetPlayer();
 	
 	m_fScaleSize = 1.f;
 	return S_OK;
 }
+
+//void CUI::Late_Ready_Object(void)
+//{
+//	if (m_tInfo.wstrTexture == L"Proto_Texture_Element")
+//	{
+//		m_pTarget = CGameMgr::GetInstance()->GetPlayer();
+//	}
+//}
 
 _int CUI::Update_Object(const _float& fTimeDelta)
 {

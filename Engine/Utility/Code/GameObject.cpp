@@ -46,6 +46,24 @@ Engine::_int Engine::CGameObject::Update_Object(const _float& fTimeDelta)
 	return iResult;
 }
 
+void CGameObject::EmplaceCol(wstring ObjTag, CGameObject * pGameObject)
+{
+	USES_CONVERSION;
+	const _tchar* pConvObjTag = W2BSTR(ObjTag.c_str());
+	m_mapColider.emplace(pConvObjTag, pGameObject);
+}
+
+void CGameObject::SetCharInfo(_float fHp, _float fAtk)
+{
+	m_tCharInfo.fAtk = fAtk;
+	m_tCharInfo.fInitAtk = fAtk;
+
+	m_tCharInfo.fMaxHp = fHp;
+	m_tCharInfo.fHp = fHp;
+
+	m_tCharInfo.fDmg = 0.f;
+}
+
 Engine::CComponent * Engine::CGameObject::Find_Component(const _tchar * pComponentTag, COMPONENTID eID)
 {
 	auto	iter = find_if(m_mapComponent[eID].begin(), m_mapComponent[eID].end(), CTag_Finder(pComponentTag));
@@ -117,6 +135,15 @@ _float CGameObject::GetWorldZ(COMPONENTID eID)
 void CGameObject::Render_Object(void)
 {
 
+}
+
+void CGameObject::Set_Component(const _tchar * pComTag, CComponent * pComponent, COMPONENTID eID)
+{
+	auto iter_find = m_mapComponent[eID].find(pComTag);
+	if (iter_find != m_mapComponent[eID].end())
+		return;
+
+	m_mapComponent[eID].emplace(pComTag, pComponent);
 }
 
 

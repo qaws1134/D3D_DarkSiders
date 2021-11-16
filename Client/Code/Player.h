@@ -11,6 +11,7 @@ class CTransform;
 class CRenderer;
 class CCalculator;
 class CShader;
+class CNaviMesh;
 //class CColliderSphere;
 END
 
@@ -44,6 +45,7 @@ public:
 	void		Set_Element(War::WEAPON_ELEMENT eElement) { m_eElement = eElement; }
 	void		Set_PlayerState(War::STATE eState) { m_eMachineState = eState; }
 	void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
+	void		Set_NaviMesh(CNaviMesh* pNavi) { m_pNavi = pNavi; }
 #pragma  endregion Set 함수
 #pragma region Get 함수
 
@@ -60,7 +62,7 @@ private:
 	CRenderer*		m_pRendererCom = nullptr;
 	CCalculator*	m_pCalculatorCom = nullptr;
 	CShader*			m_pShaderCom = nullptr;
-
+	CNaviMesh*		m_pNavi = nullptr;
 private:
 
 	_vec3 m_vDir;

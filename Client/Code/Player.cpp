@@ -36,7 +36,7 @@ HRESULT CPlayer::Ready_Object(void)
 	dDashCheckFrame = 0.5;
 	dJumpLandCheckFrame = 0.7f;
 
-
+	SetCharInfo(100.f, 1.f);
 	m_eElement = War::ELEMENT_EARTH;		//ÀåÂøÇÑ ¼Ó¼º
 
 	return S_OK;
@@ -133,7 +133,8 @@ void CPlayer::Render_Object(void)
 	pEffect->BeginPass(0);
 
 	m_pMeshCom->Render_Meshes(pEffect);
-
+	if(m_pNavi)
+		m_pNavi->Render_NaviMesh();
 	pEffect->EndPass();
 	pEffect->End();
 
@@ -1110,7 +1111,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::War_Jump_Fall_Combat:
 		if (!m_bJumpEnd)
 		{
-			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 50.f, 100.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
+			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 120.f, 100.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
 			m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
 		}
 		break;

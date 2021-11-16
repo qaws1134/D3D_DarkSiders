@@ -367,14 +367,24 @@ _bool CCalculator::Collision_OBB(const _vec3 * pDestMin, const _vec3 * pDestMax,
 }
 
 _bool CCalculator::Collision_Sphere(const _vec3 * pDestCenter, const _float * pDestRadius,
-	const _vec3 * pSourCenter, const _float * pSourRadius)
+	const _vec3 * pSourCenter, const _float * pSourRadius, MESHTYPE eType)
 {
-
+	_float fDstRad = 0.f, fSrcRad = 0.f;
+	if (eType == MESH_DYNAMIC)
+	{
+		fDstRad = *pDestRadius * 0.01f;
+		fSrcRad = *pSourRadius * 0.01f;
+	}
+	else
+	{
+		fDstRad = *pDestRadius;
+		fSrcRad = *pSourRadius;
+	}
 	_vec3	vDestCenter, vSourCenter, vDistance;
 	_float	fRadiSum;
 
 
-	fRadiSum = *pDestRadius + *pSourRadius;
+	fRadiSum = fDstRad + fSrcRad;
 
 	vDistance = *pDestCenter - *pSourCenter;
 

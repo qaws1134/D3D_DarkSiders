@@ -25,7 +25,7 @@ HRESULT Engine::CCell::Ready_Cell(const _ulong& dwIndex,
 								const _vec3* pPointC)
 {
 	m_dwIndex = dwIndex;
-	Set_Line(pPointA, pPointB, pPointC);
+	//Set_Line(pPointA, pPointB, pPointC);
 	m_vPoint[POINT_A] = *pPointA;
 	m_vPoint[POINT_B] = *pPointB;
 	m_vPoint[POINT_C] = *pPointC;
@@ -46,27 +46,27 @@ HRESULT Engine::CCell::Ready_Cell(const _ulong& dwIndex,
 	return S_OK;
 }
 
-void CCell::Set_Line(const _vec3 * pPointA, const _vec3 * pPointB, const _vec3 * pPointC)
-{
-	for (_uint i = 0; i < LINE_END; i++)
-	{
-		Safe_Release(m_pLine[i]);
-	}
-
-	m_vPoint[POINT_A] = *pPointA;
-	m_vPoint[POINT_B] = *pPointB;
-	m_vPoint[POINT_C] = *pPointC;
-
-	m_pLine[LINE_AB] = CLine::Create(&_vec2(m_vPoint[POINT_A].x, m_vPoint[POINT_A].z),
-		&_vec2(m_vPoint[POINT_B].x, m_vPoint[POINT_B].z));
-
-	m_pLine[LINE_BC] = CLine::Create(&_vec2(m_vPoint[POINT_B].x, m_vPoint[POINT_B].z),
-		&_vec2(m_vPoint[POINT_C].x, m_vPoint[POINT_C].z));
-
-	m_pLine[LINE_CA] = CLine::Create(&_vec2(m_vPoint[POINT_C].x, m_vPoint[POINT_C].z),
-		&_vec2(m_vPoint[POINT_A].x, m_vPoint[POINT_A].z));
-
-}
+//void CCell::Set_Line(const _vec3 * pPointA, const _vec3 * pPointB, const _vec3 * pPointC)
+//{
+//	for (_uint i = 0; i < LINE_END; i++)
+//	{
+//		Safe_Release(m_pLine[i]);
+//	}
+//
+//	m_vPoint[POINT_A] = *pPointA;
+//	m_vPoint[POINT_B] = *pPointB;
+//	m_vPoint[POINT_C] = *pPointC;
+//
+//	m_pLine[LINE_AB] = CLine::Create(&_vec2(m_vPoint[POINT_A].x, m_vPoint[POINT_A].z),
+//		&_vec2(m_vPoint[POINT_B].x, m_vPoint[POINT_B].z));
+//
+//	m_pLine[LINE_BC] = CLine::Create(&_vec2(m_vPoint[POINT_B].x, m_vPoint[POINT_B].z),
+//		&_vec2(m_vPoint[POINT_C].x, m_vPoint[POINT_C].z));
+//
+//	m_pLine[LINE_CA] = CLine::Create(&_vec2(m_vPoint[POINT_C].x, m_vPoint[POINT_C].z),
+//		&_vec2(m_vPoint[POINT_A].x, m_vPoint[POINT_A].z));
+//
+//}
 
 Engine::_bool Engine::CCell::Compare_Point(
 	const _vec3* pPointFirst, 

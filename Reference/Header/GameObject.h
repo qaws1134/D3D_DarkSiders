@@ -29,19 +29,37 @@ public:
 
 
 public:
-	virtual		HRESULT		Ready_Object(void);
-	virtual     void		Late_Ready_Object(void);
-	virtual		_int		Update_Object(const _float& fTimeDelta);
-	virtual		void		Render_Object(void);
+	virtual	HRESULT		Ready_Object(void);
+	virtual void		Late_Ready_Object(void);
+	virtual	_int		Update_Object(const _float& fTimeDelta);
+	virtual	void		Render_Object(void);
 public :
 	CGameObject* GetTarget() { return m_pTarget; }
 	_bool GetActive() { return m_bActive; }
 	wstring& GetObjTag() { return m_wstrObjTag; }
+	map<const _tchar*, CGameObject*>& GetColmap() { return m_mapColider; }
 
 	void SetObjTag(wstring& wstrObjTag) { m_wstrObjTag = wstrObjTag; }
 	void SetTarget(CGameObject* pTarget) { m_pTarget = pTarget; }
 	void SetActive(_bool bActive) { m_bActive = bActive; }
-	void EmplaceCol(wstring ObjTag, CGameObject* pGameObject) { m_mapColider.emplace(ObjTag, pGameObject); }
+
+	void Set_Component(const _tchar* pComTag, CComponent* pComponent,COMPONENTID eID);
+
+
+	//체력, 데미지
+	void TakeDmg(_float fDmg) { m_tCharInfo.fDmg = fDmg; }
+	void ResetDmg() { m_tCharInfo.fDmg = 0.f; }
+	void SetHP(_float fHp) { m_tCharInfo.fHp = fHp; }
+	void SetAtk(_float fAtk) { m_tCharInfo.fAtk = fAtk; }
+
+	_float GetAtk() { return m_tCharInfo.fAtk; }
+	_float GetHp() { return m_tCharInfo.fHp; }
+	_float GetDmg() { return m_tCharInfo.fDmg; }
+
+	//충돌체
+	void EmplaceCol(wstring ObjTag, CGameObject* pGameObject);
+	void SetCharInfo(_float fHp, _float fAtk);
+
 protected:
 	LPDIRECT3DDEVICE9					m_pGraphicDev;
 	map<const _tchar*, CComponent*>		m_mapComponent[ID_END];
@@ -56,8 +74,9 @@ private:
 
 protected:
 	_bool	m_bCol = false;
-	map<wstring, CGameObject*>m_mapColider;
+	map<const _tchar*, CGameObject*>m_mapColider;
 
+	CHARINFO m_tCharInfo;
 public:
 	virtual void	Free(void);
 };

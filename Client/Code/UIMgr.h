@@ -26,7 +26,7 @@ public:
 	void	InitStore(LPDIRECT3DDEVICE9 pGraphicDev);
 	void	InitStoreList(LPDIRECT3DDEVICE9 pGraphicDev,list<CGameObject*> listStore, UI::ITEM eItemIdx);
 
-
+	void	BeginUISet();
 #pragma region Init
 
 	map<UI::LISTKEY, list<CGameObject*>> InitCreateUI(LPDIRECT3DDEVICE9 pGraphicDev);

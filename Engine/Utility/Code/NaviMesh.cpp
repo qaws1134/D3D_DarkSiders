@@ -22,11 +22,11 @@ Engine::CNaviMesh::~CNaviMesh(void)
 {
 
 }
-
-void CNaviMesh::Set_CellUpdate(_ulong dwIndex, _vec3 vPosA, _vec3 vPosB, _vec3 vPosC)
-{
-	m_vecCell[dwIndex]->Set_Line(&vPosA, &vPosB, &vPosC);
-}
+//
+//void CNaviMesh::Set_CellUpdate(_ulong dwIndex, _vec3 vPosA, _vec3 vPosB, _vec3 vPosC)
+//{
+//	m_vecCell[dwIndex]->Set_Line(&vPosA, &vPosB, &vPosC);
+//}
 
 void CNaviMesh::Add_Cell( _vec3 vPosA, _vec3 vPosB, _vec3 vPosC)
 {
@@ -34,79 +34,38 @@ void CNaviMesh::Add_Cell( _vec3 vPosA, _vec3 vPosB, _vec3 vPosC)
 	pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &vPosA, &vPosB, &vPosC);
 	NULL_CHECK_RETURN(pCell, );
 	m_vecCell.push_back(pCell);
-	FAILED_CHECK_RETURN(Link_Cell(), );
+	//FAILED_CHECK_RETURN(Link_Cell(), );
 }
 
 HRESULT Engine::CNaviMesh::Ready_NaviMesh(void)
 {
 
-	//m_vecCell.reserve(4);
-
-	//CCell*		pCell = nullptr;
-
-	//// 0
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(0.f, 0.f, 2.f), &_vec3(2.f, 0.f, 0.f), &_vec3(0.f, 0.f, 0.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-
-	//// 1
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(0.f, 0.f, 2.f), &_vec3(2.f, 0.f, 2.f), &_vec3(2.f, 0.f, 0.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-
-	//// 2
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(0.f, 0.f, 4.f), &_vec3(2.f, 0.f, 2.f), &_vec3(0.f, 0.f, 2.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-
-	//// 3
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(2.f, 0.f, 2.f), &_vec3(4.f, 0.f, 0.f), &_vec3(2.f, 0.f, 0.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-
-	//FAILED_CHECK_RETURN(Link_Cell(), E_FAIL);
-
 	return S_OK;
 }
-HRESULT Engine::CNaviMesh::Ready_NaviMesh(map<_ulong, map<_ulong, CCell*>> mapNavi)
+HRESULT CNaviMesh::Ready_NaviMesh(map<_uint, map<_uint, MESH>> mapNavi)
 {
-
 	m_vecCell.reserve(mapNavi.size());
 
 	CCell*		pCell = nullptr;
-
-
+	_vec3 vPos[3];
+	_uint idx = 0;
 	for (auto iter : mapNavi)
 	{
-		for (auto iter_Cell : iter.second)
+		for (auto iter_Pos : iter.second)
 		{
-			m_vecCell.emplace_back(iter_Cell.second);
+			vPos[idx] = iter_Pos.second.vPos;
+			idx++;
 		}
+		pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &vPos[0], &vPos[1], &vPos[2]);
+		NULL_CHECK_RETURN(pCell, E_FAIL);
+		m_vecCell.push_back(pCell);
+		idx = 0;
 	}
-	//// 0
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(0.f, 0.f, 2.f), &_vec3(2.f, 0.f, 0.f), &_vec3(0.f, 0.f, 0.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-
-	//// 1
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(0.f, 0.f, 2.f), &_vec3(2.f, 0.f, 2.f), &_vec3(2.f, 0.f, 0.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-
-	//// 2
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(0.f, 0.f, 4.f), &_vec3(2.f, 0.f, 2.f), &_vec3(0.f, 0.f, 2.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-
-	//// 3
-	//pCell = CCell::Create(m_pGraphicDev, m_vecCell.size(), &_vec3(2.f, 0.f, 2.f), &_vec3(4.f, 0.f, 0.f), &_vec3(2.f, 0.f, 0.f));
-	//NULL_CHECK_RETURN(pCell, E_FAIL);
-	//m_vecCell.push_back(pCell);
-	FAILED_CHECK_RETURN(Link_Cell(), E_FAIL);
-
+	Link_Cell();
 
 	return S_OK;
 }
+
 void CNaviMesh::Render_NaviMesh(void)
 {
 	for (auto& iter : m_vecCell)
@@ -126,6 +85,7 @@ _vec3 CNaviMesh::MoveOn_NaviMesh(const _vec3 * pTargetPos, const _vec3 * pTarget
 
 	return _vec3();
 }
+
 
 //_bool CNaviMesh::PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize)
 //{
@@ -187,15 +147,15 @@ Engine::CNaviMesh* Engine::CNaviMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 
 	return pInstance;
 }
-//Engine::CNaviMesh* Engine::CNaviMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev,map<_ulong,map<_ulong, CCell*>> m_mapCell)
-//{
-//	CNaviMesh*	pInstance = new CNaviMesh(pGraphicDev);
-//
-//	if (FAILED(pInstance->Ready_NaviMesh(m_mapCell)))
-//		Safe_Release(pInstance);
-//
-//	return pInstance;
-//}
+Engine::CNaviMesh * Engine::CNaviMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev, map<_uint, map<_uint, MESH>> mapNavi)
+{
+	CNaviMesh*	pInstance = new CNaviMesh(pGraphicDev);
+
+	if (FAILED(pInstance->Ready_NaviMesh(mapNavi)))
+		Safe_Release(pInstance);
+
+	return pInstance;
+}
 
 Engine::CComponent* Engine::CNaviMesh::Clone(void)
 {

@@ -110,6 +110,15 @@ namespace Engine
 
 
 
+	typedef struct tagCharacterInfo
+	{
+		_float fMaxHp;
+		_float fHp;
+		_float fAtk;
+		_float fInitAtk;
+		_float fDmg;
+	}CHARINFO;
+
 }
 
 #endif // Engine_Struct_h__

@@ -435,6 +435,14 @@ void CUIMgr::InitStoreList(LPDIRECT3DDEVICE9 pGraphicDev,list<CGameObject*> list
 	listStore.clear();
 }
 
+void CUIMgr::BeginUISet()
+{
+	for (auto iter : m_listWeaponElement)
+	{
+		iter->SetTarget(CGameMgr::GetInstance()->GetPlayer());
+	}
+}
+
 
 
 void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, list<CGameObject*>& listItemInsert)

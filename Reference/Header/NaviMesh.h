@@ -16,17 +16,17 @@ private:
 
 public:
 	void			Set_CellIndex(const _ulong& dwIndex) { m_dwIndex = dwIndex; }
-	void			Set_CellUpdate(_ulong dwIndex, _vec3 vPosA, _vec3 vPosB, _vec3 vPosC);
+	
 	void			Add_Cell( _vec3 vPosA, _vec3 vPosB, _vec3 vPosC);
 public:
 	HRESULT			Ready_NaviMesh();
-	HRESULT			Ready_NaviMesh(map<_ulong, map<_ulong, CCell*>> mapNavi);
+	HRESULT			Ready_NaviMesh(map<_uint, map<_uint, MESH>> mapNavi);
 	void			Render_NaviMesh(void);
 	_vec3			MoveOn_NaviMesh(const _vec3* pTargetPos, const _vec3* pTargetDir, const _float& fSpeed, const _float& fTimeDelta);
 	//_bool			PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize);
+	HRESULT			Link_Cell(void);
 
 private:
-	HRESULT			Link_Cell(void);
 
 private:
 	vector<CCell*>			m_vecCell;
@@ -34,6 +34,7 @@ private:
 
 public:
 	static CNaviMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
+	static  CNaviMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev, map<_uint, map<_uint, MESH>> mapNavi);
 	//static  CNaviMesh*		Create(LPDIRECT3DDEVICE9 pGraphicDev, map<_ulong, map<_ulong, CCell*>> mapNavi);
 	virtual CComponent*		Clone(void);
 	virtual void			Free(void);

@@ -56,7 +56,10 @@ _int CColMesh::Update_Object(const _float& fTimeDelta)
 	{
 		m_pTransformCom->Set_ParentMatrix(&(*m_pParentBoneMatrix * *m_pParentWorldMatrix));
 	}
-	
+
+	_vec3 vPos;
+	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+	m_pColliderCom->Set_Center(vPos);
 	Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;

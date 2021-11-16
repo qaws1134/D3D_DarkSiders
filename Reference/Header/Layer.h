@@ -15,6 +15,7 @@ public:
 	CComponent*		Get_Component(const _tchar* pObjTag, const _tchar* pComponentTag, COMPONENTID eID);
 	CGameObject*	Get_GameObject(const _tchar* pObjTag);
 
+	map<const _tchar*, CGameObject*>&GetMapObj() { return m_mapObject; }
 public:
 	HRESULT		Add_GameObject(const _tchar* pObjTag, CGameObject* pInstance);
 
@@ -25,7 +26,7 @@ public:
 private:
 	map<const _tchar*, CGameObject*>		m_mapObject;
 
-	//map<const _tchar*, vector<CGameObject*>>		m_mapObject;
+
 
 public:
 	static CLayer*		Create(void);

@@ -2,6 +2,9 @@
 #include "LoadMgr.h"
 #include "Struct.h"
 #include "SpawnMgr.h"
+#include "NaviMesh.h"
+#include "GameMgr.h"
+#include "Player.h"
 #include "Export_Function.h"
 
 
@@ -20,7 +23,7 @@ CLoadMgr::~CLoadMgr(void)
 
 HRESULT CLoadMgr::LoadData(wstring szFilePath)
 {
-	LoadColTool(szFilePath+L"Colider3.dat");
+	LoadColTool(szFilePath+L"Colider4.dat");
 	LoadMeshTool(szFilePath+L"Mesh.dat");
 
 	return S_OK;
@@ -159,13 +162,16 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 {
 	CGameObject* pCol = nullptr;
 	CGameObject* pGameObject = nullptr;
+	wstring LayerTag;
+	_vec3* vNavePos = nullptr; 
+
 
 	for (auto& iter : m_mapStaticData)
 	{
 		for (auto& iter_Second : iter.second)
 		{
 			//생성
-			pGameObject =  CSpawnMgr::GetInstance()->Spawn(iter.first.c_str(), iter_Second.second);
+			pGameObject =  CSpawnMgr::GetInstance()->Spawn(iter.first.c_str(), iter_Second.second, &LayerTag);
 			NULL_CHECK_MSG(pGameObject, L"로드 스태틱 데이터 실패");
 			SetTransform(dynamic_cast<CTransform*>(pGameObject->Get_Component(L"Com_Transform", ID_STATIC)), iter_Second.second);
  
@@ -175,16 +181,20 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 				//컬라이더 부착
 				for (auto& iter_find_second : iter_find->second)
 				{
+					USES_CONVERSION;
+					//레이어는 뒤에 메쉬 명 붙여서
+					const _tchar* pConvLayerTag = W2BSTR((LayerTag+iter_find->first).c_str());
+
 					pCol = CSpawnMgr::GetInstance()->Spawn(pGameObject, iter_find_second.second);
 					//오브젝트 맵에 따로 넣고 
 					pGameObject->EmplaceCol(iter_find_second.first, pCol);
-
-					m_mapHead.emplace((iter_find->first +iter_find_second.first), pCol);	//레이어에 추가 
+					Add_GameObject(pConvLayerTag, iter_find_second.first.c_str(), pCol);
+					//m_mapHead.emplace((iter_find->first +iter_find_second.first), pCol);	//레이어에 추가 
 				}
 			}
 			
 			//레이어에 추가할 데이터 저장 
-			m_mapHead.emplace(iter_Second.first,pGameObject);
+			//m_mapHead.emplace(iter_Second.first,pGameObject);
 		}
 	}
 
@@ -192,7 +202,7 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 	{
 		for (auto& iter_Second : iter.second)
 		{
-			pGameObject = CSpawnMgr::GetInstance()->Spawn(iter.first, iter_Second.second);
+			pGameObject = CSpawnMgr::GetInstance()->Spawn(iter.first, iter_Second.second, &LayerTag);
 			NULL_CHECK_MSG(pGameObject, L"로드 스태틱 데이터 실패");
 			SetTransform(dynamic_cast<CTransform*>( pGameObject->Get_Component(L"Com_Transform", ID_DYNAMIC)),iter_Second.second);
 
@@ -203,19 +213,27 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 				//컬라이더 부착
 				for (auto& iter_find_second : iter_find->second)
 				{
+					USES_CONVERSION;
+					const _tchar* pConvLayerTag = W2BSTR(LayerTag.c_str());
 					pCol = CSpawnMgr::GetInstance()->Spawn(pGameObject, iter_find_second.second);
 
 					//오브젝트 맵에 따로 넣고 
 					pGameObject->EmplaceCol(iter_find_second.first, pCol);
-			
-					m_mapHead.emplace((iter_find->first+iter_find_second.first),pCol);	//레이어에 추가 
+					//오브젝트 레이어에 맞춰서 생성 
+					Add_GameObject(pConvLayerTag, iter_find_second.first.c_str(), pCol);
+					//m_mapHead.emplace((iter_find->first+iter_find_second.first),pCol);	//레이어에 추가 
 				}
 			}
 
 			//레이어에 추가할 데이터 저장 
-			m_mapHead.emplace(iter_Second.first, pGameObject);
+			//m_mapHead.emplace(iter_Second.first, pGameObject);
 		}
 	}
+
+
+	CComponent* pComponent = CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData);
+	dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_NaviMesh(dynamic_cast<CNaviMesh*>(pComponent));
+	CGameMgr::GetInstance()->GetPlayer()->Set_Component(L"Com_Navi", pComponent,ID_STATIC);
 
 	return m_mapHead;
 }

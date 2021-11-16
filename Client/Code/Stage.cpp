@@ -93,6 +93,9 @@ void CStage::Begin_Scene()
 {
 	if (m_bBegin)
 		return;
+	CLoadMgr::GetInstance()->SpawnData();
+	Get_GameObject(L"UI", L"StaticCamera")->SetTarget(CGameMgr::GetInstance()->GetPlayer());
+	CUIMgr::GetInstance()->BeginUISet();
 	CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
 	CUIMgr::GetInstance()->InitToastInfo(m_pGraphicDev);
 
@@ -143,15 +146,16 @@ HRESULT CStage::Ready_Layer_GameLogic(const _tchar * pLayerTag)
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Terrain", pGameObject), E_FAIL);
 
-	USES_CONVERSION;
 
-	for (auto& iter : CLoadMgr::GetInstance()->SpawnData())
-	{
-		 const _tchar* pObjKEy = W2BSTR(iter.first.c_str());
+	//USES_CONVERSION;
 
-		FAILED_CHECK_RETURN(pLayer->Add_GameObject(pObjKEy,iter.second), E_FAIL);
-		
-	}
+	//for (auto& iter : CLoadMgr::GetInstance()->SpawnData())
+	//{
+	//	 const _tchar* pObjKEy = W2BSTR(iter.first.c_str());
+
+	//	FAILED_CHECK_RETURN(pLayer->Add_GameObject(pObjKEy,iter.second), E_FAIL);
+	//	
+	//}
 
 
 

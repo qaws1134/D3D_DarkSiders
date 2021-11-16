@@ -45,7 +45,7 @@ inline void			Add_GameObject(const _tchar* pLayerTag, const _tchar* pObjTag, CGa
 // ProtoMgr
 inline HRESULT		Ready_Renderer(LPDIRECT3DDEVICE9& pGraphicDev);
 inline HRESULT		Ready_Prototype(const _tchar* pProtoTag, CComponent* pInstance);
-inline CComponent* Clone_Prototype(const _tchar* pProtoTag);
+inline CComponent*  Clone_Prototype(const _tchar* pProtoTag);
 
 // Renderer
 inline CRenderer*	Get_Renderer(void);

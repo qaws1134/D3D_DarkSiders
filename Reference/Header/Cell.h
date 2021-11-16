@@ -23,7 +23,7 @@ public:
 	void				Set_Neighbor(NEIGHBOR eType, CCell* pNeighbor) { m_pNeighbor[eType] = pNeighbor; }
 	const _ulong*		Get_CellIndex(void) { return &m_dwIndex; }
 
-	void				Set_Line(const _vec3* pPointA, const _vec3* pPointB, const _vec3* pPointC);
+	
 public:							 
 	HRESULT					Ready_Cell(const _ulong& dwIndex, 
 										const _vec3* pPointA, 

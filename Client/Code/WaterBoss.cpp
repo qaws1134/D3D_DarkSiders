@@ -37,6 +37,9 @@ HRESULT CWaterBoss::Ready_Object(void)
 	m_iPatternNum = 0;
 	m_bBlendTime = 0.5;
 
+
+	SetCharInfo(50.f, 4.f);
+
 	return S_OK;
 }
 

@@ -87,6 +87,7 @@ HRESULT CLogo::Ready_Layer_GameLogic(const _tchar* pLayerTag)
 
 	return S_OK;
 }
+
 HRESULT CLogo::Ready_Prototype(void)
 {
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_TriCol", CTriCol::Create(m_pGraphicDev)), E_FAIL);
@@ -96,9 +97,10 @@ HRESULT CLogo::Ready_Prototype(void)
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Texture_Loading", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Logo/Loading.png", TEX_NORMAL, 1)), E_FAIL);
 
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Transform", CTransform::Create(m_pGraphicDev)), E_FAIL);
-
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_NaviMesh", CNaviMesh::Create(m_pGraphicDev)), E_FAIL);
 	return S_OK;
 }
+
 void CLogo::Render_Scene(void)
 {
 	// DEBUG ¿ë

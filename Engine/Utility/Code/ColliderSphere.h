@@ -16,6 +16,9 @@ public:
 	 _matrix*			Get_ColliderWorld(void) { return &m_matColMatrix; }
 	const _vec3*		Get_Center() { return &m_vCenter; }
 	const _float*		Get_Radius() { return &m_fRadius; }
+
+
+	void		Set_Center(_vec3 vCenter) { m_vCenter = vCenter; }
 public:
 	HRESULT			Ready_Collider(const _vec3* pPos,_float fRadius = 0);
 	HRESULT			Ready_Collider(const _vec3* pPos,_ulong dwVtxCnt);

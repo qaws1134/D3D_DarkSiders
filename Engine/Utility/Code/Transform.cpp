@@ -28,6 +28,7 @@ Engine::CTransform::~CTransform(void)
 
 _bool CTransform::MoveStep(MOVETYPE eMoveType,  _float* fSpeed, const _float& fPower, const _float& fMaxSpeed, const _vec3* vDir, const _float& fTimeDelta)
 {
+
 	switch (eMoveType)
 	{
 	case Engine::MOVETYPE_ACC:
@@ -47,6 +48,7 @@ _bool CTransform::MoveStep(MOVETYPE eMoveType,  _float* fSpeed, const _float& fP
 	case Engine::MOVETYPE_END:
 		break;
 	}
+	m_fAccel = *fSpeed*fTimeDelta;
 	Move_Pos(vDir, *fSpeed, fTimeDelta);
 	
 	return false;
@@ -189,8 +191,15 @@ void Engine::CTransform::Set_WorldMatrix(const _matrix* pWorld)
 
 void Engine::CTransform::Move_Pos(const _vec3* pDir, const _float& fSpeed, const _float& fTimeDelta)
 {
-	m_vInfo[INFO_POS] += *pDir * fSpeed * fTimeDelta;
+	m_fTransTimer = fTimeDelta;
+	m_vInfo[INFO_POS] = m_vInfo[INFO_POS] + *pDir * fSpeed * fTimeDelta;
 }
+
+void CTransform::Move_Pos(const _vec3 * pDir, const _float & fSpeed)
+{
+	m_vInfo[INFO_POS] = m_vInfo[INFO_POS] + *pDir * fSpeed;
+}
+
 
 void Engine::CTransform::Rotation(ROTATION eType, const _float& fAngle)
 {

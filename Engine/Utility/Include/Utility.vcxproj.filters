@@ -109,6 +109,9 @@
     <Filter Include="09.RenderTarget\Manger">
       <UniqueIdentifier>{dec1baca-efed-4ebb-86d7-3c95096ac064}</UniqueIdentifier>
     </Filter>
+    <Filter Include="10.ColMgr">
+      <UniqueIdentifier>{e7efa874-2cba-496b-8d0a-f7ef4bddd71f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Component.cpp">
@@ -209,6 +212,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\RenderTargetMgr.cpp">
       <Filter>09.RenderTarget\Manger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ColMgr.cpp">
+      <Filter>10.ColMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -331,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Shader_UI.hpp">
       <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ColMgr.h">
+      <Filter>10.ColMgr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
