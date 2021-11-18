@@ -2,7 +2,7 @@
 #include "Loading.h"
 #include "LoadMgr.h"
 #include "Export_Function.h"
-
+#include "GameMgr.h"
 
 
 CLoading::CLoading(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -126,7 +126,11 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneBase",	CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Base_0%d.png", TEX_NORMAL, 4)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneElement", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneElement_0%d.png", TEX_NORMAL, 8)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Creature",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Creature_0%d.png", TEX_NORMAL, 22)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneEffect", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneEffect.png", TEX_NORMAL, 0)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneEffect", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneEffect.png", TEX_NORMAL, 1)), E_FAIL);
+
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect_Lightning", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/VFX_gen_bolts.tga", TEX_NORMAL, 1)), E_FAIL);
+
 
 
 #pragma endregion UI Texture
@@ -154,12 +158,66 @@ Engine::_uint CLoading::Loading_ForStage(void)
 #pragma region STATICMESH	
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"TombStone", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/TombStone/", L"TombStone.x")), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Tree01", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Tree/", L"Tree01.X")), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss_Orb", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterBoss_Orb/", L"Orb.X")), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss_Bullet", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterBoss_Bullet/", L"WaterBoss_Bullet.X")), E_FAIL);
+
+
+	for (_uint i = 0; i < 6; i++)
+	{
+		wstring wstrProto = L"Effect_Bolt" + to_wstring(i);
+		wstring wsrFile = L"Effect_Bolt" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 3; i++)
+	{
+		wstring wstrProto = L"Ramp" + to_wstring(i);
+		wstring wsrFile = L"Ramp" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 3; i++)
+	{
+		wstring wstrProto = L"StoneCluster" + to_wstring(i);
+		wstring wsrFile = L"StoneCluster" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"StoneSingle" + to_wstring(i);
+		wstring wsrFile = L"StoneSingle" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+
+
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Ghost" + to_wstring(i);
+		wstring wsrFile = L"Ghost" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterFloor/", L"WaterFloor.X")), E_FAIL);
+
+
+
+
+
+
 #pragma region STATICMESH
 
 
 
-
-
+	//오브젝트 풀 생성 
+	//CGameMgr::GetInstance()->InitObjPool();
 
 	lstrcpy(m_szLoading, L"Loading Complete!!!!");
 

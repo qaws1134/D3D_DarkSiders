@@ -42,7 +42,7 @@ inline void	Render_Font(const _tchar* pFontTag,
 	const _vec2* pPos,
 	D3DXCOLOR Color);
 
-
+inline void	Set_FontZ(const _tchar* pFontTag,_float fSortZ);
 // InputDev
 inline _byte	Get_DIKeyState(_ubyte byKeyID);
 inline _byte	Get_DIMouseState(MOUSEKEYSTATE eMouse);

@@ -37,6 +37,7 @@ HRESULT CColliderSphere::Ready_Collider(const _vec3 * pPos,_float fRadius)
 	//가장 작은 좌표 값과 가증 큰 좌표 값을 만들어주는 함수
 	//D3DXComputeBoundingSphere(pPos, dwVtxCnt, sizeof(_vec3), &m_vCenter, &m_fRadius);
 	m_fRadius = fRadius;
+	//D3DXMatrixIdentity(&m_matColMatrix);
 #ifdef  _DEBUG
 	
 	D3DXCreateSphere(

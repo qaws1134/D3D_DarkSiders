@@ -21,12 +21,12 @@ public:
 	void		Render_Font(const _tchar* pString, 
 							const _vec2* pPos,
 							D3DXCOLOR Color);
-
+	void		SetFontZ(_float fSortZ) { m_fSortZ = fSortZ; }
 private:
 	LPDIRECT3DDEVICE9		m_pGraphicDev;
 	LPD3DXFONT				m_pFont;
 	LPD3DXSPRITE			m_pSprite;
-
+	_float					m_fSortZ = 0.15f;
 public:
 	static CFont*		Create(LPDIRECT3DDEVICE9 pGraphicDev,
 								const _tchar* pFontType,

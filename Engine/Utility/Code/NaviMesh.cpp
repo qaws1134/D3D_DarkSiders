@@ -16,6 +16,7 @@ Engine::CNaviMesh::CNaviMesh(const CNaviMesh& rhs)
 {
 	for (auto& iter : m_vecCell)
 		iter->AddRef();
+
 }
 
 Engine::CNaviMesh::~CNaviMesh(void)

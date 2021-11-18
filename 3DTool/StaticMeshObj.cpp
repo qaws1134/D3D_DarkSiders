@@ -23,9 +23,9 @@ CStaticMeshObj::~CStaticMeshObj(void)
 HRESULT CStaticMeshObj::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
-	//m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
-
+	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
+	m_pTransformCom->Update_Component(0.f);
 
 	return S_OK;
 }
@@ -95,7 +95,7 @@ HRESULT CStaticMeshObj::Add_Component()
 
 		// Mesh
 	pComponent = m_pMeshCom = dynamic_cast<CStaticMesh*>(Clone_Prototype(m_wstrProtoMesh.c_str()));
-	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
+ 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
 
 	// Transform
@@ -114,9 +114,11 @@ HRESULT CStaticMeshObj::Add_Component()
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
 
-
+	_vec3 vPos;
+	m_pTransformCom->Get_INFO(INFO_POS,&vPos);
+	
 	// Collider
-	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, m_pMeshCom->Get_VtxPos(), m_pMeshCom->Get_VtxCnt());
+	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, &vPos, 100.f);
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
 

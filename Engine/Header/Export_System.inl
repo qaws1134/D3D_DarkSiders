@@ -60,6 +60,14 @@ void	Render_Font(const _tchar* pFontTag, const _tchar* pString, const _vec2* pPo
 	CFontMgr::GetInstance()->Render_Font(pFontTag, pString, pPos, Color);
 }
 
+void	Set_FontZ(const _tchar* pFontTag, _float fSortZ)
+{
+	CFontMgr::GetInstance()->SetFontZ(pFontTag, fSortZ);
+}
+
+
+
+
 // InputDev
 _byte	Get_DIKeyState(_ubyte byKeyID)
 {

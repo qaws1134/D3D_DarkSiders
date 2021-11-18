@@ -564,10 +564,9 @@ _bool CMeshTool::MeshCol(RAY tRay, map<wstring, map<wstring, CGameObject*>> mapM
 			_float fSrcRadius = 0.1f;
 			_float fOffSet = 1.f;
 			m_pCheck = (CButton*)GetDlgItem(IDC_RADIO6);
-			if (m_pCheck->GetCheck())
-			{
-				fOffSet = 0.01f; //다이나믹일경우 100배줄임
-			}
+
+			fOffSet = 0.005f; //다이나믹일경우 100배줄임
+			
 			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay, vPos,*fRadius*fOffSet))
 			{
 					if(m_pCtrlObject)
@@ -781,6 +780,10 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 		for (auto map_iter : iter.second)
 		{
 			map_iter.second->Update_Object(m_fDeltaTime);
+			if (map_iter.first == L"PlayerBarrier_0")
+			{
+				continue;
+			}
 		}
 	}
 	for (auto iter : m_mapDynamicMesh)
@@ -880,9 +883,28 @@ void CMeshTool::OnBnClickedObjStaticListDelete()
 	CString wstrIdxKey = m_TreeStatic.GetItemText(hItem);
 	CString wstrToken = L"_";
 	_int iTokenIdx = 0;
-	CString wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx);
+	CString wstrKey;
+	CString wstrTokenKey;
+	CString wstrSaveToken;
+	while (true)
+	{
+		//wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx);
+		//iTokenIdx++;
 
-	auto iter_find = m_mapStaticMesh.find(wstrKey.GetString());
+		if ((wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx)) == L"")
+		{
+
+			wstrTokenKey.Delete(wstrTokenKey.GetLength() - wstrSaveToken.GetLength() - 2, 2 + wstrSaveToken.GetLength());
+			break;
+		}
+		else
+		{
+			wstrSaveToken = wstrKey;
+			wstrTokenKey += wstrKey + wstrToken;
+		}
+	}
+
+	auto iter_find = m_mapStaticMesh.find(wstrTokenKey.GetString());
 
 	if (iter_find == m_mapStaticMesh.end())
 		return;
@@ -1097,6 +1119,7 @@ void CMeshTool::OnBnClickedLoad()
 		DWORD dwbyte = 0;
 		DWORD dwStringSize = 0;
 		DWORD dwMapSize = 0;
+		DWORD dwObjSize = 0;
 		TCHAR* pBuf = nullptr;
 		MESH tMesh;
 
@@ -1119,12 +1142,13 @@ void CMeshTool::OnBnClickedLoad()
 			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			pBuf = new TCHAR[dwStringSize];
 			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+			ReadFile(hFile, &dwObjSize, sizeof(DWORD), &dwbyte, nullptr);
 			map<wstring, CGameObject*> mapStaticObj;
-			for (_uint i = 0; i < dwMapSize; i ++)
+			for (_uint i = 0; i < dwObjSize; i ++)
 			{
 				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
-				wstring wstrKey = pBuf + to_wstring(i);
+				wstring Token = L"_";
+				wstring wstrKey = pBuf + Token + to_wstring(i);
 				CGameObject* pStaticMesh = SpawnStaticMesh(pBuf);
 				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Pos(&tMesh.vPos);
 				dynamic_cast<CTransform*>(pStaticMesh->Get_Component(L"Com_Transform", ID_STATIC))->Set_Scale(&tMesh.vScale);
@@ -1143,9 +1167,9 @@ void CMeshTool::OnBnClickedLoad()
 			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			pBuf = new TCHAR[dwStringSize];
 			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
+			ReadFile(hFile, &dwObjSize, sizeof(DWORD), &dwbyte, nullptr);
 			map<wstring, CGameObject*> mapDynamicObj;
-			for (_uint i = 0; i < dwMapSize; i++)
+			for (_uint i = 0; i < dwObjSize; i++)
 			{
 				ReadFile(hFile, &tMesh, sizeof(MESH), &dwbyte, nullptr);
 				wstring Token = L"_";
@@ -1484,15 +1508,35 @@ void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 		CString wstrIdxKey = m_TreeStatic.GetItemText(hItem);
 		CString wstrToken = L"_";
 		_int iTokenIdx = 0;
-		CString wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx);
+		CString wstrKey;
+		CString wstrTokenKey;
+		CString wstrSaveToken;
+		while (true)
+		{
+			//wstrKey = wstrIdxKey.Tokenize(wstrToken, iTokenIdx);
+			//iTokenIdx++;
+		
+			if ((wstrKey=wstrIdxKey.Tokenize(wstrToken, iTokenIdx)) == L"")
+			{
 
-		auto iter_find = m_mapStaticMesh.find(wstrKey.GetString());
+				wstrTokenKey.Delete(wstrTokenKey.GetLength()- wstrSaveToken.GetLength()-2, 2+ wstrSaveToken.GetLength());
+				break;
+			}
+			else
+			{
+				wstrSaveToken = wstrKey;
+				wstrTokenKey += wstrKey+wstrToken;
+			}
+		}
+
+		auto iter_find = m_mapStaticMesh.find(wstrTokenKey.GetString());
 
 		if (iter_find == m_mapStaticMesh.end())
 			return;
 
 		auto Objiter_find = iter_find->second.find(wstrIdxKey.GetString());
-		
+		if (Objiter_find == iter_find->second.end())
+			return;
 		if (!Objiter_find->second)
 			return;
 
@@ -1518,7 +1562,7 @@ void CMeshTool::OnNMClickStaticList(NMHDR *pNMHDR, LRESULT *pResult)
 		m_fPositionX = vPos.x;
 		m_fPositionY = vPos.y;
 		m_fPositionZ = vPos.z;
-
+		m_vPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
 	}
 
 	*pResult = 0;
@@ -1575,6 +1619,7 @@ void CMeshTool::OnNMClickDynamicList(NMHDR *pNMHDR, LRESULT *pResult)
 		m_fPositionX = vPos.x;
 		m_fPositionY = vPos.y;
 		m_fPositionZ = vPos.z;
+		m_vPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
 
 	}
 
@@ -1727,7 +1772,7 @@ void CMeshTool::OnDeltaposSpinPositionX(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		m_fPositionX -= m_fDeltaTime;
 	}
-	m_vPos.x = m_fPositionX;
+	m_vPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
 	m_pCtrlTransform->Set_Pos(&m_vPos);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	*pResult = 0;
@@ -1741,6 +1786,7 @@ void CMeshTool::OnDeltaposSpinPositionY(NMHDR *pNMHDR, LRESULT *pResult)
 		return;
 	UpdateData(TRUE);
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	
 	if (pNMUpDown->iDelta < 0)	//->값 증가
 	{
 		m_fPositionY += m_fDeltaTime;
@@ -1749,7 +1795,8 @@ void CMeshTool::OnDeltaposSpinPositionY(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		m_fPositionY -= m_fDeltaTime;
 	}
-	m_vPos.y = m_fPositionY;
+	
+	m_vPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
 	m_pCtrlTransform->Set_Pos(&m_vPos);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	*pResult = 0;
@@ -1771,7 +1818,7 @@ void CMeshTool::OnDeltaposSpinPositionZ(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		m_fPositionZ -= m_fDeltaTime;
 	}
-	m_vPos.z = m_fPositionZ;
+	m_vPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
 	m_pCtrlTransform->Set_Pos(&m_vPos);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	*pResult = 0;

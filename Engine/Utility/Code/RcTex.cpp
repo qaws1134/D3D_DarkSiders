@@ -20,6 +20,34 @@ Engine::CRcTex::~CRcTex(void)
 
 }
 
+void CRcTex::SetUV(_vec2 * pUV)
+{
+	if(!m_pUV)
+		m_pUV = new _vec2[m_dwVtxCnt];
+
+	VTXTEX*		pVertex = nullptr;
+	m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+
+	for(_uint i = 0 ; i <4; i++)
+		pVertex[i].vTexUV = pUV[i];
+
+
+	m_pVB->Unlock();
+}
+
+void CRcTex::MoveUV(_vec2 vUV)
+{
+	m_pUV[0].x += vUV.x;
+	m_pUV[1].x += vUV.x;
+	m_pUV[2].x += vUV.x;
+	m_pUV[3].x += vUV.x;
+
+	m_pUV[0].y += vUV.y;
+	m_pUV[1].y += vUV.y;
+	m_pUV[2].y += vUV.y;
+	m_pUV[3].y += vUV.y;
+}
+
 HRESULT Engine::CRcTex::Ready_Buffer(void)
 {
 	m_dwTriCnt = 2;
@@ -30,7 +58,7 @@ HRESULT Engine::CRcTex::Ready_Buffer(void)
 	m_IdxFmt = D3DFMT_INDEX16;
 	m_dwIdxSize = sizeof(INDEX16);
 	m_pPos = new _vec3[m_dwVtxCnt];
-
+	m_pUV = new _vec2[m_dwVtxCnt];
 	FAILED_CHECK_RETURN(CVIBuffer::Ready_Buffer(), E_FAIL);
 
 
@@ -53,6 +81,8 @@ HRESULT Engine::CRcTex::Ready_Buffer(void)
 	for(_uint i = 0; i <4; i++)
 		m_pPos[i] = pVertex[i].vPosition;
 
+	for (_uint i = 0; i < 4; i++)
+		m_pUV[i] = pVertex[i].vTexUV;
 
 	
 	INDEX16*	pIndex = nullptr;
@@ -92,6 +122,8 @@ void Engine::CRcTex::Free(void)
 {
 	if (false == m_bClone)
 		Safe_Delete_Array(m_pPos);
+
+	Safe_Delete_Array(m_pUV);
 
 	CVIBuffer::Free();
 }

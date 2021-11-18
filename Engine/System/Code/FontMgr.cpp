@@ -38,6 +38,16 @@ void Engine::CFontMgr::Render_Font(const _tchar* pFontTag, const _tchar* pString
 
 }
 
+void CFontMgr::SetFontZ(const _tchar * pFontTag, _float fSortZ)
+{
+	auto	iter = find_if(m_mapFont.begin(), m_mapFont.end(), CTag_Finder(pFontTag));
+
+	if (iter == m_mapFont.end())
+		return;
+
+	return iter->second->SetFontZ(fSortZ);
+}
+
 CFont* Engine::CFontMgr::Find_Font(const _tchar* pFontTag)
 {
 	auto	iter = find_if(m_mapFont.begin(), m_mapFont.end(), CTag_Finder(pFontTag));

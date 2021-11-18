@@ -15,12 +15,13 @@ private:
 public:
 	HRESULT	Ready_Meshes(const _tchar* pFilePath, const _tchar* pFileName);
 	void	Render_Meshes(void);
+	void	Render_Meshes(LPD3DXEFFECT& pEffect);
 
 public :
 	const _vec3*			Get_VtxPos(void) { return m_pVtxPos; }
 	const _ulong&			Get_Stride(void) { return m_dwStride; }
 	const _ulong&			Get_VtxCnt(void) { return m_dwVtxCnt; }
-
+	_bool					Find_Alpha(const char* pFileName);
 
 
 private:

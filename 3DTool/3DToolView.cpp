@@ -139,6 +139,7 @@ CMy3DToolDoc* CMy3DToolView::GetDocument() const // 디버그되지 않은 버전은 인라�
 
 void CMy3DToolView::OnInitialUpdate()
 {
+	USES_CONVERSION;
 	CView::OnInitialUpdate();
 
 
@@ -186,6 +187,92 @@ void CMy3DToolView::OnInitialUpdate()
 	Ready_Prototype(L"War", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/War/", L"War.X"));
 
 	Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X"));
+	Ready_Prototype(L"PlayerBarrier", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/PlayerBarrier/", L"PlayerBarrier.X"));
+
+
+
+	for (_uint i = 0; i < 24; i++) 
+	{
+		wstring wstrProto = L"Eden" + to_wstring(i);
+		wstring wsrFile = L"Eden" + to_wstring(i)+ L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Eden/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Eden_decal" + to_wstring(i);
+		wstring wsrFile = L"Eden_decal" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Eden/", pConvFileTag));
+	}
+	Ready_Prototype(L"Eden_Edge", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Eden/", L"Eden_Edge.X"));
+
+	for (_uint i = 0; i < 5; i++)
+	{
+		wstring wstrProto = L"Eden_Prop" + to_wstring(i);
+		wstring wsrFile = L"Eden_Prop" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Eden_Prop/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Eden_WaterFall" + to_wstring(i);
+		wstring wsrFile = L"Eden_WaterFall" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/WaterFall/", pConvFileTag));
+	}
+
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"StoneSingle" + to_wstring(i);
+		wstring wsrFile = L"StoneSingle" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 3; i++)
+	{
+		wstring wstrProto = L"StoneCluster" + to_wstring(i);
+		wstring wsrFile = L"StoneCluster" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+
+
+
+
+	for (_uint i = 0; i < 6; i++)
+	{
+		wstring wstrProto = L"Effect_Bolt" + to_wstring(i);
+		wstring wsrFile = L"Effect_Bolt" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 3; i++)
+	{
+		wstring wstrProto = L"Ramp" + to_wstring(i);
+		wstring wsrFile = L"Ramp" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Ghost" + to_wstring(i);
+		wstring wsrFile = L"Ghost" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	}
+
+
 	// Terrain
 	m_pTerrain = CTerrain::Create(m_pDevice);
 	NULL_CHECK_RETURN(m_pTerrain, );

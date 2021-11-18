@@ -27,7 +27,7 @@ public:
 						const _tchar* pString,
 						const _vec2* pPos, 
 						D3DXCOLOR Color);
-
+	void	SetFontZ(const _tchar* pFontTag, _float fSortZ);
 private:
 	CFont*		Find_Font(const _tchar* pFontTag);
 

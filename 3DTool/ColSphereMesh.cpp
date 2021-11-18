@@ -129,6 +129,7 @@ HRESULT CColSphereMesh::Add_Component()
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
 
+
 	// Collider
 	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, &m_vPos, m_fRadius);
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);

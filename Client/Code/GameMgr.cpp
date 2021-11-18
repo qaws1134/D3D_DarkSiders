@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GameMgr.h"
 #include "UIMgr.h"
+#include "Bullet.h"
+#include "Effect.h"
 #include "Export_Function.h"
 
 
@@ -9,11 +11,13 @@ IMPLEMENT_SINGLETON(CGameMgr)
 CGameMgr::CGameMgr()
 {
 	m_vecStone.reserve(22);
+	CGameObject* pGameObject = nullptr;
+
 }
 
 CGameMgr::~CGameMgr(void)
 {
-
+	Free();
 }
 
 
@@ -103,10 +107,101 @@ STONE CGameMgr::GetStone(UI::STONE eStone)
 	return tStone;
 }
 
+HRESULT CGameMgr::InitObjPool()
+{
+	InitBullet();
+	InitEffect();
+	//파티클
+	//이펙트
+
+	return S_OK;
+}
+
+HRESULT CGameMgr::InitBullet()
+{
+	CGameObject* pObj = nullptr;
+	USES_CONVERSION;
+	for (_uint i = 0; i < 20; i++)
+	{
+		wstring wstrIndxKey = to_wstring(m_iBulletIdx);
+		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
+		pObj = CBullet::Create(m_pGraphicDev);
+		pObj->SetActive(false);
+		Add_GameObject(L"Bullet", pConvObjTag, pObj);
+		m_queBullet.emplace(pObj);
+		m_iBulletIdx++;
+	}
+	return S_OK;
+}
+
+void CGameMgr::RetunBullet(CGameObject * pObj)
+{
+	//pObj 조정한 값 초기화 
+	_uint eType = BULLET::BULLET_END;
+	dynamic_cast<CBullet*>(pObj)->SetOption(&eType);
+//	pObj->SetActive(false);
+	
+	m_queBullet.emplace(pObj);
+}
+
+CGameObject * CGameMgr::GetBullet(_uint eType)
+{
+	if (m_queBullet.empty())
+	{
+		InitBullet();
+	}
+	CGameObject* pObj = m_queBullet.front();
+	//pObj->SetActive(true);
+	dynamic_cast<CBullet*>(pObj)->SetOption(&eType);
+	m_queBullet.pop();
+	return pObj;
+}
+
+
+HRESULT CGameMgr::InitEffect()
+{
+	CGameObject* pObj = nullptr;
+	USES_CONVERSION;
+	for (_uint i = 0; i < 20; i++)
+	{
+		wstring wstrIndxKey = to_wstring(m_iEffectIdx);
+		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
+		pObj = CEffect::Create(m_pGraphicDev);
+		pObj->SetActive(false);
+		Add_GameObject(L"Effect", pConvObjTag, pObj);
+		m_queEffect.emplace(pObj);
+		m_iEffectIdx++;
+	}
+	return S_OK;
+}
+
+
+void CGameMgr::RetunEffect(CGameObject * pObj)
+{
+	_uint eType = EFFECT::EFFECT_END;
+	dynamic_cast<CEffect*>(pObj)->SetOption(&eType);
+
+	m_queEffect.emplace(pObj);
+}
+
+CGameObject * CGameMgr::GetEffect(_uint eType)
+{
+	if (m_queEffect.empty())
+	{
+		InitEffect();
+	}
+	CGameObject* pObj = m_queEffect.front();
+	dynamic_cast<CEffect*>(pObj)->SetOption(&eType);
+	m_queEffect.pop();
+
+	return pObj;
+}
+
 
 
 void CGameMgr::Free(void)
 {
+
 }
 
 

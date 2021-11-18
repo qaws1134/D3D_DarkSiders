@@ -69,7 +69,11 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 					_vec3 vDstDir = vSrcPos - vDstPos;
 					_vec3 vSrcDir = vDstPos - vSrcPos;
 
-					_float fAccel = pDstTransform->Get_Accel()*0.9f;
+					_float fAccel = pDstTransform->Get_Accel();
+					if (fAccel == 1.f)
+					{
+						fAccel *= 5.f;
+					}
 					pDstTransform->Move_Pos(&vDstDir, fRadi*fAccel, 0.001f);
 					pDstTransform->Reset_Accel();
 					//pSrcTransform->Move_Pos(&vSrcDir, fRadi, 0.001f);

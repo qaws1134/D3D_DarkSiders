@@ -2,7 +2,9 @@
 #include "Stage.h"
 #include "GameMgr.h"
 #include "LoadMgr.h"
+#include "WaterBoss_Orb.h"
 #include "Export_Function.h"
+
 
 CStage::CStage(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CScene(pGraphicDev)
@@ -50,12 +52,18 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 		CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
 	}
 
+	if (Key_Down(KEY_NUM4))
+	{
+		CGameMgr::GetInstance()->GetBullet(BULLET::BULLET_CALLLIGHTNING);
+		CGameMgr::GetInstance()->GetEffect(EFFECT::CALLLIGHTNING_START);
+	}
+
 	//if (Key_Down(KEY_K))
 	//{
 	//	CGameObject*			pGameObject = nullptr;
-	//	pGameObject = CWaterBoss::Create(m_pGraphicDev);
+	//	pGameObject = CWaterBoss_Orb::Create(m_pGraphicDev);
 	//	NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	//	Add_GameObject(L"GameLogic", L"WaterBoss", pGameObject);
+	//	Add_GameObject(L"GameLogic", L"WaterBoss_Orb_0", pGameObject);
 	//	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"WaterBoss", pGameObject), E_FAIL);
 	//}
 
@@ -94,10 +102,11 @@ void CStage::Begin_Scene()
 	if (m_bBegin)
 		return;
 	CLoadMgr::GetInstance()->SpawnData();
-	Get_GameObject(L"UI", L"StaticCamera")->SetTarget(CGameMgr::GetInstance()->GetPlayer());
+	Get_GameObject(L"Environment", L"StaticCamera")->SetTarget(CGameMgr::GetInstance()->GetPlayer());
 	CUIMgr::GetInstance()->BeginUISet();
 	CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
 	CUIMgr::GetInstance()->InitToastInfo(m_pGraphicDev);
+	CGameMgr::GetInstance()->InitBullet();
 
 	CScene::Begin_Scene();
 }
@@ -109,7 +118,20 @@ HRESULT CStage::Ready_Layer_Environment(const _tchar* pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
+	CAMERA_DESC CameraDesc;
+	CameraDesc.fFovY = D3DXToRadian(60.f);
+	CameraDesc.fAspect = (_float)WINCX / WINCY;
+	CameraDesc.fNear = 1.f;
+	CameraDesc.fFar = 1000.f;
+	CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
+	CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
 
+
+	pGameObject = CStaticCamera::Create(m_pGraphicDev, CameraDesc);
+	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	//auto iter_find = m_mapLayer.find(L"GameLogic");
+	//pGameObject->SetTarget(iter_find->second->Get_GameObject(L"Player"));
+	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"StaticCamera", pGameObject), E_FAIL);
 	//CAMERA_DESC CameraDesc;
 	//CameraDesc.fFovY = D3DXToRadian(60.f);
 	//CameraDesc.fAspect = (_float)WINCX / WINCY;
@@ -208,20 +230,7 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
-	CAMERA_DESC CameraDesc;
-	CameraDesc.fFovY = D3DXToRadian(60.f);
-	CameraDesc.fAspect = (_float)WINCX / WINCY;
-	CameraDesc.fNear = 1.f;
-	CameraDesc.fFar = 1000.f;
-	CameraDesc.vEye = _vec3(0.f, 10.f, -5.f);
-	CameraDesc.vAt = _vec3(0.f, 0.f, 0.f);
 
-
-	pGameObject = CStaticCamera::Create(m_pGraphicDev, CameraDesc);
-	NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	//auto iter_find = m_mapLayer.find(L"GameLogic");
-	//pGameObject->SetTarget(iter_find->second->Get_GameObject(L"Player"));
-	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"StaticCamera", pGameObject), E_FAIL);
 
 
 	//pGameObject = CUI_WeaponElement::Create(m_pGraphicDev);

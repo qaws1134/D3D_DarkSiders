@@ -157,9 +157,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\BackGround.h" />
+    <ClInclude Include="..\Code\Bullet.h" />
     <ClInclude Include="..\Code\ColMesh.h" />
     <ClInclude Include="..\Code\Define.h" />
     <ClInclude Include="..\Code\DynamicCamera.h" />
+    <ClInclude Include="..\Code\Effect.h" />
+    <ClInclude Include="..\Code\EffMgr.h" />
     <ClInclude Include="..\Code\Enum.h" />
     <ClInclude Include="..\Code\GameMgr.h" />
     <ClInclude Include="..\Code\Loading.h" />
@@ -182,8 +185,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\BackGround.cpp" />
+    <ClCompile Include="..\Code\Bullet.cpp" />
     <ClCompile Include="..\Code\ColMesh.cpp" />
     <ClCompile Include="..\Code\DynamicCamera.cpp" />
+    <ClCompile Include="..\Code\Effect.cpp" />
+    <ClCompile Include="..\Code\EffMgr.cpp" />
     <ClCompile Include="..\Code\GameMgr.cpp" />
     <ClCompile Include="..\Code\Loading.cpp" />
     <ClCompile Include="..\Code\LoadMgr.cpp" />

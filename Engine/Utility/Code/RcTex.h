@@ -14,14 +14,19 @@ private:
 
 public:
 	const _vec3*		Get_VtxPos(void) const { return m_pPos; }
+	_vec2*		Get_VtxUV(void) { return m_pUV; }
 
+
+	void SetUV(_vec2* pUV);
+
+	void MoveUV(_vec2 vUV);
 public:
 	HRESULT		Ready_Buffer(void);
 	void		Render_Buffer(void);
 
 private:
 	_vec3*					m_pPos = nullptr;
-
+	_vec2*					m_pUV = nullptr;
 
 public:
 	static CRcTex*			Create(LPDIRECT3DDEVICE9 pGraphicDev);

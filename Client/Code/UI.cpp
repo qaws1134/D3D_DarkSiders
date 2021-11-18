@@ -97,7 +97,7 @@ void CUI::Render_Object(void)
 	{
 
 		Render_Font(m_tFont.wstrFont.c_str(), m_tFont.wstrText.c_str(), &_vec2(m_tFont.vPos.x+ m_tInfo.vPos.x, m_tFont.vPos.y + m_tInfo.vPos.y), D3DXCOLOR(m_tFont.vColor.x, m_tFont.vColor.y, m_tFont.vColor.z, m_tFont.vColor.w));
-		// 여기서 폰트 위치를 따로 잡아서 넘기는데
+
 		return;
 	}
 

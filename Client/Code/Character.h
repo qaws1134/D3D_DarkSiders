@@ -1,5 +1,5 @@
-#ifndef WaterBoss_h__
-#define WaterBoss_h__
+#ifndef Bullet_h__
+#define Bullet_h__
 
 #include "GameObject.h"
 #include "Enum.h"
@@ -14,12 +14,12 @@ class CColliderSphere;
 END
 
 
-class CWaterBoss : public CGameObject
+class CBullet : public CGameObject
 {
 private:
-	explicit CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev);
-	explicit CWaterBoss(const CWaterBoss& rhs);
-	virtual ~CWaterBoss(void);
+	explicit CBullet(LPDIRECT3DDEVICE9 pGraphicDev);
+	explicit CBullet(const CBullet& rhs);
+	virtual ~CBullet(void);
 
 public:
 	virtual HRESULT Ready_Object(void) override;
@@ -40,8 +40,8 @@ private:
 	_vec3		m_vDir;
 
 public:
-	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
+	static CBullet*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	virtual void			Free(void);
 };
 
-#endif // WaterBoss_h__
+#endif // Bullet_h__

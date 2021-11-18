@@ -1,6 +1,44 @@
 #ifndef ClientEnum_h__
 #define ClientEnum_h__
 
+
+namespace EFFECT
+{
+	enum TYPE
+	{
+		CALLLIGHTNING_START,
+		CALLLIGHTNING_LOOP,
+		CALLLIGHTNING_END,
+
+		EFFECT_ORBCHAGE_START,		//오브 기모으기
+		EFFECT_ORBCHAGE_LOOP,
+		EFFECT_ORBCHAGE_END,
+
+		EFFECT_TSUNAMICHARGE_START,	//쓰나미 기모으기  
+		EFFECT_TSUNAMICHARGE_LOOP,
+		EFFECT_TSUNAMICHARGE_END,
+
+		EFFECT_TAIL_START,	//꼬리 붙이기 -> 텍스쳐 선택해서 ㄱㄱ
+		EFFECT_TAIL_LOOP,
+		EFFECT_TAIL_END,
+
+		EFFECT_END
+	};
+
+}
+
+namespace BULLET{
+	enum TYPE
+	{
+		BULLET_CALLLIGHTNING,
+		BULLET_ORBLIGHTNING,
+		BULLET_TSUNAMI,
+
+		BULLET_END
+	};
+}
+
+
 namespace WHEEL
 {
 	enum MOVE {

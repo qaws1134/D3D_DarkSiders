@@ -19,6 +19,7 @@ public:
 
 
 	void		Set_Center(_vec3 vCenter) { m_vCenter = vCenter; }
+	void		Set_Radius(_float fRadius) { m_fRadius = fRadius; }
 public:
 	HRESULT			Ready_Collider(const _vec3* pPos,_float fRadius = 0);
 	HRESULT			Ready_Collider(const _vec3* pPos,_ulong dwVtxCnt);

@@ -4,6 +4,7 @@
 #include "Base.h"
 #include "Define.h"
 #include "GameObject.h"
+
 #include "Struct.h"
 #include "Enum.h"
 
@@ -23,20 +24,41 @@ public:
 	CGameObject*		GetPlayer() { return m_pPlayer; }
 	vector<STONE>		GetStoneVec() { return m_vecStone; }
 	STONE				GetStone(UI::STONE eStone);
+	void TakeStone(UI::STONE eStone);
+	
 	LPDIRECT3DDEVICE9	GetDevice() { return m_pGraphicDev; }
 
 
-	void TakeStone(UI::STONE eStone);
+
+
+	//오브젝트풀
+	HRESULT InitObjPool();
+
+	HRESULT InitBullet();
+	void RetunBullet(CGameObject* pObj);
+	CGameObject* GetBullet(_uint eType);
+
+	HRESULT InitEffect();
+	void RetunEffect(CGameObject* pObj);
+	CGameObject* GetEffect(_uint eType);
 
 
 private:
+	LPDIRECT3DDEVICE9 m_pGraphicDev;
 	//플레이어 저장 
 	CGameObject* m_pPlayer = nullptr;
 
 	_float m_fSoul;
+
 	vector<STONE> m_vecStone;
 	vector<ITEM>m_vecItemInfo;
-	LPDIRECT3DDEVICE9 m_pGraphicDev;
+
+	queue<CGameObject*> m_queBullet;
+	queue<CGameObject*> m_queEffect;
+
+	_uint m_iBulletIdx = 0;
+	_uint m_iEffectIdx = 0;
+
 private:
 	virtual void Free(void) override;
 

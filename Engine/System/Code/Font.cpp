@@ -51,7 +51,7 @@ void Engine::CFont::Render_Font(const _tchar* pString, const _vec2* pPos, D3DXCO
 	m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	_matrix matWorld;
 	D3DXMatrixIdentity(&matWorld);
-	matWorld._43 = 0.15f;
+	matWorld._43 = m_fSortZ;
 	m_pSprite->SetTransform(&matWorld);
 	m_pFont->DrawTextW(m_pSprite, pString, lstrlen(pString), &rc, DT_NOCLIP, Color);
 	m_pSprite->End();

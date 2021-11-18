@@ -60,6 +60,9 @@ public :
 	void EmplaceCol(wstring ObjTag, CGameObject* pGameObject);
 	void SetCharInfo(_float fHp, _float fAtk);
 
+	virtual void SetOption(void* arg = nullptr) {}
+
+
 protected:
 	LPDIRECT3DDEVICE9					m_pGraphicDev;
 	map<const _tchar*, CComponent*>		m_mapComponent[ID_END];

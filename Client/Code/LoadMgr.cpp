@@ -183,12 +183,12 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 				{
 					USES_CONVERSION;
 					//레이어는 뒤에 메쉬 명 붙여서
-					const _tchar* pConvLayerTag = W2BSTR((LayerTag+iter_find->first).c_str());
-
+					const _tchar* pConvLayerTag = W2BSTR(LayerTag.c_str());
+					const _tchar* pConvObjTag = W2BSTR((iter_find_second.first + iter_find->first).c_str());
 					pCol = CSpawnMgr::GetInstance()->Spawn(pGameObject, iter_find_second.second);
 					//오브젝트 맵에 따로 넣고 
 					pGameObject->EmplaceCol(iter_find_second.first, pCol);
-					Add_GameObject(pConvLayerTag, iter_find_second.first.c_str(), pCol);
+					Add_GameObject(pConvLayerTag, pConvObjTag, pCol);
 					//m_mapHead.emplace((iter_find->first +iter_find_second.first), pCol);	//레이어에 추가 
 				}
 			}
@@ -215,12 +215,13 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 				{
 					USES_CONVERSION;
 					const _tchar* pConvLayerTag = W2BSTR(LayerTag.c_str());
+					const _tchar* pConvObjTag = W2BSTR((iter_find_second.first + iter_find->first).c_str());
 					pCol = CSpawnMgr::GetInstance()->Spawn(pGameObject, iter_find_second.second);
 
 					//오브젝트 맵에 따로 넣고 
 					pGameObject->EmplaceCol(iter_find_second.first, pCol);
 					//오브젝트 레이어에 맞춰서 생성 
-					Add_GameObject(pConvLayerTag, iter_find_second.first.c_str(), pCol);
+					Add_GameObject(pConvLayerTag, pConvObjTag, pCol);
 					//m_mapHead.emplace((iter_find->first+iter_find_second.first),pCol);	//레이어에 추가 
 				}
 			}
@@ -230,7 +231,7 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 		}
 	}
 
-
+	//네비매시 추가 
 	CComponent* pComponent = CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData);
 	dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_NaviMesh(dynamic_cast<CNaviMesh*>(pComponent));
 	CGameMgr::GetInstance()->GetPlayer()->Set_Component(L"Com_Navi", pComponent,ID_STATIC);

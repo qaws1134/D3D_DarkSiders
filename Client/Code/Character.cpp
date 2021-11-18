@@ -1,26 +1,26 @@
 #include "stdafx.h"
-#include "Character.h"
+#include "Bullet.h"
 
 #include "Export_Function.h"
 
-CCharacter::CCharacter(LPDIRECT3DDEVICE9 pGraphicDev)
+CBullet::CBullet(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
 
 }
 
-CCharacter::CCharacter(const CCharacter& rhs)
+CBullet::CBullet(const CBullet& rhs)
 	: CGameObject(rhs)
 {
 
 }
 
-CCharacter::~CCharacter(void)
+CBullet::~CBullet(void)
 {
 
 }
 
-HRESULT CCharacter::Ready_Object(void)
+HRESULT CBullet::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
@@ -28,7 +28,7 @@ HRESULT CCharacter::Ready_Object(void)
 	return S_OK;
 }
 
-_int CCharacter::Update_Object(const _float& fTimeDelta)
+_int CBullet::Update_Object(const _float& fTimeDelta)
 {
 	
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
@@ -37,7 +37,7 @@ _int CCharacter::Update_Object(const _float& fTimeDelta)
 	return iExit;
 }
 
-void CCharacter::Render_Object(void)
+void CBullet::Render_Object(void)
 {
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, m_pTransformCom->Get_WorldMatrix());
 	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -49,12 +49,12 @@ void CCharacter::Render_Object(void)
 	m_pGraphicDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-void CCharacter::Free(void)
+void CBullet::Free(void)
 {
 	CGameObject::Free();
 }
 
-HRESULT CCharacter::Add_Component(void)
+HRESULT CBullet::Add_Component(void)
 {
 	CComponent*		pComponent = nullptr;
 
