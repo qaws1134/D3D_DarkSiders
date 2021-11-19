@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "WaterBoss.h"
 #include "Cell.h"
+#include "Building.h"
 IMPLEMENT_SINGLETON(CSpawnMgr)
 CSpawnMgr::CSpawnMgr()
 
@@ -57,13 +58,25 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		Add_GameObject(pConvLayerTag, L"Player", pGameObject);
 	}
 	//waterBoss ½ºÆù
-	if(Objkey ==L"WaterBoss")
+	else if(Objkey ==L"WaterBoss")
 	{
 		*pLayerTag = L"Enemy";
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		pGameObject = CWaterBoss::Create(CGameMgr::GetInstance()->GetDevice());
 		NULL_CHECK_RETURN(pGameObject, nullptr);
 		Add_GameObject(pConvLayerTag, L"WaterBoss", pGameObject);
+	}
+	else
+	{
+		//¸Ê ½ºÆù 
+		*pLayerTag = L"Building"; 
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		const _tchar* pConvObjTag= W2BSTR((*pLayerTag +to_wstring(m_iBuidingIdx)).c_str());
+		pGameObject = CBuilding::Create(CGameMgr::GetInstance()->GetDevice(), Objkey.c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iBuidingIdx++;
+		
 	}
 
 	return pGameObject;

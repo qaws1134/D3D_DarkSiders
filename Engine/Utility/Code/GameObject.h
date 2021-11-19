@@ -19,6 +19,9 @@ public:
 	CComponent*		Get_Component(const _tchar* pComponentTag, COMPONENTID eID);
 	void			Compute_ViewZ(const _vec3* pPos);
 
+
+	_vec3* GetPos(COMPONENTID eID);
+
 	void SetPos(_vec3 vPos, COMPONENTID eID);
 	void SetZPos(_float fzPos, COMPONENTID eID);
 	_float GetWorldZ(COMPONENTID eID);

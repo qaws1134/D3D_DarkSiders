@@ -530,19 +530,28 @@ _bool CMeshTool::NaviSel(RAY tRay)
 			if (CRayPickManager::GetInstance()->RaySphereCollision(tRay, vPos, fRadius))
 			{
 				vColPos = vPos;
-			}
-
-			if (vColPos == vPos)
-			{
-	
-				iter_second.second->GetCol() ? iter_second.second->SetCol(false) : iter_second.second->SetCol(true);
+				iter_second.second->SetCol(true);
 				m_mapCtrlNavi.emplace(iter.first, iter_second.second);
 				if (!m_pCheck->GetCheck())
 				{
 					return true;
 				}
-
 			}
+			else
+			{
+				iter_second.second->SetCol(false);
+			}
+
+			//if (vColPos == vPos)
+			//{
+			//	iter_second.second->GetCol() ? iter_second.second->SetCol(false) : iter_second.second->SetCol(true);
+			//	m_mapCtrlNavi.emplace(iter.first, iter_second.second);
+			//	if (!m_pCheck->GetCheck())
+			//	{
+			//		return true;
+			//	}
+
+			//}
 
 		}
 	}
@@ -817,8 +826,45 @@ void CMeshTool::OnTimer(UINT_PTR nIDEvent)
 	{
 		m_pCtrlTransform->Update_Component(m_fDeltaTime);
 	}
+	if (Get_DIKeyState(DIK_0) & 0x80)
+	{
+		if (!m_mapCtrlNavi.empty())
+		{
+			for (auto iter : m_mapCtrlNavi)
+			{
+				iter.second->SetCol(false);
+			}
+		}
+	}
 
+	if (Get_DIKeyState(DIK_8) & 0x80)
+	{
+		if (!m_mapCtrlNavi.empty())
+		{
+			for (auto iter : m_mapCtrlNavi)
+			{
+				_vec3 vPos;
+				dynamic_cast<CTransform*>(iter.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vPos);
+				vPos.y -= 0.5f;
+				iter.second->SetPos(vPos, ID_DYNAMIC);
 
+			}
+		}
+	}
+	if (Get_DIKeyState(DIK_9) & 0x80)
+	{
+		if (!m_mapCtrlNavi.empty())
+		{
+			for (auto iter : m_mapCtrlNavi)
+			{
+				_vec3 vPos;
+				dynamic_cast<CTransform*>(iter.second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS,&vPos);
+				vPos.y += 0.5f;
+				iter.second->SetPos(vPos, ID_DYNAMIC);
+
+			}
+		}
+	}
 
 
 	CDialog::OnTimer(nIDEvent);
@@ -1483,7 +1529,7 @@ void CMeshTool::OnNMClickNaviList(NMHDR *pNMHDR, LRESULT *pResult)
 		m_fPositionX = vPos.x;
 		m_fPositionY = vPos.y;
 		m_fPositionZ = vPos.z;
-	
+		m_vPos = _vec3(m_fPositionX, m_fPositionY, m_fPositionZ);
 
 	}
 
@@ -1594,6 +1640,8 @@ void CMeshTool::OnNMClickDynamicList(NMHDR *pNMHDR, LRESULT *pResult)
 
 		auto Objiter_find = iter_find->second.find(wstrIdxKey.GetString());
 
+		if (Objiter_find == iter_find->second.end())
+			return;
 		if (!Objiter_find->second)
 			return;
 

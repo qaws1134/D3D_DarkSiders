@@ -3,6 +3,8 @@
 #include "UIMgr.h"
 #include "Bullet.h"
 #include "Effect.h"
+#include "ParticleSystem.h"
+#include "EffMgr.h"
 #include "Export_Function.h"
 
 
@@ -28,6 +30,46 @@ void CGameMgr::TakeStone(UI::STONE eStone)
 	STONE tStone = GetStone(eStone);
 
 	m_vecStone.emplace_back(tStone);
+}
+
+POPTION CGameMgr::GetParticleInfo(PARTICLEEFF::TYPE eParticle)
+{
+	POPTION tOption;
+	switch (eParticle)
+	{
+	case PARTICLEEFF::PARTICLE_LIGHTNING:
+		tOption.bColor = false;
+		tOption.bLifeTime = true;
+		tOption.bSpeed = true;
+		tOption.fStartLifeTime = 0.f;
+		tOption.fEndLifeTime = 5.f;
+		tOption.bLoop = true;
+		tOption.eType = ShapeType::CONE;
+		tOption.fAngle = 90.f;
+		tOption.fArc = 360.f;
+		tOption.fDuration = 0.f;
+		tOption.fStartSpeed = 390.f;
+		tOption.fEndSpeed = 400.f;
+		tOption.fGravity = 1.f;
+		tOption.fRadius = 0.3f;
+		tOption.fSize = 0.5f;
+		tOption.iAmount = 100;
+		tOption.iBatchSize = 512;
+		tOption.vStartColor = D3DXCOLOR{ 0.2f, 0.2f, 1.f, 1.f };
+		tOption.fStartTime = 100.f;
+		tOption.fSizeSpeed = 1.f;
+		tOption.bStartDraw = true;
+		tOption.fEndTimer = 3.f;
+		break;
+	case PARTICLEEFF::PARTICLE_END:
+		break;
+	default:
+		break;
+	}
+
+
+
+	return tOption;
 }
 
 STONE CGameMgr::GetStone(UI::STONE eStone)
@@ -111,6 +153,7 @@ HRESULT CGameMgr::InitObjPool()
 {
 	InitBullet();
 	InitEffect();
+	//InitParticle();
 	//파티클
 	//이펙트
 
@@ -179,11 +222,13 @@ HRESULT CGameMgr::InitEffect()
 void CGameMgr::RetunEffect(CGameObject * pObj)
 {
 	_uint eType = EFFECT::EFFECT_END;
-	dynamic_cast<CEffect*>(pObj)->SetOption(&eType);
+	//dynamic_cast<CEffect*>(pObj)->SetOption(&eType);
 
 	m_queEffect.emplace(pObj);
 }
 
+//1. 이펙트 매니져 호출
+//2. 게임 메니져에서 이펙트랑 파티클을 가져감 
 CGameObject * CGameMgr::GetEffect(_uint eType)
 {
 	if (m_queEffect.empty())
@@ -194,6 +239,53 @@ CGameObject * CGameMgr::GetEffect(_uint eType)
 	dynamic_cast<CEffect*>(pObj)->SetOption(&eType);
 	m_queEffect.pop();
 
+	return pObj;
+}
+
+HRESULT CGameMgr::InitParticle()
+{
+	CGameObject* pObj = nullptr;
+	USES_CONVERSION;
+	for (_uint i = 0; i < 20; i++)
+	{
+		wstring wstrIndxKey = to_wstring(m_iParticleIdx);
+		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
+		pObj = CParticleSystem::Create(m_pGraphicDev);
+		pObj->SetActive(false);
+		Add_GameObject(L"Particle", pConvObjTag, pObj);
+		m_queParticle.emplace(pObj);
+		m_iParticleIdx++;
+	}
+	return S_OK;
+}
+
+void CGameMgr::RetunParticle(CGameObject * pObj)
+{
+	//_uint eType = PARTICLEEFF::PARTICLE_END;
+	//dynamic_cast<CParticleSystem*>(pObj)->SetOption(&eType);
+	pObj->SetActive(false);
+	m_queParticle.emplace(pObj);
+}
+
+CGameObject * CGameMgr::GetParticle(_uint eType)
+{
+	if (m_queParticle.empty())
+	{
+		InitParticle();
+	}
+	CGameObject* pObj = m_queParticle.front();
+
+	POPTION tOption;
+
+	switch (eType)
+	{
+	case PARTICLEEFF::PARTICLE_LIGHTNING:
+		tOption = GetParticleInfo((PARTICLEEFF::TYPE)eType);
+		dynamic_cast<CParticleSystem*>(pObj)->SetParticle(L"../../Resource/Texture/Effect/Particle.png", tOption);
+		pObj->SetActive(true);
+		//dynamic_cast<CParticleSystem*>(pObj)->SetOption(&eType);
+		m_queParticle.pop();
+	}
 	return pObj;
 }
 

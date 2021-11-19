@@ -101,6 +101,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxguid.lib;System.lib;%(AdditionalDependencies);Utility.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../Reference/Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -157,7 +158,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\BackGround.h" />
+    <ClInclude Include="..\Code\Building.h" />
     <ClInclude Include="..\Code\Bullet.h" />
+    <ClInclude Include="..\Code\Chest.h" />
     <ClInclude Include="..\Code\ColMesh.h" />
     <ClInclude Include="..\Code\Define.h" />
     <ClInclude Include="..\Code\DynamicCamera.h" />
@@ -165,6 +168,8 @@
     <ClInclude Include="..\Code\EffMgr.h" />
     <ClInclude Include="..\Code\Enum.h" />
     <ClInclude Include="..\Code\GameMgr.h" />
+    <ClInclude Include="..\Code\Goblin.h" />
+    <ClInclude Include="..\Code\Grinner.h" />
     <ClInclude Include="..\Code\Loading.h" />
     <ClInclude Include="..\Code\LoadMgr.h" />
     <ClInclude Include="..\Code\Logo.h" />
@@ -185,12 +190,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\BackGround.cpp" />
+    <ClCompile Include="..\Code\Building.cpp" />
     <ClCompile Include="..\Code\Bullet.cpp" />
+    <ClCompile Include="..\Code\Chest.cpp" />
     <ClCompile Include="..\Code\ColMesh.cpp" />
     <ClCompile Include="..\Code\DynamicCamera.cpp" />
     <ClCompile Include="..\Code\Effect.cpp" />
     <ClCompile Include="..\Code\EffMgr.cpp" />
     <ClCompile Include="..\Code\GameMgr.cpp" />
+    <ClCompile Include="..\Code\Goblin.cpp" />
+    <ClCompile Include="..\Code\Grinner.cpp" />
     <ClCompile Include="..\Code\Loading.cpp" />
     <ClCompile Include="..\Code\LoadMgr.cpp" />
     <ClCompile Include="..\Code\Logo.cpp" />

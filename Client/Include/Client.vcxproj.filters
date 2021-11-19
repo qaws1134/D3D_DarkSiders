@@ -103,6 +103,15 @@
     <Filter Include="02. GameObject\07. Effect\MeshEff">
       <UniqueIdentifier>{e8ab5e78-001e-4f51-ab19-2d9bb96a08ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\01. Character\03. Grinner">
+      <UniqueIdentifier>{5d097f65-5000-40b1-b0be-ad33a1a7a479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\09. Chest">
+      <UniqueIdentifier>{8c73c223-0060-4872-83fa-d8bc26267506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\04. Goblin">
+      <UniqueIdentifier>{603d41a5-2a58-4ce8-a49b-475550754cba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -183,6 +192,18 @@
     <ClInclude Include="..\Code\Effect.h">
       <Filter>02. GameObject\07. Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Building.h">
+      <Filter>02. GameObject\08.Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Grinner.h">
+      <Filter>02. GameObject\01. Character\03. Grinner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Goblin.h">
+      <Filter>02. GameObject\01. Character\04. Goblin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Chest.h">
+      <Filter>02. GameObject\09. Chest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -247,6 +268,18 @@
     </ClCompile>
     <ClCompile Include="..\Code\Effect.cpp">
       <Filter>02. GameObject\07. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Building.cpp">
+      <Filter>02. GameObject\08.Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Grinner.cpp">
+      <Filter>02. GameObject\01. Character\03. Grinner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Goblin.cpp">
+      <Filter>02. GameObject\01. Character\04. Goblin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Chest.cpp">
+      <Filter>02. GameObject\09. Chest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

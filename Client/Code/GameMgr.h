@@ -4,7 +4,7 @@
 #include "Base.h"
 #include "Define.h"
 #include "GameObject.h"
-
+#include "ParticleSystem.h"
 #include "Struct.h"
 #include "Enum.h"
 
@@ -28,7 +28,7 @@ public:
 	
 	LPDIRECT3DDEVICE9	GetDevice() { return m_pGraphicDev; }
 
-
+	POPTION				GetParticleInfo(PARTICLEEFF::TYPE eParticle);
 
 
 	//오브젝트풀
@@ -38,11 +38,14 @@ public:
 	void RetunBullet(CGameObject* pObj);
 	CGameObject* GetBullet(_uint eType);
 
-	HRESULT InitEffect();
+	HRESULT InitEffect();				//리셋아직 안함
 	void RetunEffect(CGameObject* pObj);
 	CGameObject* GetEffect(_uint eType);
 
 
+	HRESULT InitParticle();
+	void RetunParticle(CGameObject* pObj);
+	CGameObject* GetParticle(_uint eType);
 private:
 	LPDIRECT3DDEVICE9 m_pGraphicDev;
 	//플레이어 저장 
@@ -55,10 +58,11 @@ private:
 
 	queue<CGameObject*> m_queBullet;
 	queue<CGameObject*> m_queEffect;
+	queue<CGameObject*> m_queParticle;
 
 	_uint m_iBulletIdx = 0;
 	_uint m_iEffectIdx = 0;
-
+	_uint m_iParticleIdx = 0;
 private:
 	virtual void Free(void) override;
 

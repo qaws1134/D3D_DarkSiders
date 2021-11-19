@@ -11,6 +11,7 @@ Engine::CRcTex::CRcTex(LPDIRECT3DDEVICE9 pGraphicDev)
 Engine::CRcTex::CRcTex(const CRcTex& rhs)
 	: CVIBuffer(rhs)
 	,m_pPos(rhs.m_pPos)
+	,m_pUV(rhs.m_pUV)
 {
 
 }
@@ -22,8 +23,6 @@ Engine::CRcTex::~CRcTex(void)
 
 void CRcTex::SetUV(_vec2 * pUV)
 {
-	if(!m_pUV)
-		m_pUV = new _vec2[m_dwVtxCnt];
 
 	VTXTEX*		pVertex = nullptr;
 	m_pVB->Lock(0, 0, (void**)&pVertex, 0);
@@ -59,6 +58,7 @@ HRESULT Engine::CRcTex::Ready_Buffer(void)
 	m_dwIdxSize = sizeof(INDEX16);
 	m_pPos = new _vec3[m_dwVtxCnt];
 	m_pUV = new _vec2[m_dwVtxCnt];
+
 	FAILED_CHECK_RETURN(CVIBuffer::Ready_Buffer(), E_FAIL);
 
 
@@ -122,7 +122,7 @@ void Engine::CRcTex::Free(void)
 {
 	if (false == m_bClone)
 		Safe_Delete_Array(m_pPos);
-
+	if (false == m_bClone)
 	Safe_Delete_Array(m_pUV);
 
 	CVIBuffer::Free();

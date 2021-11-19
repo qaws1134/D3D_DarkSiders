@@ -96,6 +96,19 @@ void Engine::CGameObject::Compute_ViewZ(const _vec3 * pPos)
 	m_fViewZ = D3DXVec3Length(&(vCamPos - *pPos));
 }
 
+_vec3 * Engine::CGameObject::GetPos(COMPONENTID eID)
+{
+	CComponent*		pComponent = Find_Component(L"Com_Transform", eID);
+
+	if (nullptr == pComponent)
+		return nullptr;
+
+	_vec3 *vPos = nullptr;
+	dynamic_cast<CTransform*>(pComponent)->Get_INFO(INFO_POS,vPos);
+	return vPos;
+
+}
+
 void CGameObject::SetPos(_vec3 vPos, COMPONENTID eID)
 {
 	CComponent*		pComponent = Find_Component(L"Com_Transform", eID);

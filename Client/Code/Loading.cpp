@@ -63,7 +63,6 @@ Engine::_uint CLoading::Loading_ForStage(void)
 		
 	lstrcpy(m_szLoading, L"Loading Texture...............");
 	
-	CLoadMgr::GetInstance()->LoadData(L"../../Data/");
 
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Terrain", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Terrain/Grass_%d.tga", TEX_NORMAL, 2)), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_SkyBox", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/SkyBox/burger%d.dds", TEX_CUBE, 4)), E_FAIL);
@@ -99,8 +98,8 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Element",				CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Element/Element_0%d.png", TEX_NORMAL, 6)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Element_Base",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Element/Base_0%d.png", TEX_NORMAL, 4)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Element_Arrow",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Element/Arrow_Element_01.png", TEX_NORMAL, 1)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Element_Arrow_Bg", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Element/Arrow_Element_00.png", TEX_NORMAL, 1)), E_FAIL);
-
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Element_Arrow_Bg",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Element/Arrow_Element_00.png", TEX_NORMAL, 1)), E_FAIL);
+		
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Skill",					CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Skill/Skill_0%d.png", TEX_NORMAL, 3)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Skill_Base",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Skill/Base.png", TEX_NORMAL,1)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Skill_Select",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Skill/Select.png", TEX_NORMAL, 1)), E_FAIL);
@@ -108,17 +107,17 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_StatStone_Health",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/StatStone/Health_0%d.png", TEX_NORMAL, 4)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_StatStone_Skill",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/StatStone/SkillGage_0%d.png", TEX_NORMAL, 4)), E_FAIL);
 
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Bg", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Bg_0%d.png", TEX_NORMAL, 4)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Bg",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Bg_0%d.png", TEX_NORMAL, 4)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Base",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Base.png", TEX_NORMAL,1)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Core", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Core_0%d.png", TEX_NORMAL, 2)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Core",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Core_0%d.png", TEX_NORMAL, 2)), E_FAIL);
 
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Sel",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Select.png", TEX_NORMAL, 1)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Info", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Info.png", TEX_NORMAL, 1)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Sel",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Select.png", TEX_NORMAL, 1)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Info",			CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Info.png", TEX_NORMAL, 1)), E_FAIL);
 
 
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Base",CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/ListBase_0%d.png",TEX_NORMAL, 5)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Sel",CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Sel_0%d.png", TEX_NORMAL, 2)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Sel", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Sel_0%d.png", TEX_NORMAL, 2)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Seg", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Seg_0%d.png", TEX_NORMAL, 3)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Icon",CTexture::Create(m_pGraphicDev,L"../../Resource/Texture/UI/Stone/Icon_0%d.png", TEX_NORMAL, 2)), E_FAIL);
 
@@ -126,7 +125,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneBase",	CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Base_0%d.png", TEX_NORMAL, 4)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneElement", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneElement_0%d.png", TEX_NORMAL, 8)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Creature",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Creature_0%d.png", TEX_NORMAL, 22)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneEffect", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneEffect.png", TEX_NORMAL, 1)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneEffect",  CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneEffect.png", TEX_NORMAL, 1)), E_FAIL);
 
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect_Lightning", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/VFX_gen_bolts.tga", TEX_NORMAL, 1)), E_FAIL);
@@ -161,6 +160,46 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss_Orb", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterBoss_Orb/", L"Orb.X")), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss_Bullet", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterBoss_Bullet/", L"WaterBoss_Bullet.X")), E_FAIL);
 
+
+	//맵
+	for (_uint i = 0; i < 24; i++)
+	{
+		wstring wstrProto = L"Eden" + to_wstring(i);
+		wstring wsrFile = L"Eden" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Eden_decal" + to_wstring(i);
+		wstring wsrFile = L"Eden_decal" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", pConvFileTag));
+	}
+	Ready_Prototype(L"Eden_Edge", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", L"Eden_Edge.X"));
+
+	for (_uint i = 0; i < 5; i++)
+	{
+		wstring wstrProto = L"Eden_Prop" + to_wstring(i);
+		wstring wsrFile = L"Eden_Prop" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden_Prop/", pConvFileTag));
+	}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Eden_WaterFall" + to_wstring(i);
+		wstring wsrFile = L"Eden_WaterFall" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterFall/", pConvFileTag));
+	}
+
+	
+
+	//이펙트 
 
 	for (_uint i = 0; i < 6; i++)
 	{
@@ -218,7 +257,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 
 	//오브젝트 풀 생성 
 	//CGameMgr::GetInstance()->InitObjPool();
-
+	CLoadMgr::GetInstance()->LoadData(L"../../Data/");
 	lstrcpy(m_szLoading, L"Loading Complete!!!!");
 
 	m_bFinish = true;

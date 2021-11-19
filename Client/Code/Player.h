@@ -63,6 +63,7 @@ private:
 	CCalculator*	m_pCalculatorCom = nullptr;
 	CShader*			m_pShaderCom = nullptr;
 	CNaviMesh*		m_pNavi = nullptr;
+
 private:
 
 	_vec3 m_vDir;

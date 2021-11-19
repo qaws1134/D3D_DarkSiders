@@ -188,6 +188,7 @@ call CopyUtility.bat</Command>
     <ClCompile Include="..\Code\Management.cpp" />
     <ClCompile Include="..\Code\NaviMesh.cpp" />
     <ClCompile Include="..\Code\Optimization.cpp" />
+    <ClCompile Include="..\Code\ParticleSystem.cpp" />
     <ClCompile Include="..\Code\ProtoMgr.cpp" />
     <ClCompile Include="..\Code\RayPickManager.cpp" />
     <ClCompile Include="..\Code\RcTex.cpp" />
@@ -225,6 +226,7 @@ call CopyUtility.bat</Command>
     <ClInclude Include="..\Code\Management.h" />
     <ClInclude Include="..\Code\NaviMesh.h" />
     <ClInclude Include="..\Code\Optimization.h" />
+    <ClInclude Include="..\Code\ParticleSystem.h" />
     <ClInclude Include="..\Code\ProtoMgr.h" />
     <ClInclude Include="..\Code\RayPickManager.h" />
     <ClInclude Include="..\Code\RcTex.h" />

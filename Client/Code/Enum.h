@@ -2,13 +2,22 @@
 #define ClientEnum_h__
 
 
+namespace PARTICLEEFF
+{
+	enum TYPE
+	{
+		PARTICLE_LIGHTNING,
+		PARTICLE_END
+	};
+}
+
 namespace EFFECT
 {
 	enum TYPE
 	{
-		CALLLIGHTNING_START,
-		CALLLIGHTNING_LOOP,
-		CALLLIGHTNING_END,
+		EFFECT_CALLLIGHTNING_START,
+		EFFECT_CALLLIGHTNING_LOOP,
+		EFFECT_CALLLIGHTNING_END,
 
 		EFFECT_ORBCHAGE_START,		//오브 기모으기
 		EFFECT_ORBCHAGE_LOOP,
@@ -166,8 +175,91 @@ namespace UI
 	};
 	
 }
+namespace Chest
+{
+	enum Ani {
+		Check_Idle,                               //0	frame:[101]
+		Check_Start,                              //1	frame:[101]
+		Check_Opened,                             //2	frame:[8]
+		Check_Open,                               //3	frame:[74]
+		Check_Impact,                             //4	frame:[26]
+		Check_Closed,                             //5	frame:[6]
+		End
+	};
+}
 
+namespace Grinner
+{
+	enum Ani {
+		Grinner_Atk_Flip,                         //0	frame:[73]
+		Grinner_Atk_BarfinRainbows,               //1	frame:[131]
+		Grinner_Atk_Lunge,                        //2	frame:[49]
+		Grinner_Atk_Swipe_Combo,                  //3	frame:[81]
+		Grinner_DeadPose,                         //4	frame:[2]
+		Grinner_Death,                            //5	frame:[66]
+		Grinner_Death_War,                        //6	frame:[163]
+		Grinner_DeathPose_War,                    //7	frame:[173]
+		Grinner_Idle,                             //8	frame:[81]
+		Grinner_Impact_F,                         //9	frame:[36]
+		Grinner_Impact_Flinch_B,                  //10	frame:[31]
+		Grinner_Impact_Flinch_F,                  //11	frame:[31]
+		Grinner_Impact_Flinch_L,                  //12	frame:[31]
+		Grinner_Impact_Flinch_R,                  //13	frame:[31]
+		Grinner_Impact_L,                         //14	frame:[36]
+		Grinner_Impact_R,                         //15	frame:[36]
+		Grinner_Jump_Apex,                        //16	frame:[26]
+		Grinner_Jump_Fall,                        //17	frame:[26]
+		Grinner_Jump_Land,                        //18	frame:[21]
+		Grinner_Jump_Launch,                      //19	frame:[21]
+		Grinner_Knock_B_Start,                    //20	frame:[6]
+		Grinner_Knock_B_Apex,                     //21	frame:[26]
+		Grinner_Knock_B_Fall,                     //22	frame:[29]
+		Grinner_Knock_B_Land,                     //23	frame:[33]
+		Grinner_Knock_B_Recover,                  //24	frame:[51]
+		Grinner_Knock_B_Idle,                     //25	frame:[121]
+		Grinner_PotalSpawn,                       //26	frame:[83]
+		Grinner_Run_F,                            //27	frame:[61]
+		Grinner_Run_FL,                           //28	frame:[61]
+		Grinner_Run_FR,                           //29	frame:[61]
+		Grinner_Turn_90_L,                        //30	frame:[26]
+		Grinner_Turn_90_R,                        //31	frame:[26]
+		Grinner_Turn_180_L,                       //32	frame:[31]
+		Grinner_Turn_180_R,                       //33	frame:[31]
+		Grinner_Walk_B,                           //34	frame:[41]
+		Grinner_Walk_BL,                          //35	frame:[41]
+		Grinner_Walk_BR,                          //36	frame:[41]
+		Grinner_Walk_F,                           //37	frame:[41]
+		Grinner_Walk_L,                           //38	frame:[41]
+		Grinner_Walk_R,                           //39	frame:[41]
+		End
+	};
+}
 
+namespace Goblin {
+	enum Ani {
+		Goblin_Attack_01,                         //0	frame:[61]
+		Goblin_Attack_02,                         //1	frame:[63]
+		Goblin_Attack_Spear,                      //2	frame:[76]
+		Goblin_Attack_Dash_Back,                  //3	frame:[40]
+		Goblin_Idle,                              //4	frame:[81]
+		Goblin_Impact_B,                          //5	frame:[36]
+		Goblin_Impact_F,                          //6	frame:[36]
+		Goblin_Jump_Apex,                         //7	frame:[23]
+		Goblin_Jump_Fall,                         //8	frame:[23]
+		Goblin_Jump_Land,                         //9	frame:[30]
+		Goblin_Jump_Launch,                       //10	frame:[11]
+		Goblin_Jump_Launch_Pose,                  //11	frame:[23]
+		Goblin_Run_B,                             //12	frame:[1]
+		Goblin_Run_F,                             //13	frame:[1]
+		Goblin_Sit_End,                           //14	frame:[45]
+		Goblin_Sit_Idle,                          //15	frame:[63]
+		Goblin_Spawn,                             //16	frame:[56]
+		Goblin_Spawn_Climb_Hovel,                 //17	frame:[91]
+		Goblin_Turn_L,                            //18	frame:[31]
+		Goblin_Turn_R,                            //19	frame:[31]
+		End
+	};
+}
 
 namespace War {
 

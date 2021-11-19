@@ -46,6 +46,9 @@ public:
 	_bool			Collision_Sphere(const _vec3* pDestCenter, const _float* pDestRadius,
 		const _vec3* pSourCenter, const _float* pSourRadius, MESHTYPE eType);
 
+	_float			Compute_HeightOnTri(const _vec3* vPos, const _vec3* vTriVtx);
+
+
 private:
 	void			Set_Point(OBB* pObb, const _vec3* pMin, const _vec3* pMax);
 	void			Set_Axis(OBB* pObb);

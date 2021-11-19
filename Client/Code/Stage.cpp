@@ -3,6 +3,7 @@
 #include "GameMgr.h"
 #include "LoadMgr.h"
 #include "WaterBoss_Orb.h"
+#include "EffMgr.h"
 #include "Export_Function.h"
 
 
@@ -55,7 +56,7 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 	if (Key_Down(KEY_NUM4))
 	{
 		CGameMgr::GetInstance()->GetBullet(BULLET::BULLET_CALLLIGHTNING);
-		CGameMgr::GetInstance()->GetEffect(EFFECT::CALLLIGHTNING_START);
+		CEffMgr::GetInstance()->SpawnEff(EFFECT::EFFECT_CALLLIGHTNING_START);
 	}
 
 	//if (Key_Down(KEY_K))
@@ -106,8 +107,7 @@ void CStage::Begin_Scene()
 	CUIMgr::GetInstance()->BeginUISet();
 	CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
 	CUIMgr::GetInstance()->InitToastInfo(m_pGraphicDev);
-	CGameMgr::GetInstance()->InitBullet();
-
+	CGameMgr::GetInstance()->InitObjPool();
 	CScene::Begin_Scene();
 }
 

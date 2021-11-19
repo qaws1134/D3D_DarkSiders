@@ -19,6 +19,7 @@ private:
 
 public:
 	const _vec3*		Get_Point(POINT eType) const { return &m_vPoint[eType]; }
+	const _vec3*		Get_CellTri()const { return m_vPoint; }
 	CCell*				Get_Neighbor(NEIGHBOR eType) const { return m_pNeighbor[eType]; }
 	void				Set_Neighbor(NEIGHBOR eType, CCell* pNeighbor) { m_pNeighbor[eType] = pNeighbor; }
 	const _ulong*		Get_CellIndex(void) { return &m_dwIndex; }

@@ -1,5 +1,6 @@
 #include "NaviMesh.h"
 #include "RayPickManager.h"
+#include "Calculator.h"
 USING(Engine)
 
 Engine::CNaviMesh::CNaviMesh(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -74,13 +75,16 @@ void CNaviMesh::Render_NaviMesh(void)
 }
 
 _vec3 CNaviMesh::MoveOn_NaviMesh(const _vec3 * pTargetPos, const _vec3 * pTargetDir, 
-								const _float & fSpeed, const _float & fTimeDelta)
+								const _float & fSpeed, const _float & fTimeDelta,CCalculator* pCalcul)
 {
 	_vec3		vEndPos = *pTargetPos + (*pTargetDir * fSpeed * fTimeDelta);
 
 	if (CCell::COMPARE_MOVE == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
+	{
+		_float fPosY= pCalcul->Compute_HeightOnTri(&vEndPos, m_vecCell[m_dwIndex]->Get_CellTri());
+		vEndPos.y = fPosY;
 		return vEndPos;
-
+	}
 	else if (CCell::COMPARE_STOP == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
 		return *pTargetPos;
 

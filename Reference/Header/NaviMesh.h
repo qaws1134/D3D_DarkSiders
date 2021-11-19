@@ -22,7 +22,7 @@ public:
 	HRESULT			Ready_NaviMesh();
 	HRESULT			Ready_NaviMesh(map<_uint, map<_uint, MESH>> mapNavi);
 	void			Render_NaviMesh(void);
-	_vec3			MoveOn_NaviMesh(const _vec3* pTargetPos, const _vec3* pTargetDir, const _float& fSpeed, const _float& fTimeDelta);
+	_vec3			MoveOn_NaviMesh(const _vec3* pTargetPos, const _vec3* pTargetDir, const _float& fSpeed, const _float& fTimeDelta, class CCalculator* pCalcul);
 	//_bool			PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize);
 	HRESULT			Link_Cell(void);
 

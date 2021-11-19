@@ -24,7 +24,7 @@ HRESULT CEffect::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	
-	m_pTransformCom->Set_Pos(5.f, 0.f, 5.f);
+	m_pTransformCom->Set_Pos(10.f, 0.f, 5.f);
 	m_pTransformCom->Update_Component(0.f);
 
 	return S_OK;
@@ -80,13 +80,13 @@ void CEffect::SetOption(void * pArg)
 
 
 	Safe_Delete_Array(m_vUV);
-	m_vUV = new _vec2[4];
 
 	m_bActive = true;
 	m_bLoop = false;
 	switch (m_eEffect)
 	{
-	case EFFECT::CALLLIGHTNING_START:
+	case EFFECT::EFFECT_CALLLIGHTNING_START:
+		m_vUV = new _vec2[4];
 		m_wstrTexture = L"Proto_Texture_Effect_Lightning";
 		m_eNextEffect;
 		m_bLoop = true;
@@ -95,14 +95,14 @@ void CEffect::SetOption(void * pArg)
 		m_pTransformCom->Set_Scale(1.f, 10.f, 1.f);
 		//m_fFrameSpeed = 4.f;
 		break;
-	case EFFECT::CALLLIGHTNING_LOOP:
+	case EFFECT::EFFECT_CALLLIGHTNING_LOOP:
 		m_wstrTexture = L"Proto_Texture_Effect_Lightning";
 		m_eNextEffect;
 		m_bLoop = true;
 		SetVertiQuarterUV();
 		SetBufferUV(m_vUV);
 		break;
-	case EFFECT::CALLLIGHTNING_END:
+	case EFFECT::EFFECT_CALLLIGHTNING_END:
 		m_wstrTexture;
 		m_eNextEffect;
 		break;
@@ -179,6 +179,7 @@ void CEffect::SetOption(void * pArg)
 	{
 		m_pTextureCom = dynamic_cast<CTexture*>(iter_find->second);
 	}
+
 
 
 }
@@ -283,11 +284,11 @@ void CEffect::UpdateEffect(_float fTimeDelta)
 {
 	switch (m_eEffect)
 	{
-	case EFFECT::CALLLIGHTNING_START:
+	case EFFECT::EFFECT_CALLLIGHTNING_START:
 		break;
-	case EFFECT::CALLLIGHTNING_LOOP:
+	case EFFECT::EFFECT_CALLLIGHTNING_LOOP:
 		break;
-	case EFFECT::CALLLIGHTNING_END:
+	case EFFECT::EFFECT_CALLLIGHTNING_END:
 		break;
 	case EFFECT::EFFECT_ORBCHAGE_START:
 		break;

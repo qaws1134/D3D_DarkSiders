@@ -6,6 +6,7 @@
 #include "GameMgr.h"
 #include "LoadMgr.h"
 #include "SpawnMgr.h"
+#include "EffMgr.h"
 CMainApp::CMainApp(void)
 {
 
@@ -120,7 +121,7 @@ void CMainApp::Free(void)
 	CLoadMgr::GetInstance()->DestroyInstance();
 	CSpawnMgr::GetInstance()->DestroyInstance();
 	CGameMgr::GetInstance()->DestroyInstance();
-
+	CEffMgr::GetInstance()->DestroyInstance();
 	Safe_Release(m_pManagementClass);
 	Safe_Release(m_pGraphicDev);
 	Safe_Release(m_pDeviceClass);

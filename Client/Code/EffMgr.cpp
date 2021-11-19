@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "EffMgr.h"
 #include "GameMgr.h"
+#include "ParticleSystem.h"
 #include "Export_Function.h"
 
 IMPLEMENT_SINGLETON(CEffMgr)
@@ -15,6 +16,7 @@ CEffMgr::~CEffMgr(void)
 	Free();
 }
 
+
 //한번만 톡하고 생성
 void CEffMgr::SpawnEff(EFFECT::TYPE eEffect)
 {
@@ -24,17 +26,15 @@ void CEffMgr::SpawnEff(EFFECT::TYPE eEffect)
 	//한번 타임에 여러개 생성 시 
 	switch (eEffect)
 	{
-	case EFFECT::CALLLIGHTNING_START:
+	case EFFECT::EFFECT_CALLLIGHTNING_START:
 
-		//매시 이펙트인지 텍스쳐 이펙트인지 판단해서 생성
-
-		//pObj = CGameMgr::GetInstance()->GetEffect(//다른이팩트);
-		//pObj->SetOption(&eEffect);
-		//m_listEffect.emplace_back(pObj);
+		pObj = CGameMgr::GetInstance()->GetEffect(eEffect);
+		m_listEffect.emplace_back(pObj);
+		pObj = CGameMgr::GetInstance()->GetParticle(PARTICLEEFF::PARTICLE_LIGHTNING);
 		break;
-	case EFFECT::CALLLIGHTNING_LOOP:
+	case EFFECT::EFFECT_CALLLIGHTNING_LOOP:
 		break;
-	case EFFECT::CALLLIGHTNING_END:
+	case EFFECT::EFFECT_CALLLIGHTNING_END:
 		break;
 	case EFFECT::EFFECT_ORBCHAGE_START:
 		break;
@@ -60,9 +60,9 @@ void CEffMgr::SpawnEff(EFFECT::TYPE eEffect)
 		break;
 	}
 
-	pObj = CGameMgr::GetInstance()->GetEffect(eEffect);
+	/*pObj = CGameMgr::GetInstance()->GetEffect(eEffect);
 	pObj->SetOption(&eEffect);
-	m_listEffect.emplace_back(pObj);
+	m_listEffect.emplace_back(pObj);*/
 
 }
 
@@ -94,4 +94,5 @@ void CEffMgr::EffectListUpdate()
 
 void CEffMgr::Free(void)
 {
+
 }

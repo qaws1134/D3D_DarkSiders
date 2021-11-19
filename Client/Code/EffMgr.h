@@ -24,6 +24,7 @@ public:
 private:
 	list<CGameObject*> m_listEffect;
 
+
 public:
 	virtual void			Free(void);
 };

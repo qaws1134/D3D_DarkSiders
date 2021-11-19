@@ -23,6 +23,10 @@ public:
 private:
 	virtual void Free(void) override;
 
+private:
+	_uint m_iBuidingIdx = 0;
+
+
 };
 
 

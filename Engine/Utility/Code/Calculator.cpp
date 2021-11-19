@@ -396,6 +396,12 @@ _bool CCalculator::Collision_Sphere(const _vec3 * pDestCenter, const _float * pD
 		return true;
 }
 
+_float CCalculator::Compute_HeightOnTri(const _vec3 * vPos, const _vec3 * vTriVtx)
+{
+	D3DXPLANE plane;
+	D3DXPlaneFromPoints(&plane,&vTriVtx[0],&vTriVtx[1],&vTriVtx[2]);
+	return -(plane.a * vPos->x + plane.c * vPos->z + plane.d) / plane.b;
+}
 
 void CCalculator::Set_Point(OBB * pObb, const _vec3 * pMin, const _vec3 * pMax)
 {

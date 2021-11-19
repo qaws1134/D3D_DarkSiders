@@ -112,6 +112,9 @@
     <Filter Include="10.ColMgr">
       <UniqueIdentifier>{e7efa874-2cba-496b-8d0a-f7ef4bddd71f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\Particle">
+      <UniqueIdentifier>{286c5de5-5c80-4948-a248-4bd3355a9a83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Component.cpp">
@@ -215,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\ColMgr.cpp">
       <Filter>10.ColMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ParticleSystem.cpp">
+      <Filter>03. GameObject\Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\ColMgr.h">
       <Filter>10.ColMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ParticleSystem.h">
+      <Filter>03. GameObject\Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -24,7 +24,8 @@ CLoadMgr::~CLoadMgr(void)
 HRESULT CLoadMgr::LoadData(wstring szFilePath)
 {
 	LoadColTool(szFilePath+L"Colider4.dat");
-	LoadMeshTool(szFilePath+L"Mesh.dat");
+	//LoadMeshTool(szFilePath+L"Mesh.dat");
+	LoadMeshTool(szFilePath + L"Map14.dat");
 
 	return S_OK;
 }

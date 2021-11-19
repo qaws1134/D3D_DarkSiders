@@ -116,6 +116,7 @@ HRESULT CPlayer::Add_Component()
 	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
+
 	return S_OK;
 }
 
@@ -211,7 +212,11 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 			_vec3	vPos;
 			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 
-			//m_pTransformCom->Set_Pos(&m_pNaviCom->MoveOn_NaviMesh(&vPos, &m_vDir, 5.f, fTimeDelta));
+			if (m_pNavi)
+			{
+				m_pTransformCom->Set_Pos(&m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, 5.f, fTimeDelta,m_pCalculatorCom));
+				m_pTransformCom->Update_Component(fTimeDelta);
+			}
 		}
 	}
 
