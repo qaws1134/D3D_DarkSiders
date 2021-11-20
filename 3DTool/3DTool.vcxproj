@@ -101,6 +101,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>../Reference/Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxguid.lib;System.lib;%(AdditionalDependencies);Utility.lib</AdditionalDependencies>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

@@ -169,6 +169,7 @@ call CopySystem.bat</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Font.cpp" />
+    <ClCompile Include="..\Code\Well512Random.cpp" />
     <ClCompile Include="..\Code\FontMgr.cpp" />
     <ClCompile Include="..\Code\Frame.cpp" />
     <ClCompile Include="..\Code\FrameMgr.cpp" />
@@ -181,6 +182,7 @@ call CopySystem.bat</Command>
   <ItemGroup>
     <ClInclude Include="..\..\Header\Export_System.h" />
     <ClInclude Include="..\Code\Font.h" />
+    <ClInclude Include="..\Code\Well512Random.h" />
     <ClInclude Include="..\Code\FontMgr.h" />
     <ClInclude Include="..\Code\Frame.h" />
     <ClInclude Include="..\Code\FrameMgr.h" />

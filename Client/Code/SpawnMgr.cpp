@@ -6,6 +6,11 @@
 #include "GameMgr.h"
 #include "Player.h"
 #include "WaterBoss.h"
+#include "Goblin.h"
+#include "Chest.h"
+#include "Grinner.h"
+#include "Player_Barrier.h"
+#include "WaterFall.h"
 #include "Cell.h"
 #include "Building.h"
 IMPLEMENT_SINGLETON(CSpawnMgr)
@@ -22,6 +27,7 @@ CSpawnMgr::~CSpawnMgr(void)
 
 CGameObject* CSpawnMgr::Spawn(CGameObject* pTargetObj, LOAD_DATA_COL tLoadData)
 {
+	
 	CGameObject* pCollider = CColMesh::Create(CGameMgr::GetInstance()->GetDevice(), tLoadData.tCol,tLoadData.wstrBoneName.c_str());
 	pCollider->SetTarget(pTargetObj);
 	
@@ -65,6 +71,56 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		pGameObject = CWaterBoss::Create(CGameMgr::GetInstance()->GetDevice());
 		NULL_CHECK_RETURN(pGameObject, nullptr);
 		Add_GameObject(pConvLayerTag, L"WaterBoss", pGameObject);
+	}
+	else if (Objkey == L"Grinner")
+	{
+		*pLayerTag = L"Enemy";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
+		pGameObject = CGrinner::Create(CGameMgr::GetInstance()->GetDevice());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iEnemyIdx++;
+	}
+	else if (Objkey == L"Goblin")
+	{
+		*pLayerTag = L"Enemy";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
+		pGameObject = CGoblin::Create(CGameMgr::GetInstance()->GetDevice());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iEnemyIdx++;
+	}
+	else if (Objkey == L"Chest")
+	{
+		*pLayerTag = L"Interaction";		//NPC, 상자 
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		pGameObject = CChest::Create(CGameMgr::GetInstance()->GetDevice());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, L"Chest", pGameObject);
+	}
+	else if (Objkey == L"PlayerBarrier")
+	{
+		*pLayerTag = L"Building";		//조작을 위한 레이어 분리 
+		//플레이어의 네비매시 인덱스로 조작 
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		pGameObject = CPlayer_Barrier::Create(CGameMgr::GetInstance()->GetDevice());
+		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iBuidingIdx)).c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+	}
+	else if (Objkey == L"Eden_WaterFall0"|| Objkey == L"Eden_WaterFall1")
+	{
+		//스테틱 매시 
+		//스크립트 조작만 필요
+		*pLayerTag = L"Building";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iBuidingIdx)).c_str());
+		pGameObject = CWaterFall::Create(CGameMgr::GetInstance()->GetDevice(), Objkey.c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iBuidingIdx++;
 	}
 	else
 	{

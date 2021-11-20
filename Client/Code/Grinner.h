@@ -1,5 +1,5 @@
-#ifndef WaterBoss_h__
-#define WaterBoss_h__
+#ifndef Grinner_h__
+#define Grinner_h__
 
 #include "GameObject.h"
 #include "Define.h"
@@ -14,12 +14,12 @@ class CShader;
 //class CColliderSphere;
 END
 
-class CWaterBoss : public CGameObject
+class CGrinner : public CGameObject
 {
 private:
-	explicit CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev);
-	explicit CWaterBoss(const CWaterBoss& rhs);
-	virtual ~CWaterBoss(void);
+	explicit CGrinner(LPDIRECT3DDEVICE9 pGraphicDev);
+	explicit CGrinner(const CGrinner& rhs);
+	virtual ~CGrinner(void);
 
 public:
 	virtual HRESULT Ready_Object(void) override;
@@ -35,7 +35,7 @@ public:
 	_bool		Pattern_Timer(_float fDeltaTime); // 패턴 대기 시간 
 
 	void		SetPattern();
-	void		SetSlamPattern();
+
 
 #pragma region Set 함수
 public:
@@ -64,13 +64,12 @@ private:
 	//그냥 왼쪽 오른쪽 순서대로 ㄱㄱ
 
 	//머신 상	태
-	WaterBoss::STATE		m_eMachineState;
-	WaterBoss::STATE		m_ePreMachineState;
-	WaterBoss::STATE		m_LastPatternState;
+	Grinner::STATE		m_eMachineState;
+	Grinner::STATE		m_ePreMachineState;
 
 	//애니메이션 관리
-	WaterBoss::Ani		m_ePreAniState;
-	WaterBoss::Ani		m_eCurAniState;
+	Grinner::Ani		m_ePreAniState;
+	Grinner::Ani		m_eCurAniState;
 
 
 	//애니메이션 블랜드
@@ -80,15 +79,14 @@ private:
 	_float m_fPatternTimer;
 	_float m_fPatternSpeed;
 
-
 	_uint m_iPatternNum;
-	_uint m_iSlamPatternNum;
+
 
 
 public:
-	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
-	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);
+	static CGrinner*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
+	static CGrinner*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);
 	virtual void			Free(void);
 };
 
-#endif // WaterBoss_h__
+#endif // Grinner_h__

@@ -21,6 +21,7 @@ public:
 
 	void				Set_Pos(const _float& fX, const _float& fY, const _float& fZ);
 	void				Set_Pos(const _vec3* pPos);
+	void				Set_PosY(_float fPosY);
 	void				Set_Rot(const _vec3* vAngle);
 	void				Set_Rot(const _float& fX, const _float& fY, const _float& fZ);
 	void				Set_CenterPos(const _vec3* vPos);

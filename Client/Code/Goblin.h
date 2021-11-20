@@ -1,5 +1,5 @@
-#ifndef WaterBoss_h__
-#define WaterBoss_h__
+#ifndef Goblin_h__
+#define Goblin_h__
 
 #include "GameObject.h"
 #include "Define.h"
@@ -14,12 +14,12 @@ class CShader;
 //class CColliderSphere;
 END
 
-class CWaterBoss : public CGameObject
+class CGoblin : public CGameObject
 {
 private:
-	explicit CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev);
-	explicit CWaterBoss(const CWaterBoss& rhs);
-	virtual ~CWaterBoss(void);
+	explicit CGoblin(LPDIRECT3DDEVICE9 pGraphicDev);
+	explicit CGoblin(const CGoblin& rhs);
+	virtual ~CGoblin(void);
 
 public:
 	virtual HRESULT Ready_Object(void) override;
@@ -35,7 +35,6 @@ public:
 	_bool		Pattern_Timer(_float fDeltaTime); // 패턴 대기 시간 
 
 	void		SetPattern();
-	void		SetSlamPattern();
 
 #pragma region Set 함수
 public:
@@ -64,31 +63,28 @@ private:
 	//그냥 왼쪽 오른쪽 순서대로 ㄱㄱ
 
 	//머신 상	태
-	WaterBoss::STATE		m_eMachineState;
-	WaterBoss::STATE		m_ePreMachineState;
-	WaterBoss::STATE		m_LastPatternState;
+	Goblin::STATE		m_eMachineState;
+	Goblin::STATE		m_ePreMachineState;
+
 
 	//애니메이션 관리
-	WaterBoss::Ani		m_ePreAniState;
-	WaterBoss::Ani		m_eCurAniState;
+	Goblin::Ani		m_ePreAniState;
+	Goblin::Ani		m_eCurAniState;
 
 
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
-	_double m_bBlendTime;
 
 	_float m_fPatternTimer;
 	_float m_fPatternSpeed;
 
-
 	_uint m_iPatternNum;
-	_uint m_iSlamPatternNum;
 
 
 public:
-	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
-	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);
+	static CGoblin*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
+	static CGoblin*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);
 	virtual void			Free(void);
 };
 
-#endif // WaterBoss_h__
+#endif // Goblin_h__

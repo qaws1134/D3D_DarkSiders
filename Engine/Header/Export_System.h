@@ -7,7 +7,7 @@
 #include "FontMgr.h"
 #include "InputDev.h"
 #include "KeyMgr.h"
-
+#include "Well512Random.h"
 BEGIN(Engine)
 
 // GraphicDev
@@ -35,14 +35,20 @@ inline HRESULT	Ready_Font(LPDIRECT3DDEVICE9 pGraphicDev,
 	const _uint& iHeight,
 	const _uint& iWeight);
 
-
-
 inline void	Render_Font(const _tchar* pFontTag,
 	const _tchar* pString,
 	const _vec2* pPos,
 	D3DXCOLOR Color);
 
 inline void	Set_FontZ(const _tchar* pFontTag,_float fSortZ);
+
+//Random
+
+inline void  RandomInit(unsigned int nSeed);
+inline _uint RandNext(int minValue, int maxValue);
+inline _uint RandNext(unsigned int maxValue);
+inline _uint RandNext();
+
 // InputDev
 inline _byte	Get_DIKeyState(_ubyte byKeyID);
 inline _byte	Get_DIMouseState(MOUSEKEYSTATE eMouse);

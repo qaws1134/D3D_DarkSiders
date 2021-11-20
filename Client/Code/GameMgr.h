@@ -18,6 +18,9 @@ private:
 
 public:
 	void				SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer; }
+	void				SetPlayerNaviIdx(_uint iIdx) { m_iNaviIdx = iIdx; }
+	_uint				GetPlayerNaviIdx() { return m_iNaviIdx; }
+
 	void				SetDevice(LPDIRECT3DDEVICE9 pGraphicDev) { m_pGraphicDev = pGraphicDev; }
 	
 
@@ -63,6 +66,7 @@ private:
 	_uint m_iBulletIdx = 0;
 	_uint m_iEffectIdx = 0;
 	_uint m_iParticleIdx = 0;
+	_uint m_iNaviIdx = 0;
 private:
 	virtual void Free(void) override;
 

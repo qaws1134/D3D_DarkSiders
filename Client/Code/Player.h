@@ -123,7 +123,7 @@ private:
 	_bool	m_bJumpEnd = false;
 	_bool	m_bJumpAniEnd = false;
 	
-
+	_uint   m_eCompareType;
 
 	_float m_fDmg=0.f;
 

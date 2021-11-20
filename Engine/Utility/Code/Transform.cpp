@@ -1,5 +1,5 @@
 #include "Transform.h"
-
+#include "NaviMesh.h"
 USING(Engine)
 
 Engine::CTransform::CTransform(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -49,6 +49,8 @@ _bool CTransform::MoveStep(MOVETYPE eMoveType,  _float* fSpeed, const _float& fP
 		break;
 	}
 	m_fAccel = *fSpeed*fTimeDelta;
+
+
 	Move_Pos(vDir, *fSpeed, fTimeDelta);
 	
 	return false;
@@ -164,6 +166,11 @@ void Engine::CTransform::Set_Pos(const _float & fX, const _float & fY, const _fl
 void Engine::CTransform::Set_Pos(const _vec3* pPos)
 {
 	m_vInfo[INFO_POS] = *pPos;
+}
+
+void CTransform::Set_PosY(_float fPosY)
+{
+	m_vInfo[INFO_POS].y = fPosY;
 }
 
 void Engine::CTransform::Set_Rot(const _vec3 * vAngle)

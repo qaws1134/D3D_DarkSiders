@@ -16,7 +16,8 @@ private:
 
 public:
 	void			Set_CellIndex(const _ulong& dwIndex) { m_dwIndex = dwIndex; }
-	
+	_uint			Get_CellIndex() { return  m_dwIndex; }
+
 	void			Add_Cell( _vec3 vPosA, _vec3 vPosB, _vec3 vPosC);
 public:
 	HRESULT			Ready_NaviMesh();

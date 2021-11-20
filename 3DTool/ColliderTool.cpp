@@ -499,7 +499,7 @@ void CColliderTool::OnBnClickedSave()
 			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			WriteFile(hFile, iter.first.c_str(), dwStringSize, &dwbyte, nullptr);
 
-			//충돌체 개수
+			//충돌체 개수q
 			dwMapSize = iter.second.size();
 			WriteFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
 			for (auto iter_second : iter.second)

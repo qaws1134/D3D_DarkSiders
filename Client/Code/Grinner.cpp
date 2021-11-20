@@ -1,41 +1,39 @@
 #include "stdafx.h"
-#include "WaterBoss.h"
+#include "Grinner.h"
 #include "Enum.h"
 #include "Export_Function.h"
 
 
 
-CWaterBoss::CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev)
+CGrinner::CGrinner(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
 
 }
 
-CWaterBoss::CWaterBoss(const CWaterBoss& rhs)
+CGrinner::CGrinner(const CGrinner& rhs)
 	: CGameObject(rhs)
 {
 
 }
 
-CWaterBoss::~CWaterBoss(void)
+CGrinner::~CGrinner(void)
 {
 
 }
 
-HRESULT CWaterBoss::Ready_Object(void)
+HRESULT CGrinner::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
 	m_pTransformCom->Set_Rot(0.f, D3DXToRadian(-90.f), 0.f);	//파싱하면서 바꿀꺼임 
 	m_pTransformCom->Update_Component(0.f);
-	m_pMeshCom->Set_AnimationIndex(WaterBoss::Idle);
+	m_pMeshCom->Set_AnimationIndex(Grinner::Grinner_Idle);
 	m_fPatternTimer = 2.f;
 	m_fPatternSpeed = 0.f;
-	m_eCurAniState = WaterBoss::Idle;
-	m_iSlamPatternNum = 0;
+	m_eCurAniState = Grinner::Grinner_Idle;
 	m_iPatternNum = 0;
-	m_bBlendTime = 0.5;
 
 
 	SetCharInfo(50.f, 4.f);
@@ -43,53 +41,53 @@ HRESULT CWaterBoss::Ready_Object(void)
 	return S_OK;
 }
 
-void CWaterBoss::Late_Ready_Object()
+void CGrinner::Late_Ready_Object()
 {
 }
 
 
-_int CWaterBoss::Update_Object(const _float& fTimeDelta)
+_int CGrinner::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
-	Add_RenderGroup(RENDER_NONALPHA, this);
 	StateChange();
 	StateLinker(fTimeDelta);
 	m_pMeshCom->Play_Animation(fTimeDelta);
 
+	Add_RenderGroup(RENDER_NONALPHA, this);
 	return iExit;
 }
 
-CWaterBoss* CWaterBoss::Create(LPDIRECT3DDEVICE9 pGraphicDev)
+CGrinner* CGrinner::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 {
-	CWaterBoss*	pInstance = new CWaterBoss(pGraphicDev);
+	CGrinner*	pInstance = new CGrinner(pGraphicDev);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 
 	return pInstance;
 }
 
-CWaterBoss * CWaterBoss::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
+CGrinner * CGrinner::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
 {
-	CWaterBoss*	pInstance = new CWaterBoss(pGraphicDev);
+	CGrinner*	pInstance = new CGrinner(pGraphicDev);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 
 	return pInstance;
 }
 
-void CWaterBoss::Free(void)
+void CGrinner::Free(void)
 {
 	CGameObject::Free();
 }
 
 
-HRESULT CWaterBoss::Add_Component()
+HRESULT CGrinner::Add_Component()
 {
 	CComponent*		pComponent = nullptr;
 
 	// Mesh
-	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"WaterBoss"));
+	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"Grinner"));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
 
@@ -117,7 +115,7 @@ HRESULT CWaterBoss::Add_Component()
 	return S_OK;
 }
 
-void CWaterBoss::Render_Object(void)
+void CGrinner::Render_Object(void)
 {
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
@@ -139,41 +137,31 @@ void CWaterBoss::Render_Object(void)
 	Safe_Release(pEffect);
 }
 
-void CWaterBoss::StateChange()
+void CGrinner::StateChange()
 {
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
 		switch (m_eMachineState)
 		{
-		case WaterBoss::STATE_IDLE:
-			m_fPatternSpeed = 0.f;
-			m_eCurAniState = WaterBoss::Idle;
-			m_bBlend = true;
-
+		case Grinner::STATE_SPAWN_IDLE:
 			break;
-		case WaterBoss::STATE_CALL_LIGHTNING:
-			m_eCurAniState = WaterBoss::Atk_CallLightning_Start;
+		case Grinner::STATE_SPAWN:
 			break;
-		case WaterBoss::STATE_ORB:
-			m_eCurAniState = WaterBoss::Atk_SummonOrb;
+		case Grinner::STATE_IDLE:
 			break;
-		case WaterBoss::STATE_SLAM:
-			SetSlamPattern();
+		case Grinner::STATE_ATK:
+			m_iPatternNum = RandNext(0, 4);
 			break;
-		case WaterBoss::STATE_IMPACT:
-			if (WaterBoss::STATE_WAVE == m_ePreAniState)
-				m_eCurAniState = WaterBoss::TidalWave_Impact;
-			else
-				m_eCurAniState = WaterBoss::Impact_Stun;
-			m_fPatternTimer = 5.f;
+		case Grinner::STATE_MOVE:
 			break;
-		case WaterBoss::STATE_WAVE:
-			m_eCurAniState = WaterBoss::TidalWave_Loop;
-			m_fPatternTimer = 7.f;
-			m_fPatternSpeed = 0.f;
+		case Grinner::STATE_CHASE:
 			break;
-		case WaterBoss::STATE_END:
+		case Grinner::STATE_HIT:
+			break;
+		case Grinner::STATE_DEAD:
+			break;
+		case Grinner::STATE_END:
 			break;
 		default:
 			break;
@@ -185,49 +173,88 @@ void CWaterBoss::StateChange()
 
 	if (m_ePreAniState != m_eCurAniState)
 	{
+	
 		switch (m_eCurAniState)
 		{
-		case WaterBoss::Atk_CallLightning_Start:
-			m_bBlend = true;
+		case Grinner::Grinner_Atk_Flip:
 			break;
-		case WaterBoss::Atk_CallLightning:
-			m_bBlend = true;
+		case Grinner::Grinner_Atk_BarfinRainbows:
 			break;
-		case WaterBoss::Atk_SummonOrb:
-			m_bBlend = true;
+		case Grinner::Grinner_Atk_Lunge:
 			break;
-		case WaterBoss::Atk_Tentade_Pummel:	
-		case WaterBoss::Atk_TentadeSlam_FL:	
-		case WaterBoss::Atk_TentadeSlam_FL_02:	
-		case WaterBoss::Atk_TentadeSlam_FR:			
-		case WaterBoss::Atk_TentadeSlam_L:	
-		case WaterBoss::Atk_TentadeSlam_L_02:
-		case WaterBoss::Atk_TentadeSlam_R:
-		case WaterBoss::Atk_TentadeSlam_R_02:
-			m_bBlend = false;
+		case Grinner::Grinner_Atk_Swipe_Combo:
 			break;
-		case WaterBoss::Atk_WhirlPool:
-			m_bBlend = true;
+		case Grinner::Grinner_DeadPose:
 			break;
-		case WaterBoss::Impact_Stun:
-			m_bBlend = true;
+		case Grinner::Grinner_Death:
 			break;
-		case WaterBoss::Impact_Stun_Loop:
-			m_bBlend = true;
+		case Grinner::Grinner_Death_War:
 			break;
-		case WaterBoss::TidalWave:
-			m_bBlend = true;
+		case Grinner::Grinner_DeathPose_War:
 			break;
-		case WaterBoss::TidalWave_Impact:
-			m_bBlend = true;
+		case Grinner::Grinner_Idle:
 			break;
-		case WaterBoss::TidalWave_Loop:
-			m_bBlend = true;
+		case Grinner::Grinner_Impact_F:
 			break;
-		case WaterBoss::Idle:
-
+		case Grinner::Grinner_Impact_Flinch_B:
 			break;
-		case WaterBoss::End:
+		case Grinner::Grinner_Impact_Flinch_F:
+			break;
+		case Grinner::Grinner_Impact_Flinch_L:
+			break;
+		case Grinner::Grinner_Impact_Flinch_R:
+			break;
+		case Grinner::Grinner_Impact_L:
+			break;
+		case Grinner::Grinner_Impact_R:
+			break;
+		case Grinner::Grinner_Jump_Apex:
+			break;
+		case Grinner::Grinner_Jump_Fall:
+			break;
+		case Grinner::Grinner_Jump_Land:
+			break;
+		case Grinner::Grinner_Jump_Launch:
+			break;
+		case Grinner::Grinner_Knock_B_Start:
+			break;
+		case Grinner::Grinner_Knock_B_Apex:
+			break;
+		case Grinner::Grinner_Knock_B_Fall:
+			break;
+		case Grinner::Grinner_Knock_B_Land:
+			break;
+		case Grinner::Grinner_Knock_B_Recover:
+			break;
+		case Grinner::Grinner_Knock_B_Idle:
+			break;
+		case Grinner::Grinner_PotalSpawn:
+			break;
+		case Grinner::Grinner_Run_F:
+			break;
+		case Grinner::Grinner_Run_FL:
+			break;
+		case Grinner::Grinner_Run_FR:
+			break;
+		case Grinner::Grinner_Turn_90_L:
+			break;
+		case Grinner::Grinner_Turn_90_R:
+			break;
+		case Grinner::Grinner_Turn_180_L:
+			break;
+		case Grinner::Grinner_Turn_180_R:
+			break;
+		case Grinner::Grinner_Walk_B:
+			break;
+		case Grinner::Grinner_Walk_BL:
+			break;
+		case Grinner::Grinner_Walk_BR:
+			break;
+		case Grinner::Grinner_Walk_F:
+			break;
+		case Grinner::Grinner_Walk_L:
+			break;
+		case Grinner::Grinner_Walk_R:
 			break;
 		default:
 			break;
@@ -238,92 +265,93 @@ void CWaterBoss::StateChange()
 
 }
 //다음 동작으로 자동으로 연결 
-void CWaterBoss::StateLinker(_float fDeltaTime)
+void CGrinner::StateLinker(_float fDeltaTime)
 {
 	switch (m_eCurAniState)
 	{
-	case WaterBoss::Atk_CallLightning_Start:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eCurAniState = WaterBoss::Atk_CallLightning;
-		}
-
+	case Grinner::Grinner_Atk_Flip:
 		break;
-	case WaterBoss::Atk_CallLightning:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 2.f;
-
-		}
+	case Grinner::Grinner_Atk_BarfinRainbows:
 		break;
-	case WaterBoss::Atk_SummonOrb:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 2.f;
-
-		}
+	case Grinner::Grinner_Atk_Lunge:
 		break;
-	case WaterBoss::Atk_Tentade_Pummel:
-	case WaterBoss::Atk_TentadeSlam_FL:
-	case WaterBoss::Atk_TentadeSlam_FL_02:
-	case WaterBoss::Atk_TentadeSlam_FR:
-	case WaterBoss::Atk_TentadeSlam_L:
-	case WaterBoss::Atk_TentadeSlam_L_02:
-	case WaterBoss::Atk_TentadeSlam_R:
-	case WaterBoss::Atk_TentadeSlam_R_02:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 1.f;
-		}
+	case Grinner::Grinner_Atk_Swipe_Combo:
 		break;
-	case WaterBoss::Atk_WhirlPool:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 5.f;
-		}
+	case Grinner::Grinner_DeadPose:
 		break;
-	case WaterBoss::Impact_Stun:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eCurAniState = WaterBoss::Impact_Stun_Loop;
-		}
+	case Grinner::Grinner_Death:
 		break;
-	case WaterBoss::Impact_Stun_Loop:
+	case Grinner::Grinner_Death_War:
+		break;
+	case Grinner::Grinner_DeathPose_War:
+		break;
+	case Grinner::Grinner_Idle:
 		if (Pattern_Timer(fDeltaTime))
 		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
+			SetPattern();
 		}
 		break;
-	case WaterBoss::TidalWave:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
+	case Grinner::Grinner_Impact_F:
 		break;
-	case WaterBoss::TidalWave_Impact:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
+	case Grinner::Grinner_Impact_Flinch_B:
 		break;
-	case WaterBoss::TidalWave_Loop:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eCurAniState = WaterBoss::TidalWave;
-		}
-
+	case Grinner::Grinner_Impact_Flinch_F:
 		break;
-	case WaterBoss::Idle:
-		if (Pattern_Timer(fDeltaTime))
-		{
-				SetPattern();
-		}
+	case Grinner::Grinner_Impact_Flinch_L:
 		break;
-	case WaterBoss::End:
+	case Grinner::Grinner_Impact_Flinch_R:
+		break;
+	case Grinner::Grinner_Impact_L:
+		break;
+	case Grinner::Grinner_Impact_R:
+		break;
+	case Grinner::Grinner_Jump_Apex:
+		break;
+	case Grinner::Grinner_Jump_Fall:
+		break;
+	case Grinner::Grinner_Jump_Land:
+		break;
+	case Grinner::Grinner_Jump_Launch:
+		break;
+	case Grinner::Grinner_Knock_B_Start:
+		break;
+	case Grinner::Grinner_Knock_B_Apex:
+		break;
+	case Grinner::Grinner_Knock_B_Fall:
+		break;
+	case Grinner::Grinner_Knock_B_Land:
+		break;
+	case Grinner::Grinner_Knock_B_Recover:
+		break;
+	case Grinner::Grinner_Knock_B_Idle:
+		break;
+	case Grinner::Grinner_PotalSpawn:
+		break;
+	case Grinner::Grinner_Run_F:
+		break;
+	case Grinner::Grinner_Run_FL:
+		break;
+	case Grinner::Grinner_Run_FR:
+		break;
+	case Grinner::Grinner_Turn_90_L:
+		break;
+	case Grinner::Grinner_Turn_90_R:
+		break;
+	case Grinner::Grinner_Turn_180_L:
+		break;
+	case Grinner::Grinner_Turn_180_R:
+		break;
+	case Grinner::Grinner_Walk_B:
+		break;
+	case Grinner::Grinner_Walk_BL:
+		break;
+	case Grinner::Grinner_Walk_BR:
+		break;
+	case Grinner::Grinner_Walk_F:
+		break;
+	case Grinner::Grinner_Walk_L:
+		break;
+	case Grinner::Grinner_Walk_R:
 		break;
 	default:
 		break;
@@ -333,7 +361,7 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 
 
 
-HRESULT CWaterBoss::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
+HRESULT CGrinner::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 {
 	_matrix		matWorld, matView, matProj;
 
@@ -375,7 +403,7 @@ HRESULT CWaterBoss::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	return S_OK;
 }
 
-_bool CWaterBoss::Pattern_Timer(_float fDeltaTime)
+_bool CGrinner::Pattern_Timer(_float fDeltaTime)
 {
 	m_fPatternSpeed += fDeltaTime;
 	if (m_fPatternSpeed > m_fPatternTimer)
@@ -386,76 +414,24 @@ _bool CWaterBoss::Pattern_Timer(_float fDeltaTime)
 	return false;
 }
 
-void CWaterBoss::SetPattern()
+void CGrinner::SetPattern()
 {
 	switch (m_iPatternNum)
 	{
 	case 0:
-		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
+		m_eCurAniState = Grinner::Grinner_Atk_Flip;
 		break;
 	case 1:
-		m_eMachineState= WaterBoss::STATE_SLAM;
+		m_eCurAniState = Grinner::Grinner_Atk_BarfinRainbows;
 		break;
 	case 2:
-		m_eMachineState = WaterBoss::STATE_SLAM;
+		m_eCurAniState = Grinner::Grinner_Atk_Lunge;
 		break;
 	case 3:
-		m_eMachineState = WaterBoss::STATE_WAVE;
+		m_eCurAniState = Grinner::Grinner_Atk_Swipe_Combo;
 		break;
-	case 4:
-		m_eMachineState = WaterBoss::STATE_ORB;	
-		break;
-	case 5:
-		m_eMachineState = WaterBoss::STATE_ORB;
-		break;
-	case 6:
-		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
-		break;
-	case 7:
-		m_eMachineState = WaterBoss::STATE_SLAM;
-		break;
-	case 8:
-		m_eMachineState = WaterBoss::STATE_WAVE;
-		m_iPatternNum = 0;
-		break;
+
 	}	
-	m_iPatternNum++;
 }
 
-void CWaterBoss::SetSlamPattern()
-{
-	switch (m_iSlamPatternNum++)
-	{
-	case 0:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FL;
-		break;
-	case 1:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FL_02;
-		break;
-	case 2:
-		m_eCurAniState = WaterBoss::Atk_Tentade_Pummel;
-		break;
-	case 3:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FR;
-		break;
-	case 4:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_L;
-		break;
-	case 5:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_R;
-		break;
-	case 6:
-		m_eCurAniState = WaterBoss::Atk_Tentade_Pummel;
-		break;
-	case 7:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_R_02;
-		break;
-	case 8:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_L_02;
-		m_iSlamPatternNum = 0;
-		break;
-	default:
-		break;
-	}
-}
 

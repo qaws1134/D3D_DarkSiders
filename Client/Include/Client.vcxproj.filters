@@ -112,6 +112,12 @@
     <Filter Include="02. GameObject\01. Character\04. Goblin">
       <UniqueIdentifier>{603d41a5-2a58-4ce8-a49b-475550754cba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\10. Player_Barrier">
+      <UniqueIdentifier>{bcc70cae-44f7-49ce-aad1-77d1d56fda5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\11. WaterFall">
+      <UniqueIdentifier>{cd84f340-e468-4dfc-871e-43587c2271a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -204,6 +210,15 @@
     <ClInclude Include="..\Code\Chest.h">
       <Filter>02. GameObject\09. Chest</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\WaterBoss_Orb.h">
+      <Filter>02. GameObject\01. Character\01. WaterBoss\Orb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\WaterFall.h">
+      <Filter>02. GameObject\11. WaterFall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Player_Barrier.h">
+      <Filter>02. GameObject\10. Player_Barrier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -280,6 +295,15 @@
     </ClCompile>
     <ClCompile Include="..\Code\Chest.cpp">
       <Filter>02. GameObject\09. Chest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\WaterBoss_Orb.cpp">
+      <Filter>02. GameObject\01. Character\01. WaterBoss\Orb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\WaterFall.cpp">
+      <Filter>02. GameObject\11. WaterFall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Player_Barrier.cpp">
+      <Filter>02. GameObject\10. Player_Barrier</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -152,6 +152,12 @@ Engine::_uint CLoading::Loading_ForStage(void)
 #pragma region DYNAMICMESH
 	FAILED_CHECK_RETURN(Ready_Prototype(L"War", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/War/", L"War.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Chest", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Chest/", L"Chest.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"PlayerBarrier", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/PlayerBarrier/", L"PlayerBarrier.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
+
+
 #pragma endregion DYNAMICMESH
 
 #pragma region STATICMESH	
@@ -160,6 +166,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss_Orb", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterBoss_Orb/", L"Orb.X")), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss_Bullet", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterBoss_Bullet/", L"WaterBoss_Bullet.X")), E_FAIL);
 
+	FAILED_CHECK_RETURN(Ready_Prototype(L"GoblinSpear", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/GoblinSpear/", L"GoblinSpear.X")), E_FAIL);
 
 	//¸Ê
 	for (_uint i = 0; i < 24; i++)
@@ -244,7 +251,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
 	}
 
-	//FAILED_CHECK_RETURN(Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterFloor/", L"WaterFloor.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterFloor.X")), E_FAIL);
 
 
 

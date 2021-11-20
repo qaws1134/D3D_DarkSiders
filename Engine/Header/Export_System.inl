@@ -66,6 +66,22 @@ void	Set_FontZ(const _tchar* pFontTag, _float fSortZ)
 }
 
 
+void  RandomInit(unsigned int nSeed)
+{
+	Well512Random::GetInstance()->RandomInit(nSeed);
+}
+_uint RandNext(int minValue, int maxValue)
+{
+	return Well512Random::GetInstance()->Next(minValue, maxValue);
+}
+_uint RandNext(unsigned int maxValue)
+{
+	return  Well512Random::GetInstance()->Next(maxValue);
+}
+_uint RandNext()
+{
+	return  Well512Random::GetInstance()->Next();
+}
 
 
 // InputDev
@@ -119,5 +135,6 @@ void		Release_System(void)
 	CFontMgr::GetInstance()->DestroyInstance();
 	CFrameMgr::GetInstance()->DestroyInstance();
 	CTimerMgr::GetInstance()->DestroyInstance();
+	Well512Random::GetInstance()->DestroyInstance();
 	CGraphicDev::GetInstance()->DestroyInstance();
 }

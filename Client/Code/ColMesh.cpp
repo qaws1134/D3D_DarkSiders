@@ -35,6 +35,7 @@ void CColMesh::Late_Ready_Object()
 _int CColMesh::Update_Object(const _float& fTimeDelta)
 {
 	USES_CONVERSION;
+	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
 	if (m_wstrBone != L"")
 	{
@@ -50,7 +51,6 @@ _int CColMesh::Update_Object(const _float& fTimeDelta)
 
 
 	}
-	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
 	if ( m_wstrBone != L"")
 	{

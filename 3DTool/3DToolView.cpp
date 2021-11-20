@@ -184,13 +184,25 @@ void CMy3DToolView::OnInitialUpdate()
 
 	Ready_Prototype(L"Proto_Buffer_TerrainTex", CTerrainTex::Create(m_pDevice, VTXCNTX, VTXCNTZ));
 	Ready_Prototype(L"Proto_Buffer_CubeTex", CCubeTex::Create(m_pDevice));
-	Ready_Prototype(L"War", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/War/", L"War.X"));
 
+
+
+
+
+	Ready_Prototype(L"War", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/War/", L"War.X"));
 	Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X"));
 	Ready_Prototype(L"PlayerBarrier", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/PlayerBarrier/", L"PlayerBarrier.X"));
+	Ready_Prototype(L"Chest", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Chest/", L"Chest.X"));
+	Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X"));
+	Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X"));
+
+	Ready_Prototype(L"Orb", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"Orb.X"));
+	Ready_Prototype(L"WaterBoss_Bullet", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterBoss_Bullet.X"));
+	Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterFloor.X"));
 
 
 
+	Ready_Prototype(L"GoblinSpear", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/GoblinSpear/", L"GoblinSpear.X"));
 	for (_uint i = 0; i < 24; i++) 
 	{
 		wstring wstrProto = L"Eden" + to_wstring(i);

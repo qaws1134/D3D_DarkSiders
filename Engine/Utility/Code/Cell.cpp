@@ -162,10 +162,13 @@ Engine::CCell::COMPARE Engine::CCell::Compare_Position(const _vec3* pEndPos, _ul
 {
 	for (_ulong i = 0; i < LINE_END; ++i)
 	{
-		if (CLine::COMPARE_OUT == m_pLine[i]->Compare(&_vec2(pEndPos->x, pEndPos->z)))
+		if (CLine::COMPARE_OUT ==m_pLine[i]->Compare(&_vec2(pEndPos->x, pEndPos->z), &m_vNormal))
 		{
 			if (nullptr == m_pNeighbor[i])
+			{
+				m_vNormal *= -1.f;
 				return COMPARE_STOP;
+			}
 			else
 			{
 				*pCellIndex = *m_pNeighbor[i]->Get_CellIndex();

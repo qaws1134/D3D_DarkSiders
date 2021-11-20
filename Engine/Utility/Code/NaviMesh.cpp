@@ -1,6 +1,7 @@
 #include "NaviMesh.h"
 #include "RayPickManager.h"
 #include "Calculator.h"
+#include "Transform.h"
 USING(Engine)
 
 Engine::CNaviMesh::CNaviMesh(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -79,17 +80,31 @@ _vec3 CNaviMesh::MoveOn_NaviMesh(const _vec3 * pTargetPos, const _vec3 * pTarget
 {
 	_vec3		vEndPos = *pTargetPos + (*pTargetDir * fSpeed * fTimeDelta);
 
+	//제한 겸 y값 넘겨주기 
 	if (CCell::COMPARE_MOVE == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
 	{
 		_float fPosY= pCalcul->Compute_HeightOnTri(&vEndPos, m_vecCell[m_dwIndex]->Get_CellTri());
+		vEndPos = *pTargetPos + (*pTargetDir * fSpeed * fTimeDelta);
 		vEndPos.y = fPosY;
+
 		return vEndPos;
 	}
 	else if (CCell::COMPARE_STOP == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
-		return *pTargetPos;
+	{
+		_vec3 vNormal = m_vecCell[m_dwIndex]->Get_Normal();
+		_float fNormalLength = D3DXVec3Dot(&(*pTargetDir*-1.f), &vNormal);
 
+		_vec3 vSlide =  *pTargetDir + (fNormalLength*vNormal);
+		D3DXVec3Normalize(&vSlide, &vSlide);
+		_float fPosY = pCalcul->Compute_HeightOnTri(&vEndPos, m_vecCell[m_dwIndex]->Get_CellTri());
+
+		vEndPos = *pTargetPos+(vSlide * fSpeed * fTimeDelta);
+		vEndPos.y = fPosY;
+		return vEndPos;
+	}
 	return _vec3();
 }
+
 
 
 //_bool CNaviMesh::PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize)

@@ -1,5 +1,5 @@
-#ifndef WaterBoss_h__
-#define WaterBoss_h__
+#ifndef Chest_h__
+#define Chest_h__
 
 #include "GameObject.h"
 #include "Define.h"
@@ -14,12 +14,12 @@ class CShader;
 //class CColliderSphere;
 END
 
-class CWaterBoss : public CGameObject
+class CChest : public CGameObject
 {
 private:
-	explicit CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev);
-	explicit CWaterBoss(const CWaterBoss& rhs);
-	virtual ~CWaterBoss(void);
+	explicit CChest(LPDIRECT3DDEVICE9 pGraphicDev);
+	explicit CChest(const CChest& rhs);
+	virtual ~CChest(void);
 
 public:
 	virtual HRESULT Ready_Object(void) override;
@@ -32,10 +32,7 @@ public:
 	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
 
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
-	_bool		Pattern_Timer(_float fDeltaTime); // 패턴 대기 시간 
 
-	void		SetPattern();
-	void		SetSlamPattern();
 
 #pragma region Set 함수
 public:
@@ -59,36 +56,25 @@ private:
 
 private:
 
-	_vec3 m_vDir;
 
 	//그냥 왼쪽 오른쪽 순서대로 ㄱㄱ
 
 	//머신 상	태
-	WaterBoss::STATE		m_eMachineState;
-	WaterBoss::STATE		m_ePreMachineState;
-	WaterBoss::STATE		m_LastPatternState;
+	Chest::STATE		m_eMachineState;
+	Chest::STATE		m_ePreMachineState;
 
 	//애니메이션 관리
-	WaterBoss::Ani		m_ePreAniState;
-	WaterBoss::Ani		m_eCurAniState;
-
+	Chest::Ani		m_ePreAniState;
+	Chest::Ani		m_eCurAniState;
 
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
-	_double m_bBlendTime;
-
-	_float m_fPatternTimer;
-	_float m_fPatternSpeed;
-
-
-	_uint m_iPatternNum;
-	_uint m_iSlamPatternNum;
 
 
 public:
-	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
-	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);
+	static CChest*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
+	static CChest*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);
 	virtual void			Free(void);
 };
 
-#endif // WaterBoss_h__
+#endif // Chest_h__

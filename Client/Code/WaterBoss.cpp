@@ -35,7 +35,6 @@ HRESULT CWaterBoss::Ready_Object(void)
 	m_eCurAniState = WaterBoss::Idle;
 	m_iSlamPatternNum = 0;
 	m_iPatternNum = 0;
-	m_bBlendTime = 0.5;
 
 
 	SetCharInfo(50.f, 4.f);
@@ -52,10 +51,10 @@ _int CWaterBoss::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
-	Add_RenderGroup(RENDER_NONALPHA, this);
 	StateChange();
 	StateLinker(fTimeDelta);
 	m_pMeshCom->Play_Animation(fTimeDelta);
+	Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;
 }

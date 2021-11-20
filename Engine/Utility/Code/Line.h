@@ -18,8 +18,8 @@ private:
 
 public:
 	HRESULT				Ready_Line(const _vec2* pPointA, const _vec2* pPointB);
-	COMPARE				Compare(const _vec2* pEndPos);
 
+	COMPARE				Compare(const _vec2* pEndPos, _vec3* vNormal);
 private:
 	_vec2				m_vPoint[POINT_END];
 	_vec2				m_vDirection;

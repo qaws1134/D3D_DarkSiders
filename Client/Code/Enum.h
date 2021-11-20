@@ -175,8 +175,39 @@ namespace UI
 	};
 	
 }
+
+namespace Player_Barrier
+{
+	enum STATE
+	{
+		STATE_IDLE_OPEN,
+		STATE_IDLE_CLOSE,
+		STATE_OPEN,
+		STATE_CLEOSE,
+		STATE_END
+	};
+
+
+	enum Ani {
+		PlayerBarrer_Close,                       //0	frame:[40]
+		PlayerBarrer_Open,                        //1	frame:[55]
+		End
+	};
+}
+
+
+
 namespace Chest
 {
+	enum STATE
+	{
+		STATE_IDLE,
+		STATE_OPEN,
+		STATE_OPEND,
+		STATE_HIT,
+		STATE_END
+	};
+
 	enum Ani {
 		Check_Idle,                               //0	frame:[101]
 		Check_Start,                              //1	frame:[101]
@@ -190,6 +221,24 @@ namespace Chest
 
 namespace Grinner
 {
+
+	//패턴상태 
+	enum STATE
+	{
+		STATE_SPAWN_IDLE,
+		STATE_SPAWN,
+		STATE_IDLE,
+		STATE_ATK,
+		//STATE_ATK_FLIP,              //0	frame:[73]
+		//STATE_ATK_BARFINRAINBOWS,               //1	frame:[131]
+		//STATE_ATK_LUNGE,                        //2	frame:[49]
+		//STATE_ATK_SWIPE_COMBO,                  //3	frame:[81]
+		STATE_MOVE,
+		STATE_CHASE,
+		STATE_HIT,
+		STATE_DEAD,
+		STATE_END
+	};
 	enum Ani {
 		Grinner_Atk_Flip,                         //0	frame:[73]
 		Grinner_Atk_BarfinRainbows,               //1	frame:[131]
@@ -236,6 +285,20 @@ namespace Grinner
 }
 
 namespace Goblin {
+
+	enum STATE
+	{
+		STATE_SPAWN_IDLE,
+		STATE_SPAWN,
+		STATE_IDLE,
+		STATE_ATK,
+		STATE_MOVE,
+		STATE_CHASE,
+		STATE_HIT,
+		STATE_DEAD,
+		STATE_END
+	};
+
 	enum Ani {
 		Goblin_Attack_01,                         //0	frame:[61]
 		Goblin_Attack_02,                         //1	frame:[63]
@@ -249,14 +312,13 @@ namespace Goblin {
 		Goblin_Jump_Land,                         //9	frame:[30]
 		Goblin_Jump_Launch,                       //10	frame:[11]
 		Goblin_Jump_Launch_Pose,                  //11	frame:[23]
-		Goblin_Run_B,                             //12	frame:[1]
-		Goblin_Run_F,                             //13	frame:[1]
-		Goblin_Sit_End,                           //14	frame:[45]
-		Goblin_Sit_Idle,                          //15	frame:[63]
-		Goblin_Spawn,                             //16	frame:[56]
-		Goblin_Spawn_Climb_Hovel,                 //17	frame:[91]
-		Goblin_Turn_L,                            //18	frame:[31]
-		Goblin_Turn_R,                            //19	frame:[31]
+		Goblin_Sit_End,                           //12	frame:[45]
+		Goblin_Sit_Idle,                          //13	frame:[63]
+		Goblin_Spawn,                             //14	frame:[56]
+		Goblin_Spawn_Climb_Hovel,                 //15	frame:[91]
+		Goblin_Turn_L,                            //16	frame:[31]
+		Goblin_Turn_R,                            //17	frame:[31]
+		Goblin_Run_F,                             //18	frame:[17]
 		End
 	};
 }

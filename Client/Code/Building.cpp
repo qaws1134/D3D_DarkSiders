@@ -25,8 +25,7 @@ HRESULT CBuilding::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 
-	m_pTransformCom->Set_Pos(5.f, 0.f, 5.f);
-	m_pTransformCom->Update_Component(0.f);
+
 	return S_OK;
 }
 

@@ -75,7 +75,6 @@ private:
 
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
-	_double m_bBlendTime;
 
 	_float m_fPatternTimer;
 	_float m_fPatternSpeed;

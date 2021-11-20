@@ -25,7 +25,7 @@ HRESULT CLoadMgr::LoadData(wstring szFilePath)
 {
 	LoadColTool(szFilePath+L"Colider4.dat");
 	//LoadMeshTool(szFilePath+L"Mesh.dat");
-	LoadMeshTool(szFilePath + L"Map14.dat");
+	LoadMeshTool(szFilePath + L"Map16Obj.dat");
 
 	return S_OK;
 }
@@ -204,7 +204,7 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 		for (auto& iter_Second : iter.second)
 		{
 			pGameObject = CSpawnMgr::GetInstance()->Spawn(iter.first, iter_Second.second, &LayerTag);
-			NULL_CHECK_MSG(pGameObject, L"로드 스태틱 데이터 실패");
+			NULL_CHECK_MSG(pGameObject, L"로드 다이나믹 데이터 실패");
 			SetTransform(dynamic_cast<CTransform*>( pGameObject->Get_Component(L"Com_Transform", ID_DYNAMIC)),iter_Second.second);
 
 			//해당 매시의 컬라이더가 있으면 

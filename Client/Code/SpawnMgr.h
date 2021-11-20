@@ -25,8 +25,9 @@ private:
 
 private:
 	_uint m_iBuidingIdx = 0;
+	_uint m_iEnemyIdx = 0;
 
-
+	
 };
 
 

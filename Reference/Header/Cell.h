@@ -11,7 +11,9 @@ public:
 	enum POINT		{ POINT_A, POINT_B, POINT_C, POINT_END };
 	enum NEIGHBOR	{ NEIGHBOR_AB, NEIGHBOR_BC, NEIGHBOR_CA, NEIGHBOR_END };
 	enum LINE		{ LINE_AB, LINE_BC, LINE_CA, LINE_END };
-	enum COMPARE	{ COMPARE_MOVE, COMPARE_STOP, COMPARE_END };
+	
+	//카메라 앵글 회전하면서 인덱스에 셋팅 
+	enum COMPARE	{ COMPARE_MOVE,COMPARE_SPAWN_GOBLIN, COMPARE_SPAWN_GOBLIN2, COMPARE_SPAWN_GRINNER, COMPARE_STOP, COMPARE_END };
 
 private:
 	explicit CCell(LPDIRECT3DDEVICE9 pGraphicDev);
@@ -23,8 +25,8 @@ public:
 	CCell*				Get_Neighbor(NEIGHBOR eType) const { return m_pNeighbor[eType]; }
 	void				Set_Neighbor(NEIGHBOR eType, CCell* pNeighbor) { m_pNeighbor[eType] = pNeighbor; }
 	const _ulong*		Get_CellIndex(void) { return &m_dwIndex; }
+	_vec3&				Get_Normal() { return m_vNormal; }
 
-	
 public:							 
 	HRESULT					Ready_Cell(const _ulong& dwIndex, 
 										const _vec3* pPointA, 
@@ -47,7 +49,7 @@ private:
 	LPDIRECT3DDEVICE9		m_pGraphicDev;
 	LPD3DXLINE				m_pD3DXLine;
 	_ulong					m_dwIndex;
-
+	_vec3					m_vNormal;
 public:
 	static CCell*			Create(LPDIRECT3DDEVICE9 pGraphicDev, const _ulong& dwIndex, const _vec3* pPointA, const _vec3* pPointB, const _vec3* pPointC);
 	virtual void			Free(void);

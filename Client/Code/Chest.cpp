@@ -1,41 +1,38 @@
 #include "stdafx.h"
-#include "WaterBoss.h"
+#include "Chest.h"
 #include "Enum.h"
 #include "Export_Function.h"
 
 
 
-CWaterBoss::CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev)
+CChest::CChest(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
 
 }
 
-CWaterBoss::CWaterBoss(const CWaterBoss& rhs)
+CChest::CChest(const CChest& rhs)
 	: CGameObject(rhs)
 {
 
 }
 
-CWaterBoss::~CWaterBoss(void)
+CChest::~CChest(void)
 {
 
 }
 
-HRESULT CWaterBoss::Ready_Object(void)
+HRESULT CChest::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
 	m_pTransformCom->Set_Rot(0.f, D3DXToRadian(-90.f), 0.f);	//파싱하면서 바꿀꺼임 
 	m_pTransformCom->Update_Component(0.f);
-	m_pMeshCom->Set_AnimationIndex(WaterBoss::Idle);
-	m_fPatternTimer = 2.f;
-	m_fPatternSpeed = 0.f;
-	m_eCurAniState = WaterBoss::Idle;
-	m_iSlamPatternNum = 0;
-	m_iPatternNum = 0;
-	m_bBlendTime = 0.5;
+	m_pMeshCom->Set_AnimationIndex(Chest::Check_Closed);
+
+	m_eCurAniState = Chest::Check_Closed;
+
 
 
 	SetCharInfo(50.f, 4.f);
@@ -43,12 +40,12 @@ HRESULT CWaterBoss::Ready_Object(void)
 	return S_OK;
 }
 
-void CWaterBoss::Late_Ready_Object()
+void CChest::Late_Ready_Object()
 {
 }
 
 
-_int CWaterBoss::Update_Object(const _float& fTimeDelta)
+_int CChest::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
@@ -60,36 +57,36 @@ _int CWaterBoss::Update_Object(const _float& fTimeDelta)
 	return iExit;
 }
 
-CWaterBoss* CWaterBoss::Create(LPDIRECT3DDEVICE9 pGraphicDev)
+CChest* CChest::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 {
-	CWaterBoss*	pInstance = new CWaterBoss(pGraphicDev);
+	CChest*	pInstance = new CChest(pGraphicDev);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 
 	return pInstance;
 }
 
-CWaterBoss * CWaterBoss::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
+CChest * CChest::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
 {
-	CWaterBoss*	pInstance = new CWaterBoss(pGraphicDev);
+	CChest*	pInstance = new CChest(pGraphicDev);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 
 	return pInstance;
 }
 
-void CWaterBoss::Free(void)
+void CChest::Free(void)
 {
 	CGameObject::Free();
 }
 
 
-HRESULT CWaterBoss::Add_Component()
+HRESULT CChest::Add_Component()
 {
 	CComponent*		pComponent = nullptr;
 
 	// Mesh
-	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"WaterBoss"));
+	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"Chest"));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
 
@@ -117,7 +114,7 @@ HRESULT CWaterBoss::Add_Component()
 	return S_OK;
 }
 
-void CWaterBoss::Render_Object(void)
+void CChest::Render_Object(void)
 {
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
@@ -139,95 +136,49 @@ void CWaterBoss::Render_Object(void)
 	Safe_Release(pEffect);
 }
 
-void CWaterBoss::StateChange()
+void CChest::StateChange()
 {
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
+
 		switch (m_eMachineState)
 		{
-		case WaterBoss::STATE_IDLE:
-			m_fPatternSpeed = 0.f;
-			m_eCurAniState = WaterBoss::Idle;
-			m_bBlend = true;
-
+		case Chest::STATE_IDLE:
 			break;
-		case WaterBoss::STATE_CALL_LIGHTNING:
-			m_eCurAniState = WaterBoss::Atk_CallLightning_Start;
+		case Chest::STATE_OPEN:
 			break;
-		case WaterBoss::STATE_ORB:
-			m_eCurAniState = WaterBoss::Atk_SummonOrb;
+		case Chest::STATE_OPEND:
 			break;
-		case WaterBoss::STATE_SLAM:
-			SetSlamPattern();
+		case Chest::STATE_HIT:
 			break;
-		case WaterBoss::STATE_IMPACT:
-			if (WaterBoss::STATE_WAVE == m_ePreAniState)
-				m_eCurAniState = WaterBoss::TidalWave_Impact;
-			else
-				m_eCurAniState = WaterBoss::Impact_Stun;
-			m_fPatternTimer = 5.f;
-			break;
-		case WaterBoss::STATE_WAVE:
-			m_eCurAniState = WaterBoss::TidalWave_Loop;
-			m_fPatternTimer = 7.f;
-			m_fPatternSpeed = 0.f;
-			break;
-		case WaterBoss::STATE_END:
+		case Chest::STATE_END:
 			break;
 		default:
 			break;
 		}
-
 		m_ePreMachineState = m_eMachineState;
 	}
 
 
 	if (m_ePreAniState != m_eCurAniState)
 	{
+
 		switch (m_eCurAniState)
 		{
-		case WaterBoss::Atk_CallLightning_Start:
-			m_bBlend = true;
+		case Chest::Check_Idle:
 			break;
-		case WaterBoss::Atk_CallLightning:
-			m_bBlend = true;
+		case Chest::Check_Start:
 			break;
-		case WaterBoss::Atk_SummonOrb:
-			m_bBlend = true;
+		case Chest::Check_Opened:
 			break;
-		case WaterBoss::Atk_Tentade_Pummel:	
-		case WaterBoss::Atk_TentadeSlam_FL:	
-		case WaterBoss::Atk_TentadeSlam_FL_02:	
-		case WaterBoss::Atk_TentadeSlam_FR:			
-		case WaterBoss::Atk_TentadeSlam_L:	
-		case WaterBoss::Atk_TentadeSlam_L_02:
-		case WaterBoss::Atk_TentadeSlam_R:
-		case WaterBoss::Atk_TentadeSlam_R_02:
-			m_bBlend = false;
+		case Chest::Check_Open:
 			break;
-		case WaterBoss::Atk_WhirlPool:
-			m_bBlend = true;
+		case Chest::Check_Impact:
 			break;
-		case WaterBoss::Impact_Stun:
-			m_bBlend = true;
+		case Chest::Check_Closed:
 			break;
-		case WaterBoss::Impact_Stun_Loop:
-			m_bBlend = true;
-			break;
-		case WaterBoss::TidalWave:
-			m_bBlend = true;
-			break;
-		case WaterBoss::TidalWave_Impact:
-			m_bBlend = true;
-			break;
-		case WaterBoss::TidalWave_Loop:
-			m_bBlend = true;
-			break;
-		case WaterBoss::Idle:
-
-			break;
-		case WaterBoss::End:
+		case Chest::End:
 			break;
 		default:
 			break;
@@ -238,92 +189,23 @@ void CWaterBoss::StateChange()
 
 }
 //다음 동작으로 자동으로 연결 
-void CWaterBoss::StateLinker(_float fDeltaTime)
+void CChest::StateLinker(_float fDeltaTime)
 {
 	switch (m_eCurAniState)
 	{
-	case WaterBoss::Atk_CallLightning_Start:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eCurAniState = WaterBoss::Atk_CallLightning;
-		}
-
+	case Chest::Check_Idle:
 		break;
-	case WaterBoss::Atk_CallLightning:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 2.f;
-
-		}
+	case Chest::Check_Start:
 		break;
-	case WaterBoss::Atk_SummonOrb:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 2.f;
-
-		}
+	case Chest::Check_Opened:
 		break;
-	case WaterBoss::Atk_Tentade_Pummel:
-	case WaterBoss::Atk_TentadeSlam_FL:
-	case WaterBoss::Atk_TentadeSlam_FL_02:
-	case WaterBoss::Atk_TentadeSlam_FR:
-	case WaterBoss::Atk_TentadeSlam_L:
-	case WaterBoss::Atk_TentadeSlam_L_02:
-	case WaterBoss::Atk_TentadeSlam_R:
-	case WaterBoss::Atk_TentadeSlam_R_02:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 1.f;
-		}
+	case Chest::Check_Open:
 		break;
-	case WaterBoss::Atk_WhirlPool:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 5.f;
-		}
+	case Chest::Check_Impact:
 		break;
-	case WaterBoss::Impact_Stun:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eCurAniState = WaterBoss::Impact_Stun_Loop;
-		}
+	case Chest::Check_Closed:
 		break;
-	case WaterBoss::Impact_Stun_Loop:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
-		break;
-	case WaterBoss::TidalWave:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
-		break;
-	case WaterBoss::TidalWave_Impact:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
-		break;
-	case WaterBoss::TidalWave_Loop:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eCurAniState = WaterBoss::TidalWave;
-		}
-
-		break;
-	case WaterBoss::Idle:
-		if (Pattern_Timer(fDeltaTime))
-		{
-				SetPattern();
-		}
-		break;
-	case WaterBoss::End:
+	case Chest::End:
 		break;
 	default:
 		break;
@@ -333,7 +215,7 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 
 
 
-HRESULT CWaterBoss::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
+HRESULT CChest::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 {
 	_matrix		matWorld, matView, matProj;
 
@@ -374,88 +256,3 @@ HRESULT CWaterBoss::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 
 	return S_OK;
 }
-
-_bool CWaterBoss::Pattern_Timer(_float fDeltaTime)
-{
-	m_fPatternSpeed += fDeltaTime;
-	if (m_fPatternSpeed > m_fPatternTimer)
-	{
-		m_fPatternSpeed = 0.f;
-		return true;
-	}
-	return false;
-}
-
-void CWaterBoss::SetPattern()
-{
-	switch (m_iPatternNum)
-	{
-	case 0:
-		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
-		break;
-	case 1:
-		m_eMachineState= WaterBoss::STATE_SLAM;
-		break;
-	case 2:
-		m_eMachineState = WaterBoss::STATE_SLAM;
-		break;
-	case 3:
-		m_eMachineState = WaterBoss::STATE_WAVE;
-		break;
-	case 4:
-		m_eMachineState = WaterBoss::STATE_ORB;	
-		break;
-	case 5:
-		m_eMachineState = WaterBoss::STATE_ORB;
-		break;
-	case 6:
-		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
-		break;
-	case 7:
-		m_eMachineState = WaterBoss::STATE_SLAM;
-		break;
-	case 8:
-		m_eMachineState = WaterBoss::STATE_WAVE;
-		m_iPatternNum = 0;
-		break;
-	}	
-	m_iPatternNum++;
-}
-
-void CWaterBoss::SetSlamPattern()
-{
-	switch (m_iSlamPatternNum++)
-	{
-	case 0:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FL;
-		break;
-	case 1:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FL_02;
-		break;
-	case 2:
-		m_eCurAniState = WaterBoss::Atk_Tentade_Pummel;
-		break;
-	case 3:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FR;
-		break;
-	case 4:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_L;
-		break;
-	case 5:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_R;
-		break;
-	case 6:
-		m_eCurAniState = WaterBoss::Atk_Tentade_Pummel;
-		break;
-	case 7:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_R_02;
-		break;
-	case 8:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_L_02;
-		m_iSlamPatternNum = 0;
-		break;
-	default:
-		break;
-	}
-}
-

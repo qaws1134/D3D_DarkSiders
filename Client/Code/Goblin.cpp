@@ -1,41 +1,39 @@
 #include "stdafx.h"
-#include "WaterBoss.h"
+#include "Goblin.h"
 #include "Enum.h"
 #include "Export_Function.h"
 
 
 
-CWaterBoss::CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev)
+CGoblin::CGoblin(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
 
 }
 
-CWaterBoss::CWaterBoss(const CWaterBoss& rhs)
+CGoblin::CGoblin(const CGoblin& rhs)
 	: CGameObject(rhs)
 {
 
 }
 
-CWaterBoss::~CWaterBoss(void)
+CGoblin::~CGoblin(void)
 {
 
 }
 
-HRESULT CWaterBoss::Ready_Object(void)
+HRESULT CGoblin::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
 	m_pTransformCom->Set_Rot(0.f, D3DXToRadian(-90.f), 0.f);	//파싱하면서 바꿀꺼임 
 	m_pTransformCom->Update_Component(0.f);
-	m_pMeshCom->Set_AnimationIndex(WaterBoss::Idle);
+	m_pMeshCom->Set_AnimationIndex(Goblin::Goblin_Idle);
 	m_fPatternTimer = 2.f;
 	m_fPatternSpeed = 0.f;
-	m_eCurAniState = WaterBoss::Idle;
-	m_iSlamPatternNum = 0;
+	m_eCurAniState = Goblin::Goblin_Idle;
 	m_iPatternNum = 0;
-	m_bBlendTime = 0.5;
 
 
 	SetCharInfo(50.f, 4.f);
@@ -43,12 +41,12 @@ HRESULT CWaterBoss::Ready_Object(void)
 	return S_OK;
 }
 
-void CWaterBoss::Late_Ready_Object()
+void CGoblin::Late_Ready_Object()
 {
 }
 
 
-_int CWaterBoss::Update_Object(const _float& fTimeDelta)
+_int CGoblin::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
@@ -60,36 +58,36 @@ _int CWaterBoss::Update_Object(const _float& fTimeDelta)
 	return iExit;
 }
 
-CWaterBoss* CWaterBoss::Create(LPDIRECT3DDEVICE9 pGraphicDev)
+CGoblin* CGoblin::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 {
-	CWaterBoss*	pInstance = new CWaterBoss(pGraphicDev);
+	CGoblin*	pInstance = new CGoblin(pGraphicDev);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 
 	return pInstance;
 }
 
-CWaterBoss * CWaterBoss::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
+CGoblin * CGoblin::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode)
 {
-	CWaterBoss*	pInstance = new CWaterBoss(pGraphicDev);
+	CGoblin*	pInstance = new CGoblin(pGraphicDev);
 	if (FAILED(pInstance->Ready_Object()))
 		Safe_Release(pInstance);
 
 	return pInstance;
 }
 
-void CWaterBoss::Free(void)
+void CGoblin::Free(void)
 {
 	CGameObject::Free();
 }
 
 
-HRESULT CWaterBoss::Add_Component()
+HRESULT CGoblin::Add_Component()
 {
 	CComponent*		pComponent = nullptr;
 
 	// Mesh
-	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"WaterBoss"));
+	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"Goblin"));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
 
@@ -117,7 +115,7 @@ HRESULT CWaterBoss::Add_Component()
 	return S_OK;
 }
 
-void CWaterBoss::Render_Object(void)
+void CGoblin::Render_Object(void)
 {
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
@@ -139,41 +137,31 @@ void CWaterBoss::Render_Object(void)
 	Safe_Release(pEffect);
 }
 
-void CWaterBoss::StateChange()
+void CGoblin::StateChange()
 {
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
 		switch (m_eMachineState)
 		{
-		case WaterBoss::STATE_IDLE:
-			m_fPatternSpeed = 0.f;
-			m_eCurAniState = WaterBoss::Idle;
-			m_bBlend = true;
-
+		case Grinner::STATE_SPAWN_IDLE:
 			break;
-		case WaterBoss::STATE_CALL_LIGHTNING:
-			m_eCurAniState = WaterBoss::Atk_CallLightning_Start;
+		case Grinner::STATE_SPAWN:
 			break;
-		case WaterBoss::STATE_ORB:
-			m_eCurAniState = WaterBoss::Atk_SummonOrb;
+		case Grinner::STATE_IDLE:
 			break;
-		case WaterBoss::STATE_SLAM:
-			SetSlamPattern();
+		case Grinner::STATE_ATK:
+			m_iPatternNum = RandNext(0, 4);
 			break;
-		case WaterBoss::STATE_IMPACT:
-			if (WaterBoss::STATE_WAVE == m_ePreAniState)
-				m_eCurAniState = WaterBoss::TidalWave_Impact;
-			else
-				m_eCurAniState = WaterBoss::Impact_Stun;
-			m_fPatternTimer = 5.f;
+		case Grinner::STATE_MOVE:
 			break;
-		case WaterBoss::STATE_WAVE:
-			m_eCurAniState = WaterBoss::TidalWave_Loop;
-			m_fPatternTimer = 7.f;
-			m_fPatternSpeed = 0.f;
+		case Grinner::STATE_CHASE:
 			break;
-		case WaterBoss::STATE_END:
+		case Grinner::STATE_HIT:
+			break;
+		case Grinner::STATE_DEAD:
+			break;
+		case Grinner::STATE_END:
 			break;
 		default:
 			break;
@@ -181,149 +169,105 @@ void CWaterBoss::StateChange()
 
 		m_ePreMachineState = m_eMachineState;
 	}
-
-
 	if (m_ePreAniState != m_eCurAniState)
 	{
 		switch (m_eCurAniState)
 		{
-		case WaterBoss::Atk_CallLightning_Start:
-			m_bBlend = true;
+		case Goblin::Goblin_Attack_01:
 			break;
-		case WaterBoss::Atk_CallLightning:
-			m_bBlend = true;
+		case Goblin::Goblin_Attack_02:
 			break;
-		case WaterBoss::Atk_SummonOrb:
-			m_bBlend = true;
+		case Goblin::Goblin_Attack_Spear:
 			break;
-		case WaterBoss::Atk_Tentade_Pummel:	
-		case WaterBoss::Atk_TentadeSlam_FL:	
-		case WaterBoss::Atk_TentadeSlam_FL_02:	
-		case WaterBoss::Atk_TentadeSlam_FR:			
-		case WaterBoss::Atk_TentadeSlam_L:	
-		case WaterBoss::Atk_TentadeSlam_L_02:
-		case WaterBoss::Atk_TentadeSlam_R:
-		case WaterBoss::Atk_TentadeSlam_R_02:
-			m_bBlend = false;
+		case Goblin::Goblin_Attack_Dash_Back:
 			break;
-		case WaterBoss::Atk_WhirlPool:
-			m_bBlend = true;
+		case Goblin::Goblin_Idle:
 			break;
-		case WaterBoss::Impact_Stun:
-			m_bBlend = true;
+		case Goblin::Goblin_Impact_B:
 			break;
-		case WaterBoss::Impact_Stun_Loop:
-			m_bBlend = true;
+		case Goblin::Goblin_Impact_F:
 			break;
-		case WaterBoss::TidalWave:
-			m_bBlend = true;
+		case Goblin::Goblin_Jump_Apex:
 			break;
-		case WaterBoss::TidalWave_Impact:
-			m_bBlend = true;
+		case Goblin::Goblin_Jump_Fall:
 			break;
-		case WaterBoss::TidalWave_Loop:
-			m_bBlend = true;
+		case Goblin::Goblin_Jump_Land:
 			break;
-		case WaterBoss::Idle:
-
+		case Goblin::Goblin_Jump_Launch:
 			break;
-		case WaterBoss::End:
+		case Goblin::Goblin_Jump_Launch_Pose:
+			break;
+		case Goblin::Goblin_Sit_End:
+			break;
+		case Goblin::Goblin_Sit_Idle:
+			break;
+		case Goblin::Goblin_Spawn:
+			break;
+		case Goblin::Goblin_Spawn_Climb_Hovel:
+			break;
+		case Goblin::Goblin_Turn_L:
+			break;
+		case Goblin::Goblin_Turn_R:
+			break;
+		case Goblin::Goblin_Run_F:
+			break;
+		case Goblin::End:
 			break;
 		default:
 			break;
 		}
 		m_ePreAniState = m_eCurAniState;
-		m_pMeshCom->Set_AnimationIndex(m_eCurAniState,m_bBlend);
+		m_pMeshCom->Set_AnimationIndex(m_eCurAniState, m_bBlend);
 	}
-
 }
 //다음 동작으로 자동으로 연결 
-void CWaterBoss::StateLinker(_float fDeltaTime)
+void CGoblin::StateLinker(_float fDeltaTime)
 {
 	switch (m_eCurAniState)
 	{
-	case WaterBoss::Atk_CallLightning_Start:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eCurAniState = WaterBoss::Atk_CallLightning;
-		}
-
+	case Goblin::Goblin_Attack_01:
 		break;
-	case WaterBoss::Atk_CallLightning:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 2.f;
-
-		}
+	case Goblin::Goblin_Attack_02:
 		break;
-	case WaterBoss::Atk_SummonOrb:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 2.f;
-
-		}
+	case Goblin::Goblin_Attack_Spear:
 		break;
-	case WaterBoss::Atk_Tentade_Pummel:
-	case WaterBoss::Atk_TentadeSlam_FL:
-	case WaterBoss::Atk_TentadeSlam_FL_02:
-	case WaterBoss::Atk_TentadeSlam_FR:
-	case WaterBoss::Atk_TentadeSlam_L:
-	case WaterBoss::Atk_TentadeSlam_L_02:
-	case WaterBoss::Atk_TentadeSlam_R:
-	case WaterBoss::Atk_TentadeSlam_R_02:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 1.f;
-		}
+	case Goblin::Goblin_Attack_Dash_Back:
 		break;
-	case WaterBoss::Atk_WhirlPool:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-			m_fPatternTimer = 5.f;
-		}
-		break;
-	case WaterBoss::Impact_Stun:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eCurAniState = WaterBoss::Impact_Stun_Loop;
-		}
-		break;
-	case WaterBoss::Impact_Stun_Loop:
+	case Goblin::Goblin_Idle:
 		if (Pattern_Timer(fDeltaTime))
 		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
+			SetPattern();
 		}
 		break;
-	case WaterBoss::TidalWave:
-		if (m_pMeshCom->Is_Animationset(0.9))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
+	case Goblin::Goblin_Impact_B:
 		break;
-	case WaterBoss::TidalWave_Impact:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
+	case Goblin::Goblin_Impact_F:
 		break;
-	case WaterBoss::TidalWave_Loop:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eCurAniState = WaterBoss::TidalWave;
-		}
-
+	case Goblin::Goblin_Jump_Apex:
 		break;
-	case WaterBoss::Idle:
-		if (Pattern_Timer(fDeltaTime))
-		{
-				SetPattern();
-		}
+	case Goblin::Goblin_Jump_Fall:
 		break;
-	case WaterBoss::End:
+	case Goblin::Goblin_Jump_Land:
+		break;
+	case Goblin::Goblin_Jump_Launch:
+		break;
+	case Goblin::Goblin_Jump_Launch_Pose:
+		break;
+	case Goblin::Goblin_Sit_End:
+		break;
+	case Goblin::Goblin_Sit_Idle:
+		break;
+	case Goblin::Goblin_Spawn:
+		break;
+	case Goblin::Goblin_Spawn_Climb_Hovel:
+		break;
+	case Goblin::Goblin_Turn_L:
+		break;
+	case Goblin::Goblin_Turn_R:
+		break;
+	case Goblin::Goblin_Run_F:
+		break;
+	case Goblin::End:
 		break;
 	default:
 		break;
@@ -333,7 +277,7 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 
 
 
-HRESULT CWaterBoss::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
+HRESULT CGoblin::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 {
 	_matrix		matWorld, matView, matProj;
 
@@ -375,7 +319,7 @@ HRESULT CWaterBoss::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	return S_OK;
 }
 
-_bool CWaterBoss::Pattern_Timer(_float fDeltaTime)
+_bool CGoblin::Pattern_Timer(_float fDeltaTime)
 {
 	m_fPatternSpeed += fDeltaTime;
 	if (m_fPatternSpeed > m_fPatternTimer)
@@ -386,76 +330,19 @@ _bool CWaterBoss::Pattern_Timer(_float fDeltaTime)
 	return false;
 }
 
-void CWaterBoss::SetPattern()
+void CGoblin::SetPattern()
 {
 	switch (m_iPatternNum)
 	{
 	case 0:
-		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
+		m_eCurAniState = Goblin::Goblin_Attack_01;
 		break;
 	case 1:
-		m_eMachineState= WaterBoss::STATE_SLAM;
+		m_eCurAniState = Goblin::Goblin_Attack_02;
 		break;
 	case 2:
-		m_eMachineState = WaterBoss::STATE_SLAM;
-		break;
-	case 3:
-		m_eMachineState = WaterBoss::STATE_WAVE;
-		break;
-	case 4:
-		m_eMachineState = WaterBoss::STATE_ORB;	
-		break;
-	case 5:
-		m_eMachineState = WaterBoss::STATE_ORB;
-		break;
-	case 6:
-		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
-		break;
-	case 7:
-		m_eMachineState = WaterBoss::STATE_SLAM;
-		break;
-	case 8:
-		m_eMachineState = WaterBoss::STATE_WAVE;
-		m_iPatternNum = 0;
+		m_eCurAniState = Goblin::Goblin_Attack_Spear;
 		break;
 	}	
-	m_iPatternNum++;
-}
-
-void CWaterBoss::SetSlamPattern()
-{
-	switch (m_iSlamPatternNum++)
-	{
-	case 0:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FL;
-		break;
-	case 1:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FL_02;
-		break;
-	case 2:
-		m_eCurAniState = WaterBoss::Atk_Tentade_Pummel;
-		break;
-	case 3:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_FR;
-		break;
-	case 4:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_L;
-		break;
-	case 5:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_R;
-		break;
-	case 6:
-		m_eCurAniState = WaterBoss::Atk_Tentade_Pummel;
-		break;
-	case 7:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_R_02;
-		break;
-	case 8:
-		m_eCurAniState = WaterBoss::Atk_TentadeSlam_L_02;
-		m_iSlamPatternNum = 0;
-		break;
-	default:
-		break;
-	}
 }
 

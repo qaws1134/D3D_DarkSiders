@@ -24,11 +24,16 @@ HRESULT Engine::CLine::Ready_Line(const _vec2* pPointA, const _vec2* pPointB)
 	return S_OK;
 }
 
-Engine::CLine::COMPARE Engine::CLine::Compare(const _vec2* pEndPos)
+
+Engine::CLine::COMPARE Engine::CLine::Compare(const _vec2* pEndPos, _vec3* vNormal)
 {
 	_vec2		vDest = *pEndPos - m_vPoint[POINT_START];
 
 	_float		fResult = D3DXVec2Dot(D3DXVec2Normalize(&vDest, &vDest), &m_vNormal);
+
+	_vec2 vDir = (m_vPoint[POINT_FINISH] - m_vPoint[POINT_START]);
+	*vNormal = _vec3(-vDir.y, 0.f, vDir.x);
+	D3DXVec3Normalize(vNormal, vNormal);
 
 	if (0.f <= fResult)
 		return COMPARE_OUT;

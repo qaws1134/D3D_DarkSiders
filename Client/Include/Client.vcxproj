@@ -175,6 +175,7 @@
     <ClInclude Include="..\Code\Logo.h" />
     <ClInclude Include="..\Code\MainApp.h" />
     <ClInclude Include="..\Code\Player.h" />
+    <ClInclude Include="..\Code\Player_Barrier.h" />
     <ClInclude Include="..\Code\SpawnMgr.h" />
     <ClInclude Include="..\Code\Stage.h" />
     <ClInclude Include="..\Code\StaticCamera.h" />
@@ -183,6 +184,8 @@
     <ClInclude Include="..\Code\UI.h" />
     <ClInclude Include="..\Code\UIMgr.h" />
     <ClInclude Include="..\Code\WaterBoss.h" />
+    <ClInclude Include="..\Code\WaterBoss_Orb.h" />
+    <ClInclude Include="..\Code\WaterFall.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -205,6 +208,7 @@
     <ClCompile Include="..\Code\Logo.cpp" />
     <ClCompile Include="..\Code\MainApp.cpp" />
     <ClCompile Include="..\Code\Player.cpp" />
+    <ClCompile Include="..\Code\Player_Barrier.cpp" />
     <ClCompile Include="..\Code\SpawnMgr.cpp" />
     <ClCompile Include="..\Code\Stage.cpp" />
     <ClCompile Include="..\Code\StaticCamera.cpp" />
@@ -212,6 +216,8 @@
     <ClCompile Include="..\Code\UI.cpp" />
     <ClCompile Include="..\Code\UIMgr.cpp" />
     <ClCompile Include="..\Code\WaterBoss.cpp" />
+    <ClCompile Include="..\Code\WaterBoss_Orb.cpp" />
+    <ClCompile Include="..\Code\WaterFall.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
