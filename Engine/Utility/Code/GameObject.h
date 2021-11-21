@@ -30,7 +30,7 @@ public:
 	void	SetCol(_bool bCol) { m_bCol = bCol; }
 	_bool	GetCol() { return m_bCol; }
 
-
+	_bool	HitTimer(_float fDeltaTime);
 public:
 	virtual	HRESULT		Ready_Object(void);
 	virtual void		Late_Ready_Object(void);
@@ -50,7 +50,7 @@ public :
 
 
 	//체력, 데미지
-	void TakeDmg(_float fDmg) { m_tCharInfo.fDmg = fDmg; }
+	virtual void TakeDmg(_float fDmg) { m_tCharInfo.fDmg = fDmg; }
 	void ResetDmg() { m_tCharInfo.fDmg = 0.f; }
 	void SetHP(_float fHp) { m_tCharInfo.fHp = fHp; }
 	void SetAtk(_float fAtk) { m_tCharInfo.fAtk = fAtk; }
@@ -58,6 +58,7 @@ public :
 	_float GetAtk() { return m_tCharInfo.fAtk; }
 	_float GetHp() { return m_tCharInfo.fHp; }
 	_float GetDmg() { return m_tCharInfo.fDmg; }
+	_bool  GetHit() { return m_bHit; }
 
 	//충돌체
 	void EmplaceCol(wstring ObjTag, CGameObject* pGameObject);
@@ -82,7 +83,12 @@ protected:
 	_bool	m_bCol = false;
 	map<const _tchar*, CGameObject*>m_mapColider;
 
+	_float m_fHitTime;
+	_float m_fHitSpeed;
+	_bool	m_bHit = false;
+
 	CHARINFO m_tCharInfo;
+	_vec3 m_vPos;
 public:
 	virtual void	Free(void);
 };

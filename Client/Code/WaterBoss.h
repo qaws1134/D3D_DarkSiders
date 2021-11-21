@@ -26,9 +26,11 @@ public:
 	virtual void Late_Ready_Object()override;
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 	virtual void Render_Object(void) override;
+	void AtkColActive(double dStart, double dEnd, _uint iWeaponIdx);
 
 public:
 	void		StateChange();
+	void		StateActor(_float fDeltaTime);
 	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
 
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);

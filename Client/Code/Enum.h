@@ -221,6 +221,12 @@ namespace Chest
 
 namespace Grinner
 {
+	enum SPAWN
+	{
+		SPAWN_POTRAL,
+		SPAWN_APEX,
+		SPAWN_END
+	};
 
 	//패턴상태 
 	enum STATE
@@ -285,6 +291,13 @@ namespace Grinner
 }
 
 namespace Goblin {
+
+	enum SPAWN
+	{
+		SPAWN_POTRAL,
+		SPAWN_IDLE,
+		SPAWN_END
+	};
 
 	enum STATE
 	{

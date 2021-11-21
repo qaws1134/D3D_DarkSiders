@@ -36,6 +36,9 @@ HRESULT CGrinner::Ready_Object(void)
 	m_iPatternNum = 0;
 
 
+	m_fHitSpeed = 1.f;
+	m_fHitTime = 0.3f;
+
 	SetCharInfo(50.f, 4.f);
 
 	return S_OK;
@@ -51,8 +54,8 @@ _int CGrinner::Update_Object(const _float& fTimeDelta)
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
 	StateChange();
+	
 	StateLinker(fTimeDelta);
-	m_pMeshCom->Play_Animation(fTimeDelta);
 
 	Add_RenderGroup(RENDER_NONALPHA, this);
 	return iExit;
@@ -117,6 +120,10 @@ HRESULT CGrinner::Add_Component()
 
 void CGrinner::Render_Object(void)
 {
+	_float fTimeDelta = Get_TimeDelta(L"Timer_Immediate");
+	StateLinker(fTimeDelta);
+	m_pMeshCom->Play_Animation(fTimeDelta);
+
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
 
@@ -137,27 +144,114 @@ void CGrinner::Render_Object(void)
 	Safe_Release(pEffect);
 }
 
+
+
 void CGrinner::StateChange()
 {
+	//기본 상태 시 무기상태 false 
+	for (_uint i = 0; i < 3; i++)
+	{
+		wstring wstrWeaponColKey = L"Col_Weapon" + to_wstring(i);
+		auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(wstrWeaponColKey.c_str()));
+		if (iter_find != m_mapColider.end())
+			iter_find->second->SetActive(false);
+	}
+
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
 		switch (m_eMachineState)
 		{
 		case Grinner::STATE_SPAWN_IDLE:
+			m_eCurAniState = Grinner::Grinner_Idle;
 			break;
 		case Grinner::STATE_SPAWN:
+			if(Grinner::SPAWN_POTRAL==m_eSpawnType)
+				m_eCurAniState = Grinner::Grinner_PotalSpawn;
+			else if (Grinner::SPAWN_APEX == m_eSpawnType)
+				m_eCurAniState = Grinner::Grinner_Jump_Apex;
 			break;
 		case Grinner::STATE_IDLE:
+			m_eCurAniState = Grinner::Grinner_Idle;
+			m_fPatternSpeed = 0.f;
+
+			if(m_ePreMachineState == Grinner::STATE_HIT)
+				m_fPatternTimer = 1.f;
+			else
+				m_fPatternTimer = 2.f;
 			break;
 		case Grinner::STATE_ATK:
 			m_iPatternNum = RandNext(0, 4);
+			SetPattern();
+
 			break;
 		case Grinner::STATE_MOVE:
 			break;
 		case Grinner::STATE_CHASE:
+			//if()가까우면
+			m_eCurAniState = Grinner::Grinner_Walk_F;
+			m_eCurAniState = Grinner::Grinner_Run_F;
 			break;
 		case Grinner::STATE_HIT:
+			if (m_bHit)
+				break;
+			//USES_CONVERSION;
+			for (auto iter : m_mapColider)
+			{
+				//레이어는 뒤에 메쉬 명 붙여서
+				
+				//const _tchar* pConvLayerTag = W2BSTR(LayerTag.c_str());
+
+				wstring ColKey = iter.first;
+				if (iter.second->GetCol())
+				{
+					if (m_tCharInfo.fDmg < 2.f)
+					{
+						if (L"Col_Front" == ColKey)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_Flinch_F;
+						}
+						else if (L"Col_Back" == ColKey)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_Flinch_B;
+						}
+						else if (L"Col_Left" == ColKey)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_Flinch_L;	
+						}
+						else if (L"Col_Right" == ColKey)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_Flinch_R;
+						}
+					}
+					else if(m_tCharInfo.fDmg<3.f)
+					{
+						if (L"Col_Front" == iter.first)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_F;
+						}
+						else if (L"Col_Back" == iter.first)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_Flinch_B;
+						}
+						else if (L"Col_Left" == iter.first)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_L;
+						}
+						else if (L"Col_Right" == iter.first)
+						{
+							m_eCurAniState = Grinner::Grinner_Impact_R;
+						}
+					}
+					else
+					{
+						m_eCurAniState = Grinner::Grinner_Knock_B_Start;			
+					}
+					//iter.second->SetCol(false);
+					m_fHitSpeed = 0.f;
+					m_tCharInfo.fDmg = 0.f;
+				}
+			}		
 			break;
 		case Grinner::STATE_DEAD:
 			break;
@@ -197,12 +291,10 @@ void CGrinner::StateChange()
 		case Grinner::Grinner_Impact_F:
 			break;
 		case Grinner::Grinner_Impact_Flinch_B:
-			break;
 		case Grinner::Grinner_Impact_Flinch_F:
-			break;
 		case Grinner::Grinner_Impact_Flinch_L:
-			break;
 		case Grinner::Grinner_Impact_Flinch_R:
+			m_bBlend = false;
 			break;
 		case Grinner::Grinner_Impact_L:
 			break;
@@ -264,9 +356,57 @@ void CGrinner::StateChange()
 	}
 
 }
+void CGrinner::StateActor(_float fDeltaTime)
+{
+
+	_vec3 vPos;
+	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+	m_vDir = *m_pTarget->GetPos(ID_DYNAMIC) - vPos;
+
+	_vec3 vLook;
+	m_pTransformCom->Get_INFO(INFO_LOOK, &vLook);
+	_vec3 vCross;
+	D3DXVec3Cross(&vCross, &vLook, &m_vDir);
+	D3DXVec3Normalize(&vLook, &vLook);
+	_float fCos = D3DXVec3Dot(&vLook, &m_vDir);
+	_float fAngle = D3DXToDegree(acosf(fCos));
+
+	_float fAngleOffset = 3.f;
+
+	if (vCross.y < 0.f)
+	{
+		fAngle = 360.f - fAngle;
+	}
+
+	switch (m_eMachineState)
+	{
+	case Grinner::STATE_SPAWN_IDLE:
+		break;
+	case Grinner::STATE_SPAWN:
+		break;
+	case Grinner::STATE_IDLE:
+		break;
+	case Grinner::STATE_ATK:
+		break;
+	case Grinner::STATE_MOVE:
+		break;
+	case Grinner::STATE_CHASE:
+		
+		break;
+	case Grinner::STATE_HIT:
+		break;
+	case Grinner::STATE_DEAD:
+		break;
+	case Grinner::STATE_END:
+		break;
+	default:
+		break;
+	}
+}
 //다음 동작으로 자동으로 연결 
 void CGrinner::StateLinker(_float fDeltaTime)
 {
+
 	switch (m_eCurAniState)
 	{
 	case Grinner::Grinner_Atk_Flip:
@@ -286,47 +426,71 @@ void CGrinner::StateLinker(_float fDeltaTime)
 	case Grinner::Grinner_DeathPose_War:
 		break;
 	case Grinner::Grinner_Idle:
-		if (Pattern_Timer(fDeltaTime))
+		if (m_eMachineState != Grinner::STATE_CHASE)
 		{
-			SetPattern();
+			if (Pattern_Timer(fDeltaTime))
+			{
+				m_eMachineState = Grinner::STATE_ATK;
+			}
 		}
 		break;
 	case Grinner::Grinner_Impact_F:
-		break;
 	case Grinner::Grinner_Impact_Flinch_B:
-		break;
 	case Grinner::Grinner_Impact_Flinch_F:
-		break;
 	case Grinner::Grinner_Impact_Flinch_L:
-		break;
 	case Grinner::Grinner_Impact_Flinch_R:
-		break;
 	case Grinner::Grinner_Impact_L:
-		break;
 	case Grinner::Grinner_Impact_R:
+	case Grinner::Grinner_Jump_Land:
+	case Grinner::Grinner_Knock_B_Recover:
+	case Grinner::Grinner_PotalSpawn:
+		if (m_pMeshCom->Is_Animationset(0.9))
+		{
+			m_eMachineState = Grinner::STATE_IDLE;
+		}
 		break;
 	case Grinner::Grinner_Jump_Apex:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Grinner::Grinner_Jump_Fall;
+		}
 		break;
 	case Grinner::Grinner_Jump_Fall:
-		break;
-	case Grinner::Grinner_Jump_Land:
+			m_eCurAniState = Grinner::Grinner_Jump_Land;
 		break;
 	case Grinner::Grinner_Jump_Launch:
-		break;
+		break;	
 	case Grinner::Grinner_Knock_B_Start:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Grinner::Grinner_Knock_B_Apex;
+		}
 		break;
 	case Grinner::Grinner_Knock_B_Apex:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Grinner::Grinner_Knock_B_Fall;
+		}
 		break;
 	case Grinner::Grinner_Knock_B_Fall:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Grinner::Grinner_Knock_B_Land;
+		}
 		break;
 	case Grinner::Grinner_Knock_B_Land:
-		break;
-	case Grinner::Grinner_Knock_B_Recover:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Grinner::Grinner_Knock_B_Idle;
+		}
 		break;
 	case Grinner::Grinner_Knock_B_Idle:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Grinner::Grinner_Knock_B_Recover;
+		}
 		break;
-	case Grinner::Grinner_PotalSpawn:
-		break;
+
 	case Grinner::Grinner_Run_F:
 		break;
 	case Grinner::Grinner_Run_FL:
@@ -434,4 +598,11 @@ void CGrinner::SetPattern()
 	}	
 }
 
+
+void CGrinner::TakeDmg(_float fDmg)
+{
+	m_tCharInfo.fDmg = fDmg;
+	m_tCharInfo.fHp -= fDmg;
+	m_eMachineState = Grinner::STATE_HIT;
+}
 

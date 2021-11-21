@@ -140,6 +140,14 @@ void CWaterBoss::Render_Object(void)
 
 void CWaterBoss::StateChange()
 {
+	//기본 상태 시 무기상태 false 
+	for (_uint i = 0; i < 4; i++)
+	{
+		wstring wstrWeaponColKey = L"Col_Weapon" + to_wstring(i);
+		auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(wstrWeaponColKey.c_str()));
+		if (iter_find != m_mapColider.end())
+			iter_find->second->SetActive(false);
+	}
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
@@ -235,6 +243,66 @@ void CWaterBoss::StateChange()
 		m_pMeshCom->Set_AnimationIndex(m_eCurAniState,m_bBlend);
 	}
 
+}
+void CWaterBoss::StateActor(_float fDeltaTime)
+{
+	switch (m_eCurAniState)
+	{
+	case WaterBoss::Atk_CallLightning_Start:
+		break;
+	case WaterBoss::Atk_CallLightning:
+		break;
+	case WaterBoss::Atk_SummonOrb:
+		break;
+	case WaterBoss::Atk_SummonOrb_L:
+		break;
+	case WaterBoss::Atk_Tentade_Pummel:
+		AtkColActive(0.1,0.2,2);
+		AtkColActive(0.2, 0.3, 0);
+		AtkColActive(0.3, 0.4, 4);
+		AtkColActive(0.4, 0.5, 1);
+
+		break;
+	case WaterBoss::Atk_TentadeSlam_FL:
+		AtkColActive(0.2, 0.3, 2);
+		break;
+	case WaterBoss::Atk_TentadeSlam_FL_02:
+		AtkColActive(0.2, 0.3, 2);
+		break;
+	case WaterBoss::Atk_TentadeSlam_FR:
+		AtkColActive(0.2, 0.3, 1);
+		break;
+	case WaterBoss::Atk_TentadeSlam_L:
+		AtkColActive(0.2, 0.3, 3);
+		break;
+	case WaterBoss::Atk_TentadeSlam_L_02:
+		AtkColActive(0.2, 0.3, 3);
+		break;
+	case WaterBoss::Atk_TentadeSlam_R:
+		AtkColActive(0.2, 0.3, 0);
+		break;
+	case WaterBoss::Atk_TentadeSlam_R_02:
+		AtkColActive(0.2, 0.3, 0);
+		break;
+	case WaterBoss::Atk_WhirlPool:
+		break;
+	case WaterBoss::Impact_Stun:
+		break;
+	case WaterBoss::Impact_Stun_Loop:
+		break;
+	case WaterBoss::TidalWave:
+		break;
+	case WaterBoss::TidalWave_Impact:
+		break;
+	case WaterBoss::TidalWave_Loop:
+		break;
+	case WaterBoss::Idle:
+		break;
+	case WaterBoss::End:
+		break;
+	default:
+		break;
+	}
 }
 //다음 동작으로 자동으로 연결 
 void CWaterBoss::StateLinker(_float fDeltaTime)
@@ -455,6 +523,22 @@ void CWaterBoss::SetSlamPattern()
 		break;
 	default:
 		break;
+	}
+}
+
+void CWaterBoss::AtkColActive(double dStart, double dEnd,_uint iWeaponIdx)
+{
+	auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder((L"Col_Weapon"+to_wstring(iWeaponIdx)).c_str()));
+	if (iter_find == m_mapColider.end())
+		return;
+
+	if (m_pMeshCom->Is_Animationset(dEnd))
+	{
+		iter_find->second->SetActive(false);
+	}
+	else if (m_pMeshCom->Is_Animationset(dStart))
+	{
+		iter_find->second->SetActive(true);
 	}
 }
 

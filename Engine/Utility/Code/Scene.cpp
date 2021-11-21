@@ -32,7 +32,8 @@ Engine::_int Engine::CScene::Update_Scene(const _float& fTimeDelta)
 	if (GetMapObj(L"Player") != nullptr &&GetMapObj(L"Enemy") != nullptr)
 	{
 		CColMgr::Col_Body(CHECK_BODY_BODY, *GetMapObj(L"Player"), *GetMapObj(L"Enemy"), MESH_DYNAMIC);
-		CColMgr::Col_Body(CHECK_WEAPONE_BODY, *GetMapObj(L"Player"), *GetMapObj(L"Enemy"), MESH_DYNAMIC);
+		CColMgr::Col_Body(CHECK_WEAPON, *GetMapObj(L"Player"), *GetMapObj(L"Enemy"), MESH_DYNAMIC);
+		CColMgr::Col_Body(CHECK_WEAPON, *GetMapObj(L"Enemy"), *GetMapObj(L"Player"), MESH_DYNAMIC);
 	}
 	return iResult;
 }

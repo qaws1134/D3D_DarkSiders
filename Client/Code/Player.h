@@ -38,13 +38,24 @@ public:
 	void		ElementAniSet();
 	_bool		Combat_to_Idle_Timer(_float fDeltaTime);
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
-
+	virtual		void TakeDmg(_float fDmg);
+	void		AtkColActive(double dStart,double dEnd );
+	void		AtkColLoop();
+	_bool		GlideEndTimer(_float fTimeDelta);
+	_bool		GlideTimer(_float fTimeDelta);
+	_float		m_fGlideSpeed;
+	_float		m_fGlideTime;
+	_bool		m_bGlide = false;
+	_bool		m_bGlideEnd = false;
+	_float		m_fGlideEndSpeed;
+	_float		m_fGlideEndTime;
+	_bool		m_bGlideOn = false;
 
 #pragma region Set 함수
 public:
 	void		Set_Element(War::WEAPON_ELEMENT eElement) { m_eElement = eElement; }
 	void		Set_PlayerState(War::STATE eState) { m_eMachineState = eState; }
-	void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
+//	void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
 	void		Set_NaviMesh(CNaviMesh* pNavi) { m_pNavi = pNavi; }
 #pragma  endregion Set 함수
 #pragma region Get 함수
@@ -125,7 +136,12 @@ private:
 	
 	_uint   m_eCompareType;
 
-	_float m_fDmg=0.f;
+	//공격 충돌체 생성시간
+	_double m_dAtkActiveStart=0.0;
+	_double m_dAtkActiveEnd= 0.0;
+
+	
+
 
 public:
 	static CPlayer*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

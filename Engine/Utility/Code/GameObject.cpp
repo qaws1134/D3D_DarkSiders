@@ -19,6 +19,14 @@ Engine::CGameObject::~CGameObject(void)
 
 }
 
+_bool CGameObject::HitTimer(_float fDeltaTime)
+{
+	m_fHitSpeed += fDeltaTime;
+	if (m_fHitSpeed > m_fHitTime)
+		return false;
+	return true;
+}
+
 HRESULT Engine::CGameObject::Ready_Object(void)
 {
 	return S_OK;
@@ -34,7 +42,7 @@ void CGameObject::Late_Ready_Object(void)
 Engine::_int Engine::CGameObject::Update_Object(const _float& fTimeDelta)
 {
 	_int iResult = 0;
-
+	m_bHit= HitTimer(fTimeDelta);
 	for (auto& iter : m_mapComponent[ID_DYNAMIC])
 	{
 		iResult = iter.second->Update_Component(fTimeDelta);
@@ -103,10 +111,9 @@ _vec3 * Engine::CGameObject::GetPos(COMPONENTID eID)
 	if (nullptr == pComponent)
 		return nullptr;
 
-	_vec3 *vPos = nullptr;
-	dynamic_cast<CTransform*>(pComponent)->Get_INFO(INFO_POS,vPos);
-	return vPos;
-
+	dynamic_cast<CTransform*>(pComponent)->Get_INFO(INFO_POS,&m_vPos);
+	
+	return &m_vPos;
 }
 
 void CGameObject::SetPos(_vec3 vPos, COMPONENTID eID)

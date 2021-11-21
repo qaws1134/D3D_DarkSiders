@@ -29,14 +29,15 @@ public:
 
 public:
 	void		StateChange();
+	void		StateActor(_float fDeltaTime);
 	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
 
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 	_bool		Pattern_Timer(_float fDeltaTime); // 패턴 대기 시간 
 
 	void		SetPattern();
-
-
+	void		SetSpawnType(_uint eSpawn) { m_eSpawnType = eSpawn; }
+	virtual		void TakeDmg(_float fDmg);
 #pragma region Set 함수
 public:
 
@@ -81,7 +82,9 @@ private:
 
 	_uint m_iPatternNum;
 
+	_uint m_eSpawnType;
 
+	CTransform*	m_pTargetTransform = nullptr;
 
 public:
 	static CGrinner*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

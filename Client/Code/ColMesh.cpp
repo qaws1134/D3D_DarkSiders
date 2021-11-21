@@ -24,7 +24,7 @@ HRESULT CColMesh::Ready_Object( )
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
-
+	m_bActive = true;
 	return S_OK;
 }
 
@@ -60,7 +60,8 @@ _int CColMesh::Update_Object(const _float& fTimeDelta)
 	_vec3 vPos;
 	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 	m_pColliderCom->Set_Center(vPos);
-	Add_RenderGroup(RENDER_NONALPHA, this);
+	if(m_bActive)
+		Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;
 }
