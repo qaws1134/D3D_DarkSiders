@@ -55,7 +55,7 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 
 	if (Key_Down(KEY_NUM4))
 	{
-		CGameMgr::GetInstance()->GetBullet(BULLET::BULLET_CALLLIGHTNING);
+		CGameMgr::GetInstance()->GetEnemyBullet(BULLET::BULLET_CALLLIGHTNING);
 		CEffMgr::GetInstance()->SpawnEff(EFFECT::EFFECT_CALLLIGHTNING_START);
 	}
 

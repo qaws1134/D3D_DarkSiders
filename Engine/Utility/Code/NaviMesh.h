@@ -24,8 +24,13 @@ public:
 	HRESULT			Ready_NaviMesh(map<_uint, map<_uint, MESH>> mapNavi);
 	void			Render_NaviMesh(void);
 	_vec3			MoveOn_NaviMesh(const _vec3* pTargetPos, const _vec3* pTargetDir, const _float& fSpeed, const _float& fTimeDelta, class CCalculator* pCalcul);
-	//_bool			PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize);
+	_vec3			MoveStepOn_NaviMesh(const _vec3* pTargetPos, MOVETYPE eMoveType, _float* fSpeed, const _float& fPower, const _float& fMaxSpeed, const _vec3* pTargetDir, const _float& fTimeDelta, class CCalculator* pCalcul);
+	_vec3			MoveJumpOn_NaviMesh(const _vec3* pTargetPos, MOVETYPE eMoveType, _float* fSpeed, const _float& fPower, const _float& fMaxSpeed, const _vec3* pTargetDir, const _float& fTimeDelta);
+
+	
 	HRESULT			Link_Cell(void);
+	//속도 ,증감량, 지속시간
+	_vec3			MoveStep(MOVETYPE eMoveType, _float* fSpeed, const _float& fPower, const _float& fMaxSpeed, const _vec3* vDir, const _float& fTimeDelta);
 
 private:
 

@@ -17,7 +17,9 @@ public:
 public:
 	static void Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,map<const _tchar* ,CGameObject*> _Src, MESHTYPE eMesh);
 	static void SetColType(COLCHECK eColCheck,wstring* pDstTag, wstring* pSrcTag);
-	static _bool ColCheck(CGameObject* pSrcObj,wstring ColTag,CGameObject* pDstColObj, MESHTYPE eMesh);
+	static _bool ColCheckWeapon(CGameObject* pSrcObj,wstring ColTag,CGameObject* pDstColObj, MESHTYPE eMesh);
+	static _bool ColCheckBullet(CGameObject* pSrcObj, wstring ColTag, CGameObject* pDstColObj, MESHTYPE eMesh);
+
 };
 END
 #endif // !ColMgr_h__

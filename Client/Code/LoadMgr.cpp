@@ -23,9 +23,9 @@ CLoadMgr::~CLoadMgr(void)
 
 HRESULT CLoadMgr::LoadData(wstring szFilePath)
 {
-	LoadColTool(szFilePath+L"Colider23.dat");
-	//LoadMeshTool(szFilePath+L"Map16Obj.dat");
-	LoadMeshTool(szFilePath + L"Test.dat");
+	LoadColTool(szFilePath+L"Colider24.dat");
+	//LoadMeshTool(szFilePath+L"Map19Obj.dat");
+LoadMeshTool(szFilePath + L"Test.dat");
 
 	return S_OK;
 }
@@ -231,11 +231,17 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 			//m_mapHead.emplace(iter_Second.first, pGameObject);
 		}
 	}
-
+	
 	//네비매시 추가 
-	CComponent* pComponent = CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData);
+	//CComponent* pComponent = CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData);
+
+	Ready_Prototype(L"Proto_Navi", CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData));
+
+	CComponent* pComponent = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
+
+	//CGameMgr::GetInstance()->SetNavi(dynamic_cast<CNaviMesh*>(pComponent));
 	dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_NaviMesh(dynamic_cast<CNaviMesh*>(pComponent));
-	CGameMgr::GetInstance()->GetPlayer()->Set_Component(L"Com_Navi", pComponent,ID_STATIC);
+	//CGameMgr::GetInstance()->GetPlayer()->Set_Component(L"Com_Navi", pComponent,ID_STATIC);
 
 	return m_mapHead;
 }

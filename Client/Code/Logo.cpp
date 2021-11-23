@@ -98,14 +98,15 @@ HRESULT CLogo::Ready_Prototype(void)
 
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Transform", CTransform::Create(m_pGraphicDev)), E_FAIL);
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_NaviMesh", CNaviMesh::Create(m_pGraphicDev)), E_FAIL);
+
 	return S_OK;
 }
 
 void CLogo::Render_Scene(void)
 {
 	// DEBUG ¿ë
-	Set_FontZ(L"Font_Jinji",0.f);
-	Render_Font(L"Font_Jinji", m_pLoading->Get_String(), &_vec2(10.f, 15.f), D3DXCOLOR(1.f, 0.f, 0.f, 1.f));
+	Set_FontZ(L"Font_L_Normal",0.f);
+	Render_Font(L"Font_L_Normal", m_pLoading->Get_String(), &_vec2(10.f, 15.f), D3DXCOLOR(1.f, 0.f, 0.f, 1.f));
 
 }
 CLogo* CLogo::Create(LPDIRECT3DDEVICE9 pGraphicDev)

@@ -151,7 +151,8 @@ STONE CGameMgr::GetStone(UI::STONE eStone)
 
 HRESULT CGameMgr::InitObjPool()
 {
-	InitBullet();
+	InitEnemyBullet();
+	InitPlayerBullet();
 	InitEffect();
 	//InitParticle();
 	//파티클
@@ -160,7 +161,7 @@ HRESULT CGameMgr::InitObjPool()
 	return S_OK;
 }
 
-HRESULT CGameMgr::InitBullet()
+HRESULT CGameMgr::InitEnemyBullet()
 {
 	CGameObject* pObj = nullptr;
 	USES_CONVERSION;
@@ -170,33 +171,72 @@ HRESULT CGameMgr::InitBullet()
 		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
 		pObj = CBullet::Create(m_pGraphicDev);
 		pObj->SetActive(false);
-		Add_GameObject(L"Bullet", pConvObjTag, pObj);
-		m_queBullet.emplace(pObj);
+		Add_GameObject(L"Bullet_Enemy", pConvObjTag, pObj);
+		m_queEnemyBullet.emplace(pObj);
 		m_iBulletIdx++;
 	}
 	return S_OK;
 }
 
-void CGameMgr::RetunBullet(CGameObject * pObj)
+HRESULT CGameMgr::InitPlayerBullet()
+{
+	CGameObject* pObj = nullptr;
+	USES_CONVERSION;
+	for (_uint i = 0; i < 20; i++)
+	{
+		wstring wstrIndxKey = to_wstring(m_iBulletIdx);
+		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
+		pObj = CBullet::Create(m_pGraphicDev);
+		pObj->SetActive(false);
+		Add_GameObject(L"Bullet_Player", pConvObjTag, pObj);
+		m_quePlayerBullet.emplace(pObj);
+		m_iBulletIdx++;
+	}
+	return S_OK;
+}
+
+void CGameMgr::RetunPlayerBullet(CGameObject * pObj)
+{
+	_uint eType = BULLET::BULLET_END;
+	dynamic_cast<CBullet*>(pObj)->SetOption(&eType);
+	//	pObj->SetActive(false);
+
+	m_quePlayerBullet.emplace(pObj);
+}
+
+CGameObject * CGameMgr::GetPlayerBullet(_uint eType)
+{
+	if (m_quePlayerBullet.empty())
+	{
+		InitPlayerBullet();
+	}
+	CGameObject* pObj = m_quePlayerBullet.front();
+	//pObj->SetActive(true);
+	dynamic_cast<CBullet*>(pObj)->SetOption(&eType);
+	m_quePlayerBullet.pop();
+	return pObj;
+}
+
+void CGameMgr::RetunEnemyBullet(CGameObject * pObj)
 {
 	//pObj 조정한 값 초기화 
 	_uint eType = BULLET::BULLET_END;
 	dynamic_cast<CBullet*>(pObj)->SetOption(&eType);
 //	pObj->SetActive(false);
 	
-	m_queBullet.emplace(pObj);
+	m_queEnemyBullet.emplace(pObj);
 }
 
-CGameObject * CGameMgr::GetBullet(_uint eType)
+CGameObject * CGameMgr::GetEnemyBullet(_uint eType)
 {
-	if (m_queBullet.empty())
+	if (m_queEnemyBullet.empty())
 	{
-		InitBullet();
+		InitEnemyBullet();
 	}
-	CGameObject* pObj = m_queBullet.front();
+	CGameObject* pObj = m_queEnemyBullet.front();
 	//pObj->SetActive(true);
 	dynamic_cast<CBullet*>(pObj)->SetOption(&eType);
-	m_queBullet.pop();
+	m_queEnemyBullet.pop();
 	return pObj;
 }
 

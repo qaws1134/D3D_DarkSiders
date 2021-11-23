@@ -15,9 +15,11 @@ Engine::CDynamicMesh::CDynamicMesh(const CDynamicMesh& rhs)
 	: CComponent(rhs)
 	, m_pRootFrame(rhs.m_pRootFrame)
 	, m_pLoader(rhs.m_pLoader)
-	, m_MeshContainerList(rhs.m_MeshContainerList)
-	,m_mapBoneName(rhs.m_mapBoneName)
+	//, m_MeshContainerList(rhs.m_MeshContainerList)
+	, m_mapBoneName(rhs.m_mapBoneName)
 {
+
+	//SetUp_FrameMatrices((D3DXFRAME_DERIVED*)rhs.m_pRootFrame);
 	m_pAniCtrl = CAniCtrl::Create(*rhs.m_pAniCtrl);
 }
 
@@ -48,6 +50,8 @@ _bool CDynamicMesh::Is_Animationset(_double dRadius)
 {
 	return m_pAniCtrl->Is_Animationset(dRadius);
 }
+
+
 
 _vec3 CDynamicMesh::GetBonePos(const char * pFrameName)
 {
@@ -98,6 +102,7 @@ HRESULT Engine::CDynamicMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar
 	_matrix		matTemp;
 
 	Update_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame, D3DXMatrixRotationY(&matTemp, D3DXToRadian(180.f)));
+
 
 	SetUp_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame);
 
@@ -249,4 +254,3 @@ void Engine::CDynamicMesh::SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame)
 	if (nullptr != pFrame->pFrameFirstChild)
 		SetUp_FrameMatrices((D3DXFRAME_DERIVED*)pFrame->pFrameFirstChild);
 }
-

@@ -20,11 +20,15 @@ public:
 	void			Compute_ViewZ(const _vec3* pPos);
 
 
+
+	_float GetColShpereRadius() { return m_tColSphere.fRadius; }
 	_vec3* GetPos(COMPONENTID eID);
 
 	void SetPos(_vec3 vPos, COMPONENTID eID);
 	void SetZPos(_float fzPos, COMPONENTID eID);
 	_float GetWorldZ(COMPONENTID eID);
+	void	SetColTarget(CGameObject* pColTarget) { m_pColTarget = pColTarget; }
+
 
 public:
 	void	SetCol(_bool bCol) { m_bCol = bCol; }
@@ -41,6 +45,7 @@ public :
 	_bool GetActive() { return m_bActive; }
 	wstring& GetObjTag() { return m_wstrObjTag; }
 	map<const _tchar*, CGameObject*>& GetColmap() { return m_mapColider; }
+	COLLIDERSPHERE m_tColSphere;
 
 	void SetObjTag(wstring& wstrObjTag) { m_wstrObjTag = wstrObjTag; }
 	void SetTarget(CGameObject* pTarget) { m_pTarget = pTarget; }
@@ -55,22 +60,25 @@ public :
 	void SetHP(_float fHp) { m_tCharInfo.fHp = fHp; }
 	void SetAtk(_float fAtk) { m_tCharInfo.fAtk = fAtk; }
 
+
 	_float GetAtk() { return m_tCharInfo.fAtk; }
 	_float GetHp() { return m_tCharInfo.fHp; }
 	_float GetDmg() { return m_tCharInfo.fDmg; }
 	_bool  GetHit() { return m_bHit; }
+	
 
 	//�浹ü
 	void EmplaceCol(wstring ObjTag, CGameObject* pGameObject);
 	void SetCharInfo(_float fHp, _float fAtk);
 
 	virtual void SetOption(void* arg = nullptr) {}
-
-
+	void SetHitTime(_float fHitTime) { m_fHitTime = fHitTime; }
+	void SetHitSpeed(_float fHitSpeed){ m_fHitSpeed = fHitSpeed; }
 protected:
 	LPDIRECT3DDEVICE9					m_pGraphicDev;
 	map<const _tchar*, CComponent*>		m_mapComponent[ID_END];
-	CGameObject* m_pTarget;
+	CGameObject* m_pTarget= nullptr;
+	CGameObject* m_pColTarget = nullptr;
 	_float								m_fViewZ;
 
 	wstring m_wstrObjTag = L""; 
@@ -88,6 +96,8 @@ protected:
 	_bool	m_bHit = false;
 
 	CHARINFO m_tCharInfo;
+	_vec3 m_vPos;
+
 public:
 	virtual void	Free(void);
 };

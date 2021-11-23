@@ -56,7 +56,7 @@ public:
 	void		Set_Element(War::WEAPON_ELEMENT eElement) { m_eElement = eElement; }
 	void		Set_PlayerState(War::STATE eState) { m_eMachineState = eState; }
 //	void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
-	void		Set_NaviMesh(CNaviMesh* pNavi) { m_pNavi = pNavi; }
+	void		Set_NaviMesh(CNaviMesh* pNavi);
 #pragma  endregion Set 함수
 #pragma region Get 함수
 
@@ -116,6 +116,8 @@ private:
 	_float m_fInitDashSpeed ;
 	_float m_fDashSpeed;
 	_bool m_bDashMoveEnd = false;
+	_float m_fHitMoveSpeed = 50.f;
+
 	//공격 이동 조작
 	_float m_fInitAttackMoveSpeed ;
 	_float m_fAttackMoveSpeed;
@@ -141,7 +143,7 @@ private:
 	_double m_dAtkActiveEnd= 0.0;
 
 	
-
+	_vec3	m_vHitDir;
 
 public:
 	static CPlayer*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

@@ -42,9 +42,18 @@ namespace BULLET{
 		BULLET_CALLLIGHTNING,
 		BULLET_ORBLIGHTNING,
 		BULLET_TSUNAMI,
-
+		BULLET_GRINNERBARFIN,
 		BULLET_END
 	};
+
+
+	enum ID
+	{
+		BULLET_PLAYER,
+		BULLET_ENEMY,
+		ID_END
+	};
+
 }
 
 
@@ -235,6 +244,7 @@ namespace Grinner
 		STATE_SPAWN,
 		STATE_IDLE,
 		STATE_ATK,
+		STATE_TURN,
 		//STATE_ATK_FLIP,              //0	frame:[73]
 		//STATE_ATK_BARFINRAINBOWS,               //1	frame:[131]
 		//STATE_ATK_LUNGE,                        //2	frame:[49]

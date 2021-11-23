@@ -7,7 +7,7 @@
 #include "ParticleSystem.h"
 #include "Struct.h"
 #include "Enum.h"
-
+//#include "NaviMesh.h"
 class CGameMgr : public CBase
 {
 
@@ -22,7 +22,10 @@ public:
 	_uint				GetPlayerNaviIdx() { return m_iNaviIdx; }
 
 	void				SetDevice(LPDIRECT3DDEVICE9 pGraphicDev) { m_pGraphicDev = pGraphicDev; }
-	
+	//void				SetNavi(CNaviMesh* pNavi) { m_pNaviMesh = pNavi; }
+
+
+	//CNaviMesh*			GetNaviMesh() { return m_pNaviMesh; }
 
 	CGameObject*		GetPlayer() { return m_pPlayer; }
 	vector<STONE>		GetStoneVec() { return m_vecStone; }
@@ -34,12 +37,21 @@ public:
 	POPTION				GetParticleInfo(PARTICLEEFF::TYPE eParticle);
 
 
+
 	//오브젝트풀
 	HRESULT InitObjPool();
 
-	HRESULT InitBullet();
-	void RetunBullet(CGameObject* pObj);
-	CGameObject* GetBullet(_uint eType);
+	HRESULT InitEnemyBullet();
+	void RetunEnemyBullet(CGameObject* pObj);
+	CGameObject* GetEnemyBullet(_uint eType);
+
+
+
+	HRESULT InitPlayerBullet();
+	void RetunPlayerBullet(CGameObject* pObj);
+	CGameObject* GetPlayerBullet(_uint eType);
+
+
 
 	HRESULT InitEffect();				//리셋아직 안함
 	void RetunEffect(CGameObject* pObj);
@@ -59,7 +71,9 @@ private:
 	vector<STONE> m_vecStone;
 	vector<ITEM>m_vecItemInfo;
 
-	queue<CGameObject*> m_queBullet;
+	queue<CGameObject*> m_queEnemyBullet;
+	queue<CGameObject*> m_quePlayerBullet;
+
 	queue<CGameObject*> m_queEffect;
 	queue<CGameObject*> m_queParticle;
 
@@ -67,6 +81,10 @@ private:
 	_uint m_iEffectIdx = 0;
 	_uint m_iParticleIdx = 0;
 	_uint m_iNaviIdx = 0;
+
+
+	//CNaviMesh* m_pNaviMesh = nullptr;
+
 private:
 	virtual void Free(void) override;
 

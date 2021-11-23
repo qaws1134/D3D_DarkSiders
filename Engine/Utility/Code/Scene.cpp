@@ -34,6 +34,8 @@ Engine::_int Engine::CScene::Update_Scene(const _float& fTimeDelta)
 		CColMgr::Col_Body(CHECK_BODY_BODY, *GetMapObj(L"Player"), *GetMapObj(L"Enemy"), MESH_DYNAMIC);
 		CColMgr::Col_Body(CHECK_WEAPON, *GetMapObj(L"Player"), *GetMapObj(L"Enemy"), MESH_DYNAMIC);
 		CColMgr::Col_Body(CHECK_WEAPON, *GetMapObj(L"Enemy"), *GetMapObj(L"Player"), MESH_DYNAMIC);
+		CColMgr::Col_Body(CHECK_BULLET, *GetMapObj(L"Bullet_Enemy"), *GetMapObj(L"Player"), MESH_DYNAMIC);
+		//CColMgr::Col_Body(CHECK_BULLET, *GetMapObj(L"Bullet_Player"), *GetMapObj(L"Enemy"), MESH_DYNAMIC);
 	}
 	return iResult;
 }

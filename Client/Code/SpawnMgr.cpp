@@ -70,18 +70,21 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		pGameObject = CWaterBoss::Create(CGameMgr::GetInstance()->GetDevice());
 		NULL_CHECK_RETURN(pGameObject, nullptr);
-		pGameObject->SetTarget(CGameMgr::GetInstance()->GetPlayer());
+
 		Add_GameObject(pConvLayerTag, L"WaterBoss", pGameObject);
 	}
 	else if (Objkey == L"Grinner")
 	{
 		*pLayerTag = L"Enemy";
+
+		const _tchar* pConvProtoTag = W2BSTR((Objkey+to_wstring(m_iGrinnerIdx)).c_str());
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
-		pGameObject = CGrinner::Create(CGameMgr::GetInstance()->GetDevice());
+		pGameObject = CGrinner::Create(CGameMgr::GetInstance()->GetDevice(),pConvProtoTag);
 		NULL_CHECK_RETURN(pGameObject, nullptr);
-		pGameObject->SetTarget(CGameMgr::GetInstance()->GetPlayer());
+		
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iGrinnerIdx++;
 		m_iEnemyIdx++;
 	}
 	else if (Objkey == L"Goblin")
@@ -91,7 +94,7 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
 		pGameObject = CGoblin::Create(CGameMgr::GetInstance()->GetDevice());
 		NULL_CHECK_RETURN(pGameObject, nullptr);
-		pGameObject->SetTarget(CGameMgr::GetInstance()->GetPlayer());
+		
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
 		m_iEnemyIdx++;
 	}

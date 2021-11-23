@@ -32,8 +32,9 @@ public:
 	//타이머셋팅, 초기화
 	void SetLifeTimer(_float fTimer) { m_fLifeTimer = fTimer; m_fLifeSpeed = 0.f; }
 	_bool LifeTimer(_float fDeltaTime);
-
-
+	
+	void SetMove(_bool bMove ,_vec3 vDir) { m_bMove = bMove; m_vDir = vDir; }
+	void SetMove(_bool bMove) { m_bMove = bMove; }
 
 private:
 
@@ -47,11 +48,17 @@ private:
 
 	_vec3		m_vDir;
 	BULLET::TYPE m_eType;
-	COLLIDERSPHERE m_tColSphere;
 	wstring			m_wstrBulletType =L"";
 	_float m_fLifeTimer =0.f;
 	_float m_fLifeSpeed = 0.f;
 	_bool  m_LifeTime = false;
+	
+	//이동
+	_bool m_bMove =false;
+	_float m_fMoveSpeed;
+
+	BULLET::ID m_eID;
+
 public:
 	static CBullet*		Create(LPDIRECT3DDEVICE9 pGraphicDevs);
 	static CBullet*		Create(LPDIRECT3DDEVICE9 pGraphicDev, COLLIDERSPHERE tColShpere);

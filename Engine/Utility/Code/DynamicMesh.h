@@ -24,6 +24,7 @@ public:
 	_bool			Is_Animationset(_double dRadius);
 	_uint			GetMaxNumAnimationSet() { if (!m_pAniCtrl)return 0;  return m_pAniCtrl->GetMaxNumAnimationSets(); }
 
+
 	_vec3			GetBonePos(const char* pFrameName);
 
 	map<const char*, map<_ulong, const char*>> GetBoneNameList() { return m_mapBoneName; }

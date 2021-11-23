@@ -400,6 +400,8 @@ _float CCalculator::Compute_HeightOnTri(const _vec3 * vPos, const _vec3 * vTriVt
 {
 	D3DXPLANE plane;
 	D3DXPlaneFromPoints(&plane,&vTriVtx[0],&vTriVtx[1],&vTriVtx[2]);
+	 
+	_float fY = -(plane.a * vPos->x + plane.c * vPos->z + plane.d) / plane.b;
 	return -(plane.a * vPos->x + plane.c * vPos->z + plane.d) / plane.b;
 }
 

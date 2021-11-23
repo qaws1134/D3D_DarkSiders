@@ -105,6 +105,71 @@ _vec3 CNaviMesh::MoveOn_NaviMesh(const _vec3 * pTargetPos, const _vec3 * pTarget
 	return _vec3();
 }
 
+_vec3 CNaviMesh::MoveStepOn_NaviMesh(const _vec3 * pTargetPos, MOVETYPE eMoveType, _float * fSpeed, const _float & fPower, const _float & fMaxSpeed, const _vec3 * pTargetDir, const _float & fTimeDelta, CCalculator * pCalcul)
+{
+	
+	//MoveStep(eMoveType, fSpeed, fPower, fMaxSpeed, pTargetDir, fTimeDelta);
+	_vec3		vEndPos = *pTargetPos + MoveStep(eMoveType, fSpeed, fPower, fMaxSpeed, pTargetDir, fTimeDelta);
+
+	//제한 겸 y값 넘겨주기 
+	if (CCell::COMPARE_MOVE == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
+	{
+		_float fPosY = pCalcul->Compute_HeightOnTri(&vEndPos, m_vecCell[m_dwIndex]->Get_CellTri());
+		//vEndPos = *pTargetPos + (*pTargetDir * *fSpeed * fTimeDelta);
+		vEndPos.y = fPosY;
+
+		return vEndPos;
+	}
+	else if (CCell::COMPARE_STOP == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
+	{
+		_vec3 vNormal = m_vecCell[m_dwIndex]->Get_Normal();
+		_float fNormalLength = D3DXVec3Dot(&(*pTargetDir*-1.f), &vNormal);
+
+		_vec3 vSlide = *pTargetDir + (fNormalLength*vNormal);
+		//D3DXVec3Normalize(&vSlide, &vSlide);
+		_float fPosY = pCalcul->Compute_HeightOnTri(&vEndPos, m_vecCell[m_dwIndex]->Get_CellTri());
+		//MoveStep(eMoveType, fSpeed, fPower, fMaxSpeed, &vSlide, fTimeDelta);
+		//_float offset = 0.01;
+
+		vEndPos = *pTargetPos + MoveStep(eMoveType,fSpeed, fPower, fMaxSpeed, &vSlide, fTimeDelta);
+		vEndPos.y = fPosY;
+		return vEndPos;
+	}
+	return _vec3();
+}
+
+_vec3 CNaviMesh::MoveJumpOn_NaviMesh(const _vec3 * pTargetPos, MOVETYPE eMoveType, _float * fSpeed, const _float & fPower, const _float & fMaxSpeed, const _vec3 * pTargetDir, const _float & fTimeDelta)
+{
+	_vec3		vEndPos = *pTargetPos + MoveStep(eMoveType, fSpeed, fPower, fMaxSpeed, pTargetDir, fTimeDelta);
+
+	//제한 겸 y값 넘겨주기 
+	if (CCell::COMPARE_MOVE == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
+	{
+		//_float fPosY = pCalcul->Compute_HeightOnTri(&vEndPos, m_vecCell[m_dwIndex]->Get_CellTri());
+		////vEndPos = *pTargetPos + (*pTargetDir * *fSpeed * fTimeDelta);
+		//vEndPos.y = fPosY;
+
+		return vEndPos;
+	}
+	else if (CCell::COMPARE_STOP == m_vecCell[m_dwIndex]->Compare_Position(&vEndPos, &m_dwIndex))
+	{
+		_vec3 vNormal = m_vecCell[m_dwIndex]->Get_Normal();
+		_float fNormalLength = D3DXVec3Dot(&(*pTargetDir*-1.f), &vNormal);
+
+		_vec3 vSlide = *pTargetDir + (fNormalLength*vNormal);
+		//D3DXVec3Normalize(&vSlide, &vSlide);
+		//_float fPosY = pCalcul->Compute_HeightOnTri(&vEndPos, m_vecCell[m_dwIndex]->Get_CellTri());
+		//MoveStep(eMoveType, fSpeed, fPower, fMaxSpeed, &vSlide, fTimeDelta);
+		//_float offset = 0.01;
+
+		vEndPos = *pTargetPos + MoveStep(eMoveType, fSpeed, fPower, fMaxSpeed, &vSlide, fTimeDelta);
+		//vEndPos.y = fPosY;
+		return vEndPos;
+	}
+	return _vec3();
+}
+
+
 
 
 //_bool CNaviMesh::PickOn_NaviMesh(const _vec2  vMousPos, const _vec2  vWindowSize)
@@ -156,6 +221,32 @@ HRESULT Engine::CNaviMesh::Link_Cell(void)
 	}
 
 	return S_OK;
+}
+
+_vec3 CNaviMesh::MoveStep(MOVETYPE eMoveType, _float * fSpeed, const _float & fPower, const _float & fMaxSpeed, const _vec3 * vDir, const _float & fTimeDelta)
+{
+
+	switch (eMoveType)
+	{
+	case Engine::MOVETYPE_ACC:
+		if (*fSpeed < fMaxSpeed)
+			*fSpeed += fTimeDelta*fPower;
+		else
+			return _vec3(0.f,0.f,0.f);
+		break;
+	case Engine::MOVETYPE_DEFAULT:
+		break;
+	case Engine::MOVETYPE_BREAK:
+		if (*fSpeed > fMaxSpeed)
+			*fSpeed -= fTimeDelta*fPower;
+		else
+			return _vec3(0.f, 0.f, 0.f);
+		break;
+	case Engine::MOVETYPE_END:
+		break;
+	}
+
+	return  *vDir* (*fSpeed)*fTimeDelta;
 }
 
 Engine::CNaviMesh* Engine::CNaviMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev)

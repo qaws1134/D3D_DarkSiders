@@ -91,8 +91,8 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 				}
 	
 				//===========================상호작용 ====================================
-				fDstRadi += 300.f;
-				fSrcRadi += 300.f;
+				fDstRadi += 400.f;
+				fSrcRadi += 400.f;
 				if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
 				{
 					iter_Dst->second->SetCol(true);
@@ -101,7 +101,8 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 				else
 				{
 					iter_Dst->second->SetCol(false);
-					iter_Src->second->SetCol(false);
+					//몬스터는 체이싱이 안풀리도록 
+					//iter_Src->second->SetCol(false);
 
 				}
 				
@@ -152,6 +153,36 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 	//		}
 	//	}
 	//}
+	else if (eColCheck == CHECK_BULLET)
+	{
+		for (auto& pDst : _Dst)
+		{	
+			if(!pDst.second->GetActive())
+				continue;
+			for (auto& pSrc : _Src)
+			{
+				//데미지 적용
+				if (ColCheckBullet(pSrc.second, L"Col_Left", pDst.second, eMesh))
+				{
+					pSrc.second->TakeDmg(pDst.second->GetAtk());
+				}
+				else if (ColCheckBullet(pSrc.second, L"Col_Right", pDst.second, eMesh))
+				{
+					pSrc.second->TakeDmg(pDst.second->GetAtk());
+				}
+				else if (ColCheckBullet(pSrc.second, L"Col_Front", pDst.second, eMesh))
+				{
+					pSrc.second->TakeDmg(pDst.second->GetAtk());
+				}
+				else if (ColCheckBullet(pSrc.second, L"Col_Back", pDst.second, eMesh))
+				{
+					pSrc.second->TakeDmg(pDst.second->GetAtk());
+				}
+
+			}
+		
+		}
+	}
 	else if (eColCheck == CHECK_WEAPON)
 	{
 		_uint idx = 0;
@@ -165,27 +196,25 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 
 				for (auto& pSrc : _Src)
 				{
-					//히트상태가 아닐때
-					if (!pSrc.second->GetHit())
+
+					//데미지 적용
+					if (ColCheckWeapon(pSrc.second, L"Col_Left", iter_Dst->second, eMesh))
 					{
-						//데미지 적용
-						if (ColCheck(pSrc.second, L"Col_Left", iter_Dst->second, eMesh))
-						{
-							pSrc.second->TakeDmg(pDst.second->GetDmg());
-						}
-						else if (ColCheck(pSrc.second, L"Col_Right", iter_Dst->second, eMesh))
-						{
-							pSrc.second->TakeDmg(pDst.second->GetDmg());
-						}
-						else if (ColCheck(pSrc.second, L"Col_Front", iter_Dst->second, eMesh))
-						{
-							pSrc.second->TakeDmg(pDst.second->GetDmg());
-						}
-						else if (ColCheck(pSrc.second, L"Col_Back", iter_Dst->second, eMesh))
-						{
-							pSrc.second->TakeDmg(pDst.second->GetDmg());
-						}
+						pSrc.second->TakeDmg(pDst.second->GetAtk());
 					}
+					else if (ColCheckWeapon(pSrc.second, L"Col_Right", iter_Dst->second, eMesh))
+					{
+						pSrc.second->TakeDmg(pDst.second->GetAtk());
+					}
+					else if (ColCheckWeapon(pSrc.second, L"Col_Front", iter_Dst->second, eMesh))
+					{
+						pSrc.second->TakeDmg(pDst.second->GetAtk());
+					}
+					else if (ColCheckWeapon(pSrc.second, L"Col_Back", iter_Dst->second, eMesh))
+					{
+						pSrc.second->TakeDmg(pDst.second->GetAtk());
+					}
+					
 				}
 				idx++;
 			}
@@ -216,6 +245,8 @@ void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
 		*pDstTag = L"Col_Weapon";
 		*pSrcTag = L"";
 		break;
+	case Engine::CHECK_BULLET:
+		break;
 	case Engine::CHECK_END:
 		break;
 	default:
@@ -223,7 +254,7 @@ void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
 	}
 }
 
-_bool CColMgr::ColCheck(CGameObject* pSrcObj, wstring ColTag,CGameObject * pDstColObj,MESHTYPE eMesh)
+_bool CColMgr::ColCheckWeapon(CGameObject* pSrcObj, wstring ColTag,CGameObject * pDstColObj,MESHTYPE eMesh)
 {
 
 	CColliderSphere* pDstCol = dynamic_cast<CColliderSphere*>(pDstColObj->Get_Component(L"Com_Collider", ID_STATIC));
@@ -242,10 +273,48 @@ _bool CColMgr::ColCheck(CGameObject* pSrcObj, wstring ColTag,CGameObject * pDstC
 	//===========================공격 충돌 ====================================
 	if(pDstColObj->GetActive())
 	{
-		if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
+		if (!pSrcObj->GetHit())
 		{
-			iter_Src->second->SetCol(true);
-			return true;
+			if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
+			{
+				pSrcObj->SetColTarget(pDstColObj);
+				//iter_Src->second->SetColTarget(pDstColObj);
+				iter_Src->second->SetCol(true);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+_bool CColMgr::ColCheckBullet(CGameObject * pSrcObj, wstring ColTag, CGameObject * pDstColObj, MESHTYPE eMesh)
+{
+	CColliderSphere* pDstCol = dynamic_cast<CColliderSphere*>(pDstColObj->Get_Component(L"Com_Collider", ID_STATIC));
+	CCalculator* pDstCalcul = dynamic_cast<CCalculator*>(pDstColObj->Get_Component(L"Com_Calculator", ID_STATIC));
+
+	auto& iter_Src = find_if(pSrcObj->GetColmap().begin(), pSrcObj->GetColmap().end(), CTag_Finder(ColTag.c_str()));
+	if (iter_Src == pSrcObj->GetColmap().end())
+		return false;
+
+	CColliderSphere* pSrcCol = dynamic_cast<CColliderSphere*>(iter_Src->second->Get_Component(L"Com_Collider", ID_STATIC));
+	CCalculator* pSrcCal = dynamic_cast<CCalculator*>(iter_Src->second->Get_Component(L"Com_Calculator", ID_STATIC));
+
+	_float fDstRadi = pDstColObj->GetColShpereRadius();
+	_float fSrcRadi = *pSrcCol->Get_Radius();
+
+	_vec3 vDstPos;
+	dynamic_cast<CTransform*>(pDstColObj->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS,&vDstPos);
+	//===========================공격 충돌 ====================================
+	if (pDstColObj->GetActive())
+	{
+		if (!pSrcObj->GetHit())
+		{
+			if (pDstCalcul->Collision_Sphere(&vDstPos, &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
+			{
+				pSrcObj->SetColTarget(pDstColObj);
+				iter_Src->second->SetCol(true);
+				return true;
+			}
 		}
 	}
 	return false;

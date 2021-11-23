@@ -52,6 +52,7 @@ _int CWaterBoss::Update_Object(const _float& fTimeDelta)
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
 	StateChange();
+	StateActor(fTimeDelta);
 	StateLinker(fTimeDelta);
 	m_pMeshCom->Play_Animation(fTimeDelta);
 	Add_RenderGroup(RENDER_NONALPHA, this);

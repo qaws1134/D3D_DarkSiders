@@ -38,10 +38,23 @@ _int CBullet::Update_Object(const _float& fTimeDelta)
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	if (m_bActive)
 	{
+		
+		if (m_bMove)
+		{
+			m_pTransformCom->Get_INFO(INFO_LOOK, &m_vDir);
+			D3DXVec3Normalize(&m_vDir, &m_vDir);
+			m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed);
+		}
+
+
 	
 		if (LifeTimer(fTimeDelta))
 		{
-			CGameMgr::GetInstance()->RetunBullet(this);
+			if(BULLET::BULLET_ENEMY == m_eID )
+				CGameMgr::GetInstance()->RetunEnemyBullet(this);
+			else
+				CGameMgr::GetInstance()->RetunPlayerBullet(this);
+
 			m_bActive = false;
 		}
 		
@@ -103,6 +116,8 @@ void CBullet::SetOption(void * pArg)
 		m_bActive = true;
 		m_wstrBulletType = L"CallLightning";
 		//텍스쳐 셋팅 ? 메시 셋팅?
+		m_tCharInfo.fAtk = 3.f;
+		m_eID = BULLET::BULLET_ENEMY;
 		break;
 	case BULLET::BULLET_ORBLIGHTNING:
 		m_fLifeSpeed = 0.0f;
@@ -111,6 +126,8 @@ void CBullet::SetOption(void * pArg)
 		m_LifeTime = true;
 		m_bActive = true;
 		m_wstrBulletType = L"OrbLightning";
+		m_tCharInfo.fAtk = 2.f;
+		m_eID = BULLET::BULLET_ENEMY;
 		break;
 	case BULLET::BULLET_TSUNAMI:
 		m_fLifeSpeed = 0.0f;
@@ -119,13 +136,33 @@ void CBullet::SetOption(void * pArg)
 		m_LifeTime = true;
 		m_bActive = true;
 		m_wstrBulletType = L"Tsunami";
+		m_tCharInfo.fAtk = 3.f;
+		m_eID = BULLET::BULLET_ENEMY;
+		break;
+	case BULLET::BULLET_GRINNERBARFIN:
+		m_fLifeSpeed = 0.0f;
+		m_fLifeTimer = 4.f;
+		m_tColSphere.fRadius = 0.5f;
+		m_fMoveSpeed = 0.2f;
+		m_LifeTime = true;
+		m_bActive = true;
+		m_tCharInfo.fAtk = 1.f;
+		m_wstrBulletType = L"Barfin";
+		m_eID = BULLET::BULLET_ENEMY;
 		break;
 	case BULLET::BULLET_END:
 		m_fLifeSpeed = 0.f;
 		m_fLifeTimer = 0.f;
 		m_tColSphere.fRadius = 0.f;
+		m_vDir = _vec3(0.f, 0.f, 0.f);
+		m_bMove = false;
+		m_pTransformCom->Set_Rot(0.f, 0.f, 0.f);
+		m_pTransformCom->Set_Pos(0.f, 0.f, 0.f);
+		m_LifeTime = false;
 		m_bActive = false;
+		m_fMoveSpeed = 0.f;
 		m_wstrBulletType = L"End";
+		m_eID = BULLET::ID_END;
 		break;
 	default:
 		break;

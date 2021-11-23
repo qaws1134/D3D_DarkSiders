@@ -104,6 +104,12 @@ void CPlayer::Free(void)
 }
 
 
+void CPlayer::Set_NaviMesh(CNaviMesh * pNavi)
+{
+	m_pNavi = pNavi;
+	m_mapComponent[ID_STATIC].emplace(L"Com_Navi", m_pNavi);
+}
+
 HRESULT CPlayer::Add_Component()
 {
 	CComponent*		pComponent = nullptr;
@@ -183,6 +189,8 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 			m_eMachineState = War::STATE_IDLE_CB;
 
 	}
+	if (m_eMachineState == War::HIT)
+		return;
 
 
 	if (Key_Pressing(KEY_W))
@@ -495,6 +503,11 @@ void CPlayer::StateChange()
 				m_eCurAniState = War::War_Idle_Combat;
 				m_bBlend = true;
 			}
+			else if (m_ePreMachineState == War::BLOCK)
+			{
+				m_bBlend = true;
+				m_eCurAniState = War::War_Idle_Combat;
+			}
 			else
 			{
 				m_eCurAniState = War::War_Idle_Combat;
@@ -562,7 +575,7 @@ void CPlayer::StateChange()
 			break;
 		case War::BLOCK:
 			if(m_ePreMachineState!=War::HIT)
-			m_eCurAniState = War::War_Block_Start;
+				m_eCurAniState = War::War_Block_Start;
 			break;
 		case War::JUMP:
 
@@ -612,6 +625,17 @@ void CPlayer::StateChange()
 			if (m_bHit)
 				break;
 
+			if (m_pColTarget)
+			{
+				_vec3 vTargetPos;
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+				dynamic_cast<CTransform*>(m_pColTarget->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vTargetPos);
+				m_vHitDir = vPos - vTargetPos;
+				m_vHitDir.y = 0.f;
+
+				D3DXVec3Normalize(&m_vHitDir, &m_vHitDir);
+			}
 			if (m_ePreMachineState == War::BLOCK)
 			{
 				//막기상태일떄
@@ -621,6 +645,7 @@ void CPlayer::StateChange()
 					m_eCurAniState = War::War_Block_Impact_Medium;
 				else if (m_tCharInfo.fDmg< 4.f)
 					m_eCurAniState = War::War_Block_Impact_Heavy;
+				m_eCharState = War::COMBAT;
 			}
 			else
 			{
@@ -654,7 +679,7 @@ void CPlayer::StateChange()
 					}
 
 					m_fCToISpeed = 0.f;
-	
+					m_eCharState = War::COMBAT;
 				}
 				else
 				{
@@ -670,6 +695,7 @@ void CPlayer::StateChange()
 					m_eCharState = War::AIR;
 				}
 			}
+			m_fHitMoveSpeed = 50.f;
 			m_fHitSpeed = 0.f;
 			m_tCharInfo.fDmg = 0.f;
 			break;
@@ -747,33 +773,10 @@ void CPlayer::StateChange()
 		case War::War_DashTo_Back:
 			break;
 		case War::War_Atk_Light_01:
-			m_eKeyState = War::KEYSTATE_END;
-			DirSet_Combo();
-			m_fInitAttackMoveSpeed = 500.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-			break;
 		case War::War_Atk_Light_02:
-			m_eKeyState = War::KEYSTATE_END;
-			DirSet_Combo();
-
-			m_fInitAttackMoveSpeed = 500.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-			break;
 		case War::War_Atk_Light_03:
-			m_eKeyState = War::KEYSTATE_END;
-			DirSet_Combo();
-
-			m_fInitAttackMoveSpeed = 500.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-
-			break;
 		case War::War_Atk_Light_04:
+			m_tCharInfo.fAtk = 1.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
 
@@ -783,10 +786,8 @@ void CPlayer::StateChange()
 			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Atk_Air_Light_01:
-			m_eKeyState = War::KEYSTATE_END;
-			
-			break;
 		case War::War_Atk_Air_Light_02:
+			m_tCharInfo.fAtk = 1.f;
 			m_eKeyState = War::KEYSTATE_END;
 			break;
 		case War::War_Atk_Air_Filpsaw_Start:
@@ -798,6 +799,7 @@ void CPlayer::StateChange()
 			break;
 		case War::War_Atk_Air_Filpsaw_Land:
 			m_eKeyState = War::KEYSTATE_END;
+			m_tCharInfo.fAtk = 2.f;
 			//DirSet_Combo();
 			m_fInitAttackMoveSpeed = 500.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
@@ -836,11 +838,13 @@ void CPlayer::StateChange()
 
 			break;
 		case War::War_Atk_Flamebrand:
+			m_tCharInfo.fAtk = 1.f;
 			DirSet_Combo();
 			break;
 		case War::War_Atk_Flamebrand_Start:
 			break;
 		case War::War_Atk_Flamebrand_End:
+			m_tCharInfo.fAtk = 1.f;
 			m_bBlend = false;
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
@@ -848,6 +852,7 @@ void CPlayer::StateChange()
 			m_bAttackMoveEnd = false;
 			break;
 		case	War::War_Atk_LoomingDeath:
+			m_tCharInfo.fAtk = 3.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 500.f;
@@ -858,6 +863,7 @@ void CPlayer::StateChange()
 
 			break;
 		case	War::War_Atk_Vamp_Start:
+
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
@@ -865,8 +871,10 @@ void CPlayer::StateChange()
 			m_bAttackMoveEnd = false;
 			break;
 		case	War::War_Atk_Vamp_Loop:
+			m_tCharInfo.fAtk = 1.f;
 			break;
 		case	War::War_Atk_Vamp_Finish:
+			m_tCharInfo.fAtk = 3.f;
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
@@ -874,6 +882,7 @@ void CPlayer::StateChange()
 			break;
 		case	War::War_Atk_Launch_A:
 		case	War::War_Atk_Launch_B:
+			m_tCharInfo.fAtk = 1.f;
 			DirSet_Combo();
 			m_bBlend = true;					
 			m_fJumpPower = 15.f;
@@ -890,6 +899,7 @@ void CPlayer::StateChange()
 		case	War::War_Atk_Wind_Loop    :
 			break;
 		case	War::War_Atk_Wind_End :
+			m_tCharInfo.fAtk = 3.f;
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
@@ -904,21 +914,21 @@ void CPlayer::StateChange()
 			break;
 		case War::War_Block_Impact_Heavy:
 			m_bBlend = true;
-			m_fInitAttackMoveSpeed = 800.f;
+			m_fInitAttackMoveSpeed = 8.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Block_Impact_Light:
 			m_bBlend = true;
-			m_fInitAttackMoveSpeed = 500.f;
+			m_fInitAttackMoveSpeed = 5.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Block_Impact_Medium:
 			m_bBlend = true;
-			m_fInitAttackMoveSpeed = 650.f;
+			m_fInitAttackMoveSpeed = 6.5f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
@@ -927,41 +937,34 @@ void CPlayer::StateChange()
 			m_bBlend = false;
 			break;
 		case War::War_Knockback_Fall:
+			m_fJumpPower = 15.f;
+			m_fInitJumpPower = m_fJumpPower;
 			break;
 		case War::War_Knockback_Land:
 			m_bBlend = true;
 			break;
 		case War::War_Knockback_Loop:
+			m_fJumpPower = 15.f;
+			m_fInitJumpPower = m_fJumpPower;
 			m_bBlend = false;
 			break;
 		case War::War_Knockback_Start:
+			m_fJumpPower = 15.f;
+			m_fInitJumpPower = m_fJumpPower;
 			m_bBlend = false;
 			break;
 		case War::War_Impack_From_Back:
-			m_fInitAttackMoveSpeed = 800.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-			break;
 		case War::War_Impack_From_Front:
-			m_fInitAttackMoveSpeed = 800.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-			break;
 		case War::War_Impack_From_Left:
-					m_fInitAttackMoveSpeed = 800.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-			break;
 		case War::War_Impack_From_Right:
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+
 			break;
 		case War::War_Skill_01:
+			m_tCharInfo.fAtk = 3.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 800.f;
@@ -1003,22 +1006,9 @@ void CPlayer::StateChange()
 			m_bGlideOn = true;
 			break;
 		case War::War_Atk_Heavy_01:
-			m_eKeyState = War::KEYSTATE_END;
-			DirSet_Combo();
-			m_fInitAttackMoveSpeed = 500.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-			break;
 		case War::War_Atk_Heavy_02:
-			m_eKeyState = War::KEYSTATE_END;
-			DirSet_Combo();
-			m_fInitAttackMoveSpeed = 500.f;
-			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
-			m_bNexAni = false;
-			m_bAttackMoveEnd = false;
-			break;
 		case War::War_Atk_Heavy_03:
+			m_tCharInfo.fAtk = 2.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 800.f;
@@ -1181,7 +1171,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_pTransformCom->Set_Pos(&m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom));
 	}
-		break;
+	break;
 	case War::War_Jump:
 	case War::War_Jump_Combat:
 		if (!m_bJumpEnd)
@@ -1223,13 +1213,20 @@ void CPlayer::StateActer(_float fDeltaTime)
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
 	case War::War_Dash:
-		if (!m_pMeshCom->Is_Animationset(dDashCheckFrame-0.35f))
+		if (!m_pMeshCom->Is_Animationset(dDashCheckFrame - 0.35f))
 		{
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 10000.f, 3800.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 10000.f, 3800.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
 		}
 		else
 		{
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fDashSpeed, 15000.f, 0.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fDashSpeed, 15000.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fDashSpeed, 15000.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
@@ -1251,11 +1248,15 @@ void CPlayer::StateActer(_float fDeltaTime)
 		break;
 	case War::War_Atk_Light_01:
 		//0~0.3
-		AtkColActive(0, dAttackCheckFrame-0.2);
+		AtkColActive(0, dAttackCheckFrame - 0.2);
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.1))
 		{
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{	//0.3~1.0
@@ -1264,24 +1265,36 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
 	case War::War_Atk_Light_02:
-		AtkColActive(0, dAttackCheckFrame-0.1);
+		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
 		{
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 900.f, 0.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 900.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 900.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
 	case War::War_Atk_Light_03:
-		AtkColActive(0, dAttackCheckFrame-0.1);
+		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 		{
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
@@ -1290,16 +1303,24 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
 	case War::War_Atk_Light_04:
-		AtkColActive(dAttackCheckFrame-0.1, dAttackCheckFrame);
-		
+		AtkColActive(dAttackCheckFrame - 0.1, dAttackCheckFrame);
+
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.1))
 		{
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 300.f, 0.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 300.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 300.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
@@ -1308,12 +1329,13 @@ void CPlayer::StateActer(_float fDeltaTime)
 		AtkColLoop();
 		if (!m_bJumpEnd)
 		{
+
 			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 40.f, 70.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
 			m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*150.f, fDeltaTime);
 		}
 		break;
 	case War::War_Atk_Air_Filpsaw_Land:
-		AtkColActive(0, dAttackCheckFrame-0.1);
+		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
 		{
 			if (!m_bNexAni)
@@ -1330,14 +1352,21 @@ void CPlayer::StateActer(_float fDeltaTime)
 		//}
 		break;
 	case War::War_Atk_Dash:
+	{
 		AtkColActive(0, dAttackCheckFrame - 0.1);
-		if (!m_pMeshCom->Is_Animationset(dDashCheckFrame-0.35))
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		if (!m_pMeshCom->Is_Animationset(dDashCheckFrame - 0.35))
 		{
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 8000.f, 3800.f, &m_vDir, fDeltaTime);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 8000.f, 3800.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 8000.f, 3800.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fDashSpeed, 10000.f, 800.f, &m_vDir, fDeltaTime);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fDashSpeed, 10000.f, 800.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fDashSpeed, 10000.f, 800.f, &m_vDir, fDeltaTime);
 		}
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
@@ -1348,13 +1377,16 @@ void CPlayer::StateActer(_float fDeltaTime)
 			}
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Atk_Earth_Start:
 		break;
 	case War::War_Atk_Earth_Loop:
 		break;
 	case War::War_Atk_Earth_End:
-
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.1))
 		{
 			if (!m_bNexAni)
@@ -1362,15 +1394,20 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
 
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Atk_Flamebrand:
 		AtkColLoop();
 		m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
@@ -1378,16 +1415,28 @@ void CPlayer::StateActer(_float fDeltaTime)
 		break;
 	case War::War_Atk_Flamebrand_Start:
 	case War::War_Atk_Flamebrand_End:
+	{
 		AtkColActive(0, dAttackCheckFrame - 0.1);
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2000.f, 0.f, &m_vDir, fDeltaTime);
+
+
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Atk_Lightning:
+	{
 		AtkColActive(0.1, dAttackCheckFrame - 0.1);
-		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame -0.3))
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
@@ -1396,38 +1445,55 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2200.f, &m_vDir, fDeltaTime);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2200.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2200.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Atk_Wind_Start:
 	case War::War_Atk_Wind_Loop:
 	case War::War_Atk_Wind_End:
+	{
 		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (!m_bNexAni)
 		{
 			m_bAttackMoveEnd = true;
 			m_bNexAni = true;
 		}
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
 		//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime);
+	//	m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1500.f, 0.f, &m_vDir, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Atk_LoomingDeath:
-		AtkColActive(0, dAttackCheckFrame +0.3);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		AtkColActive(0, dAttackCheckFrame + 0.3);
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
 		}
-		else 	if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame+0.19))
+		else if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.19))
 		{	//0.3~1.0
 			if (!m_bNexAni)
 			{
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime);
+
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
@@ -1436,22 +1502,31 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni2 = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1400.f, 0.f, &m_vDir, fDeltaTime);
+
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1400.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1400.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
+
 		break;
+	}
 	case War::War_Atk_Vamp_Start:
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.07))
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
 	case War::War_Atk_Vamp_Loop:
 		AtkColLoop();
 	case War::War_Atk_Vamp_Finish:
-		AtkColActive(0, dAttackCheckFrame -0.1);
+		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
 		{
 			if (!m_bNexAni)
@@ -1459,18 +1534,23 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2200.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2200.f, 0.f, &m_vDir, fDeltaTime);
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 2200.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
-	case War::War_Atk_Launch_A:		
+	case War::War_Atk_Launch_A:
 	case War::War_Atk_Launch_B:
 		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (!m_bJumpEnd)
 		{
 			if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 			{
+
 				m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fJumpPower, 30.f, 0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime);
 				//m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
 			}
@@ -1491,9 +1571,15 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::War_Block_Impact_Heavy:
 	case War::War_Block_Impact_Light:
 	case War::War_Block_Impact_Medium:
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &-m_vDir, fDeltaTime);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &m_vHitDir, fDeltaTime, m_pCalculatorCom));
+
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &-m_vDir, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Block_Start:
 		break;
 	case War::War_Knockback_Fall:
@@ -1506,10 +1592,11 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::War_Knockback_Loop:
 		if (!m_bJumpEnd)
 		{
+
 			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 150.f, 200.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
-			m_pTransformCom->Move_Pos(&-m_vDir, m_fMoveSpeed*150.f, fDeltaTime);
+			m_pTransformCom->Move_Pos(&m_vHitDir, m_fMoveSpeed*1.5f, fDeltaTime);
 		}
-		m_pTransformCom->Set_PosY(m_fJumpY);
+		//m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
 	case War::War_Knockback_Start:
 		if (!m_bJumpEnd)
@@ -1519,29 +1606,52 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bJumpAniEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fJumpPower, 300.f,0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime);
-			m_pTransformCom->Move_Pos(&-m_vDir, m_fMoveSpeed*150.f, fDeltaTime);
+			m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fJumpPower, 300.f, 0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime);
+			m_pTransformCom->Move_Pos(&m_vHitDir, m_fMoveSpeed*1.5f, fDeltaTime);
 		}
 
 		break;
 	case War::War_Impack_From_Back:
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &m_vDir, fDeltaTime);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fHitMoveSpeed, 3000.f, 0.f, &m_vHitDir, fDeltaTime, m_pCalculatorCom));
+
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &m_vDir, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Impack_From_Front:
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &-m_vDir, fDeltaTime);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fHitMoveSpeed, 3000.f, 0.f, &m_vHitDir, fDeltaTime, m_pCalculatorCom));
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &-m_vDir, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
-		break;
+	}
+	break;
 	case War::War_Impack_From_Left:
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &m_vRight, fDeltaTime);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fHitMoveSpeed, 3000.f, 0.f, &m_vHitDir, fDeltaTime, m_pCalculatorCom));
+
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &m_vRight, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
+	}
 	case War::War_Impack_From_Right:
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &-m_vRight, fDeltaTime);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fHitMoveSpeed, 3000.f, 0.f, &m_vHitDir, fDeltaTime, m_pCalculatorCom));
+
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 3000.f, 0.f, &-m_vRight, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
+	}
 	case War::War_Skill_01:
-		AtkColActive(dAttackCheckFrame, dAttackCheckFrame +0.1);
+		AtkColActive(dAttackCheckFrame - 0.4, dAttackCheckFrame-0.1 );
 		if (!m_bNexAni)
 		{
 			m_bAttackMoveEnd = true;
@@ -1549,29 +1659,45 @@ void CPlayer::StateActer(_float fDeltaTime)
 			m_fAddPower = 0.f;
 		}
 		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 4000.f, &m_vDir, fDeltaTime);	
-		if (m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 4000.f, &m_vDir, fDeltaTime) )
+		if (m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 4000.f, &m_vDir, fDeltaTime))
 			m_pTransformCom->Set_PosY(m_fJumpY);
+		if (!m_pMeshCom->Is_AnimationsetFinish())
+		{
+			auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(L"Col_Body"));
+			iter_find->second->SetCol(false);
+		}
+		else
+		{
+			auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(L"Col_Body"));
+			iter_find->second->SetCol(true);
+		}
 		break;
 	case War::War_Skill_02_Start:
-		//if (!m_bNexAni)
-		//{
-		//	m_bAttackMoveEnd = true;
-		//	m_bNexAni = true;
-		//}
-		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 4000.f, &m_vDir, fDeltaTime);
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 6000.f, &m_vDir, fDeltaTime);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 6000.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 6000.f, &m_vDir, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
+	}
 		break;
 	case War::War_Skill_02_Strike:
-		m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 30000.f, 300.f, &m_vDir, fDeltaTime);
-					m_pTransformCom->Set_PosY(m_fJumpY);
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 30000.f, 300.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 30000.f, 300.f, &m_vDir, fDeltaTime);
+		m_pTransformCom->Set_PosY(m_fJumpY);
+	}
 		break;
 	case War::War_Skill_02_Run:
-
+	{
 		if (m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 6000.f, &m_vDir, fDeltaTime))
 			m_bSkill2End = true;
 		m_pTransformCom->Set_PosY(m_fJumpY);
-
+	}
 		break;
 	case War::War_Skill_03:
 		break;
@@ -1589,8 +1715,12 @@ void CPlayer::StateActer(_float fDeltaTime)
 		AtkColActive(dAttackCheckFrame-0.1, dAttackCheckFrame );
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 		{
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+		//	m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
@@ -1599,16 +1729,26 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2100.f, &m_vDir, fDeltaTime);
+			_vec3	vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2100.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2100.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
 	case War::War_Atk_Heavy_02:
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		AtkColActive(dAttackCheckFrame, dAttackCheckFrame + 0.1);
-		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.2 ))
+		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime);
+
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
@@ -1617,16 +1757,27 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 900.f, 0.f, &m_vDir, fDeltaTime);
+
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 900.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+			//	m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 900.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
+	}
 	case War::War_Atk_Heavy_03:
-		AtkColActive(dAttackCheckFrame-0.2, dAttackCheckFrame );
+	{
+		_vec3	vPos;
+		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+		AtkColActive(dAttackCheckFrame - 0.2, dAttackCheckFrame+0.2);
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
+
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
 		}
 		else
 		{
@@ -1636,10 +1787,15 @@ void CPlayer::StateActer(_float fDeltaTime)
 				m_bNexAni = true;
 				m_fAddPower = 0.f;
 			}
-			m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 7000.f, 1700.f, &m_vDir, fDeltaTime);
+
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 7000.f, 1700.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+
+
+			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 7000.f, 1700.f, &m_vDir, fDeltaTime);
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 		break;
+	}
 	case War::War_End:
 		break;
 	default:
@@ -1812,6 +1968,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Jump_Land:
+
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			m_eMachineState = War::STATE_IDLE;
@@ -1860,7 +2017,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 	case War::War_DashTo_Back:
 		break;
 	case War::War_Atk_Light_01:		
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.2))
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.3))
 		{
 			//키 상태가 확인되면 
 			if (m_eKeyState == War::LBUTTON )
@@ -2317,6 +2474,19 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Knockback_Land:
+		m_eCharState = War::COMBAT;
+		if (m_pMeshCom->Is_Animationset(0.7))
+		{
+			m_bBlend = true;
+			switch (m_eKeyState)
+			{
+			case War::WASD:
+				m_eMachineState = War::MOVE;
+				break;
+			case War::KEYSTATE_END:
+				break;
+			}
+		}
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			m_eMachineState = War::STATE_IDLE;
@@ -2779,10 +2949,10 @@ HRESULT CPlayer::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	return S_OK;
 }
 
-void CPlayer::TakeDmg(_float fDmg)
+void CPlayer::TakeDmg(_float Atk)
 {
-	m_tCharInfo.fDmg = fDmg;
-	m_tCharInfo.fHp -= fDmg;
+	m_tCharInfo.fDmg = Atk;
+	m_tCharInfo.fHp -= Atk;
 	m_eMachineState = War::HIT;
 }
 
