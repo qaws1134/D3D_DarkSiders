@@ -40,6 +40,9 @@ private:
 
 	map<wstring ,CGameObject*> m_mapHead;
 
+
+
+	_uint iEnemyIdx = 0;
 };
 
 #endif // LoadMgr_h__

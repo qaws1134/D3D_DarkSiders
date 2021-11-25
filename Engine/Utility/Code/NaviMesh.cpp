@@ -31,6 +31,9 @@ Engine::CNaviMesh::~CNaviMesh(void)
 //	m_vecCell[dwIndex]->Set_Line(&vPosA, &vPosB, &vPosC);
 //}
 
+
+
+
 void CNaviMesh::Add_Cell( _vec3 vPosA, _vec3 vPosB, _vec3 vPosC)
 {
 	CCell*		pCell = nullptr;
@@ -167,6 +170,11 @@ _vec3 CNaviMesh::MoveJumpOn_NaviMesh(const _vec3 * pTargetPos, MOVETYPE eMoveTyp
 		return vEndPos;
 	}
 	return _vec3();
+}
+
+_float CNaviMesh::GetNaviMeshY(_uint iIdx)
+{
+	return _float();
 }
 
 

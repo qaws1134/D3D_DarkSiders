@@ -46,6 +46,36 @@ Engine::_int CDynamicCamera::Update_Object(const _float& fTimeDelta)
 	return iExit;
 }
 
+void CDynamicCamera::SetOption(void * pArg)
+{
+
+	CComponent*		pComponent = nullptr;
+	if (pArg)
+	{
+		memcpy(&m_ActioniIdx, pArg, sizeof(_uint));
+	}
+
+
+	switch (m_ActioniIdx)
+	{
+	case 4:
+
+		break;
+	case 10:
+		break;
+	case 14:
+		break;
+	case 31:
+		break;
+	case 43:
+		break;
+	default:
+		break;
+	}
+
+
+}
+
 void CDynamicCamera::Key_Input(const _float& fTimeDelta)
 {
 	_matrix		matCamWorld;

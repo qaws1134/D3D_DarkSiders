@@ -15,11 +15,12 @@ Engine::CDynamicMesh::CDynamicMesh(const CDynamicMesh& rhs)
 	: CComponent(rhs)
 	, m_pRootFrame(rhs.m_pRootFrame)
 	, m_pLoader(rhs.m_pLoader)
-	//, m_MeshContainerList(rhs.m_MeshContainerList)
+	, m_MeshContainerList(rhs.m_MeshContainerList)
 	, m_mapBoneName(rhs.m_mapBoneName)
+	, m_matParent(rhs.m_matParent)
 {
 
-	//SetUp_FrameMatrices((D3DXFRAME_DERIVED*)rhs.m_pRootFrame);
+
 	m_pAniCtrl = CAniCtrl::Create(*rhs.m_pAniCtrl);
 }
 
@@ -30,6 +31,7 @@ Engine::CDynamicMesh::~CDynamicMesh(void)
 
 void CDynamicMesh::Set_AnimationIndex(const _uint & iIndex,_bool bBlend, _double dBlendTime)
 {
+	
 	m_pAniCtrl->Set_AnimationIndex(iIndex, bBlend);
 }
 
@@ -37,8 +39,8 @@ void CDynamicMesh::Play_Animation(const _float & fTimeDelta)
 {
 	m_pAniCtrl->Play_Animation(fTimeDelta);
 	
-	_matrix		matTemp;
-	Update_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame, D3DXMatrixRotationY(&matTemp, D3DXToRadian(270.f)));
+
+	Update_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame, D3DXMatrixRotationY(&m_matParent, D3DXToRadian(270.f)));
 }
 
 Engine::_bool Engine::CDynamicMesh::Is_AnimationsetFinish(void)
@@ -99,10 +101,8 @@ HRESULT Engine::CDynamicMesh::Ready_Meshes(const _tchar* pFilePath, const _tchar
 
 	Safe_Release(pAniCtrl);
 
-	_matrix		matTemp;
-
-	Update_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame, D3DXMatrixRotationY(&matTemp, D3DXToRadian(180.f)));
-
+	D3DXMatrixRotationY(&m_matParent, D3DXToRadian(180.f));
+	Update_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame,&m_matParent);
 
 	SetUp_FrameMatrices((D3DXFRAME_DERIVED*)m_pRootFrame);
 
@@ -219,6 +219,9 @@ void Engine::CDynamicMesh::Free(void)
 
 	CComponent::Free();
 }
+
+//디라이브드 컨테이너 받아서
+//뼈 복사
 
 void Engine::CDynamicMesh::SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame)
 {

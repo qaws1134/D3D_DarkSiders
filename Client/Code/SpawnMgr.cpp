@@ -82,7 +82,7 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
 		pGameObject = CGrinner::Create(CGameMgr::GetInstance()->GetDevice(),pConvProtoTag);
 		NULL_CHECK_RETURN(pGameObject, nullptr);
-		
+		m_vecGrinner.emplace_back(pGameObject);
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
 		m_iGrinnerIdx++;
 		m_iEnemyIdx++;
@@ -90,12 +90,14 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 	else if (Objkey == L"Goblin")
 	{
 		*pLayerTag = L"Enemy";
+		const _tchar* pConvProtoTag = W2BSTR((Objkey + to_wstring(m_iGoblinIdx)).c_str());
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
-		pGameObject = CGoblin::Create(CGameMgr::GetInstance()->GetDevice());
+		pGameObject = CGoblin::Create(CGameMgr::GetInstance()->GetDevice(), pConvProtoTag);
 		NULL_CHECK_RETURN(pGameObject, nullptr);
-		
+		m_vecGoblin.emplace_back(pGameObject);
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iGoblinIdx++;
 		m_iEnemyIdx++;
 	}
 	else if (Objkey == L"Chest")
@@ -108,13 +110,13 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 	}
 	else if (Objkey == L"PlayerBarrier")
 	{
-		*pLayerTag = L"Building";		//조작을 위한 레이어 분리 
+		*pLayerTag = L"PlayerBarrier";		//조작을 위한 레이어 분리 
 		//플레이어의 네비매시 인덱스로 조작 
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		pGameObject = CPlayer_Barrier::Create(CGameMgr::GetInstance()->GetDevice());
-		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iBuidingIdx)).c_str());
+		//const _tchar* pConvObjTag = W2BSTR(L"PlayerBarrier").c_str());
 		NULL_CHECK_RETURN(pGameObject, nullptr);
-		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		Add_GameObject(pConvLayerTag, L"PlayerBarrier", pGameObject);
 	}
 	else if (Objkey == L"Eden_WaterFall0"|| Objkey == L"Eden_WaterFall1")
 	{

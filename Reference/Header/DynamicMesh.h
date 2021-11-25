@@ -41,6 +41,7 @@ public:
 private:
 	// 모든 뼈들을 재귀적으로 순회하면서 부모와 자식, 또는 형제 관계를 맺을 수 있도록 행렬들을 곱하여 완성된 월드 행렬 상태를 만들어주는 함수
 	void							Update_FrameMatrices(D3DXFRAME_DERIVED* pFrame, const _matrix* pParentMatrix);
+
 	void							SetUp_FrameMatrices(D3DXFRAME_DERIVED* pFrame);
 	
 
@@ -51,7 +52,7 @@ private:
 	CHierarchyLoader*							m_pLoader;
 	list<D3DXMESHCONTAINER_DERIVED*>			m_MeshContainerList;
 	map<const char*, map<_ulong, const char*>>			m_mapBoneName;
-	
+	_matrix										m_matParent;
 	
 	CAniCtrl*									m_pAniCtrl;
 public:

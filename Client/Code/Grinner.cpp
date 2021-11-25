@@ -27,7 +27,7 @@ HRESULT CGrinner::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
-	//m_pTransformCom->Set_Rot(0.f, D3DXToRadian(90.f), 0.f);	//ÆÄ½ÌÇÏ¸é¼­ ¹Ù²Ü²¨ÀÓ 
+
 	m_pTransformCom->Update_Component(0.f);
 	m_pMeshCom->Set_AnimationIndex(Grinner::Grinner_Idle);
 	m_fPatternTimer = 1.f;
@@ -58,6 +58,8 @@ _int CGrinner::Update_Object(const _float& fTimeDelta)
 	{
 		m_pNavi = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
 		m_mapComponent[ID_STATIC].emplace(L"Com_Navi", m_pNavi);
+		m_pNavi->Set_CellIndex();
+		//m_fInitY = 
 	}
 		//m_pNavi =  CGameMgr::GetInstance()->GetNaviMesh();
 
@@ -72,6 +74,7 @@ _int CGrinner::Update_Object(const _float& fTimeDelta)
 	StateActor(fTimeDelta);
 	StateLinker(fTimeDelta);
 
+	//m_pMeshCom->Play_Animation(fTimeDelta);
 	Add_RenderGroup(RENDER_NONALPHA, this);
 	return iExit;
 }
@@ -108,11 +111,11 @@ HRESULT CGrinner::Add_Component()
 
 	const _tchar* pConvProtoTag = W2BSTR(m_wstrProtoTag.c_str());
 
-	//// Mesh
-	//if(m_wstrProtoTag == L"")
+	// Mesh
+	if(m_wstrProtoTag == L"")
 		pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"Grinner"));
-	/*else
-		pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(pConvProtoTag));*/
+	else
+		pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(pConvProtoTag));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
 
@@ -138,9 +141,6 @@ HRESULT CGrinner::Add_Component()
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
 
-	
-
-
 	return S_OK;
 }
 
@@ -148,7 +148,9 @@ void CGrinner::Render_Object(void)
 {
 	_float fTimeDelta = Get_TimeDelta(L"Timer_Immediate");
 	//StateLinker(fTimeDelta);
-	
+	m_pMeshCom->Set_AnimationIndex(m_eCurAniState, m_bBlend);
+	//m_pMeshCom->Play_Animation(0.f);
+
 	m_pMeshCom->Play_Animation(fTimeDelta);
 
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
@@ -197,12 +199,12 @@ void CGrinner::StateChange()
 				m_bBarfin[i] = false;
 			break;
 		case Grinner::STATE_SPAWN:
+			m_bTurnEnd = false;
+			m_bTurnStartCross = m_bTurnCross;
 			if(Grinner::SPAWN_POTRAL==m_eSpawnType)
 				m_eCurAniState = Grinner::Grinner_PotalSpawn;
 			else if (Grinner::SPAWN_APEX == m_eSpawnType)
 				m_eCurAniState = Grinner::Grinner_Jump_Apex;
-
-
 
 
 			break;
@@ -223,29 +225,31 @@ void CGrinner::StateChange()
 			SetAtkPattern();
 			break;
 		case Grinner::STATE_TURN:
+			m_fTurnAngle = m_fAngle;
 			m_bTurnEnd = false;
 			m_fPatternSpeed = 0.f;
 			m_fPatternTimer = 0.5f;
+			m_bTurnStartCross = m_bTurnCross;
 			if (m_fAngle > 180.f)
 			{
-				if (m_fAngle < 270.f)
+				if (m_fTurnAngle < 270.f)
 				{
 					m_eCurAniState = Grinner::Grinner_Turn_90_L;
 				}
-				else if (m_fAngle < 360.f)
+				else if (m_fTurnAngle < 360.f)
 				{
 					m_eCurAniState = Grinner::Grinner_Turn_180_L;
 				}
 				break;
 			}
-			else if (m_fAngle > 30.f)
+			else if (m_fTurnAngle > 30.f)
 			{
-				if (m_fAngle < 90.f)
+				if (m_fTurnAngle < 90.f)
 				{
 					m_eCurAniState = Grinner::Grinner_Turn_90_R;
 
 				}
-				else if (m_fAngle < 180.f)
+				else if (m_fTurnAngle < 180.f)
 				{
 					m_eCurAniState = Grinner::Grinner_Turn_180_R;
 				}
@@ -376,7 +380,7 @@ void CGrinner::StateChange()
 		case Grinner::Grinner_Turn_90_R:
 		case Grinner::Grinner_Turn_180_L:
 		case Grinner::Grinner_Turn_180_R:
-			m_bBlend = false;
+			m_bBlend = true;
 			break;
 		case Grinner::Grinner_Walk_B:
 			break;
@@ -394,7 +398,7 @@ void CGrinner::StateChange()
 			break;
 		}
 		m_ePreAniState = m_eCurAniState;
-		m_pMeshCom->Set_AnimationIndex(m_eCurAniState,m_bBlend);
+
 	}
 
 }
@@ -402,9 +406,10 @@ void CGrinner::StateActor(_float fDeltaTime)
 {
 
 	_vec3	vPos;
+	_vec3 vInitPos;
 	m_fMoveSpeed = 5.f;
-	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-	vPos = m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom);
+	m_pTransformCom->Get_INFO(INFO_POS, &vInitPos);
+	vPos = m_pNavi->MoveOn_NaviMesh(&vInitPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom);
 	m_fNaviY = vPos.y;
 	DirSet(fDeltaTime, m_fAngleSpeed,false);
 
@@ -413,8 +418,18 @@ void CGrinner::StateActor(_float fDeltaTime)
 	case Grinner::STATE_SPAWN_IDLE:
 		break;
 	case Grinner::STATE_SPAWN:
+		if (m_bTurnStartCross != m_bTurnCross)
+		{
+			m_bSpawnDir = true;
+			//if (vInitPos.y <= m_fNaviY)
+			//{
+			//	m_bSpawnEnd = true;
+			//}
+		}
+
 		if (!m_bSpawnEnd)
 		{
+			//m_fSpawnSpeed = m_fInitSpawnSpeed;
 			_vec3 vPos;
 			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 			if (vPos.y <= m_fNaviY)
@@ -449,6 +464,11 @@ void CGrinner::StateActor(_float fDeltaTime)
 	case Grinner::STATE_MOVE:
 		break;
 	case Grinner::STATE_TURN:
+		if (m_bTurnStartCross != m_bTurnCross)
+		{
+			m_eCurAniState = Grinner::Grinner_Idle;
+			m_bTurnEnd = true;
+		}
 
 		if (m_bTurnEnd)
 		{
@@ -636,7 +656,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 	case Grinner::Grinner_Atk_Flip:
 	{
 		m_tCharInfo.fAtk = 3.f;
-		AtkColActive(0.3, 0.5, 0);
+		AtkColActive(0.2, 0.4, 0);
 		if (!m_pNavi)
 			break;
 
@@ -770,7 +790,8 @@ void CGrinner::StateActor(_float fDeltaTime)
 	case Grinner::Grinner_Jump_Apex:
 		if (!m_bHitEnd)
 		{
-			DirSet(fDeltaTime, m_fAngleSpeed, true);
+			if (!m_bSpawnDir)
+				DirSet(fDeltaTime, m_fAngleSpeed, true);
 			if (!m_bNexAni)
 			{
 				m_bSpawnEnd = false;
@@ -784,7 +805,8 @@ void CGrinner::StateActor(_float fDeltaTime)
 	case Grinner::Grinner_Jump_Fall:
 		if (!m_bHitEnd)
 		{
-			DirSet(fDeltaTime, m_fAngleSpeed, true);
+			if(!m_bSpawnDir)
+				DirSet(fDeltaTime, m_fAngleSpeed, true);
 			if (!m_bNexAni)
 			{
 				m_bSpawnEnd = false;
@@ -865,10 +887,10 @@ void CGrinner::StateActor(_float fDeltaTime)
 	case Grinner::Grinner_Turn_90_R:
 	case Grinner::Grinner_Turn_180_L:
 	case Grinner::Grinner_Turn_180_R:
-	if (m_pMeshCom->Is_Animationset(0.3))
-	{
-		DirSet(fDeltaTime, m_fAngleSpeed, true);
-	}
+		if (m_pMeshCom->Is_Animationset(0.3))
+		{
+			DirSet(fDeltaTime, m_fAngleSpeed, true);
+		}
 		break;
 	case Grinner::Grinner_Walk_B:
 		break;
@@ -1160,6 +1182,11 @@ void CGrinner::DirSet(_float fDeltaTime, _float fAngleSpeed,_bool bAngleSet)
 	if (vCross.y < 0.f)
 	{
 		m_fAngle = 360.f - m_fAngle;
+		m_bTurnCross = true;
+	}
+	else
+	{
+		m_bTurnCross = false;
 	}
 
 
@@ -1167,12 +1194,10 @@ void CGrinner::DirSet(_float fDeltaTime, _float fAngleSpeed,_bool bAngleSet)
 	{
 		if (vCross.y < 0.f)
 		{
-			//if (fAngle>180.f)
 			m_pTransformCom->Rotation(ROT_Y, D3DXToRadian(-fAngleSpeed*fDeltaTime));
 		}
 		else
 		{
-			//if (fAngle < 180.f)
 			m_pTransformCom->Rotation(ROT_Y, D3DXToRadian(fAngleSpeed*fDeltaTime));
 		}
 	}
@@ -1199,5 +1224,20 @@ void CGrinner::DeadCheck()
 {
 	if (m_tCharInfo.fHp <= 0.f)
 		m_eMachineState = Grinner::STATE_DEAD;
+}
+
+void CGrinner::EnemyTurn(_float fAngle)
+{
+
+}
+
+void CGrinner::SetOption(void * pArg)
+{
+	if (pArg)
+	{
+		memcpy(&m_eSpawnType, pArg, sizeof(_uint));
+	}
+
+	m_eMachineState = Grinner::STATE_SPAWN;
 }
 

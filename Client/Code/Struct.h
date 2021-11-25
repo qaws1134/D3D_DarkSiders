@@ -40,12 +40,29 @@ typedef struct Item
 }ITEM;
 
 
+typedef struct DropItem
+{
+	DROPITEM::TYPE eType;
+		
+}DROPITEMINFO;
+
 typedef	struct tagLoadColData
 {
 	wstring wstrBoneName;
 	COLLIDERSPHERE tCol;
 }LOAD_DATA_COL;
 
+
+typedef struct tagCameraEvent
+{
+	_uint	iEventIdx ;
+	_float	fEventAngle ;
+	_float	fEventAngleSpeed ;
+	_float  fEventFov;
+	_float  fEventFovSpeed;
+
+	_bool	bEventEnd;
+}CAMEVENT;
 
 
 #endif 

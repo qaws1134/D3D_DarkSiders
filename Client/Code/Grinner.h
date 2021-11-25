@@ -45,6 +45,11 @@ public:
 	void DirSet(_float fDeltaTime,_float fAngleSpeed, _bool bAngleSet);
 	void SpawnBarfinBullet(_float  fAngle);
 	void	DeadCheck();
+	void EnemyTurn(_float fAngle);
+
+	virtual void SetOption(void* pArg);
+	void	SetNaviIdx(_uint iIdx) { m_iNaviIdx = iIdx; }
+	//void SetInitNaviIdx(_uint iInitIdx) {m_iInitNaviIdx = iInitIdx}
 
 #pragma region Set 함수
 public:
@@ -106,6 +111,9 @@ private:
 
 	//턴 끝
 	_bool m_bTurnEnd = false;
+	_float m_fTurnAngle = 0.f;
+	_bool	m_bTurnCross = false;
+	_bool	m_bTurnStartCross = false;
 
 	//히트 상태
 	_bool  m_bHitStart = false;
@@ -122,7 +130,9 @@ private:
 	_float m_fSpawnSpeed = 50.f;
 	_bool m_bSpawnEnd = false;
 	_uint m_eSpawnType;
+	_bool	m_bSpawnDir = false;
 
+	_uint m_iNaviIdx = 0;
 public:
 	static CGrinner*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	static CGrinner*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoTag);

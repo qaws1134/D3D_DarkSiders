@@ -24,8 +24,8 @@ CLoadMgr::~CLoadMgr(void)
 HRESULT CLoadMgr::LoadData(wstring szFilePath)
 {
 	LoadColTool(szFilePath+L"Colider24.dat");
-	//LoadMeshTool(szFilePath+L"Map19Obj.dat");
-LoadMeshTool(szFilePath + L"Test.dat");
+	LoadMeshTool(szFilePath+L"Map31Obj.dat");
+	//LoadMeshTool(szFilePath + L"Test3.dat");
 
 	return S_OK;
 }
@@ -199,6 +199,7 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 		}
 	}
 
+	_uint idx = 0;
 	for (auto& iter : m_mapDynamicData)
 	{
 		for (auto& iter_Second : iter.second)
@@ -216,7 +217,7 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 				{
 					USES_CONVERSION;
 					const _tchar* pConvLayerTag = W2BSTR(LayerTag.c_str());
-					const _tchar* pConvObjTag = W2BSTR((iter_find_second.first + iter_find->first).c_str());
+					const _tchar* pConvObjTag = W2BSTR((iter_find_second.first + iter_find->first+ to_wstring(idx)).c_str());
 					pCol = CSpawnMgr::GetInstance()->Spawn(pGameObject, iter_find_second.second);
 
 					//오브젝트 맵에 따로 넣고 
@@ -229,6 +230,7 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 
 			//레이어에 추가할 데이터 저장 
 			//m_mapHead.emplace(iter_Second.first, pGameObject);
+			idx++;
 		}
 	}
 	

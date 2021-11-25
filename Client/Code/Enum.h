@@ -11,6 +11,18 @@ namespace PARTICLEEFF
 	};
 }
 
+
+namespace DROPITEM
+{
+	enum TYPE
+	{
+		ITEM_STONE,
+		ITEM_SOUL,
+		ITEM_HEALTH,
+		ITEM_END
+	};
+}
+
 namespace EFFECT
 {
 	enum TYPE
@@ -43,6 +55,7 @@ namespace BULLET{
 		BULLET_ORBLIGHTNING,
 		BULLET_TSUNAMI,
 		BULLET_GRINNERBARFIN,
+		BULLET_GOBLINSPEAR,
 		BULLET_END
 	};
 
@@ -245,13 +258,10 @@ namespace Grinner
 		STATE_IDLE,
 		STATE_ATK,
 		STATE_TURN,
-		//STATE_ATK_FLIP,              //0	frame:[73]
-		//STATE_ATK_BARFINRAINBOWS,               //1	frame:[131]
-		//STATE_ATK_LUNGE,                        //2	frame:[49]
-		//STATE_ATK_SWIPE_COMBO,                  //3	frame:[81]
 		STATE_MOVE,
 		STATE_CHASE,
 		STATE_HIT,
+		STATE_HITEND,
 		STATE_DEAD,
 		STATE_END
 	};
@@ -305,19 +315,23 @@ namespace Goblin {
 	enum SPAWN
 	{
 		SPAWN_POTRAL,
-		SPAWN_IDLE,
+		SPAWN_APEX,
+		SPAWN_SIT,
 		SPAWN_END
 	};
 
+	//패턴상태 
 	enum STATE
 	{
 		STATE_SPAWN_IDLE,
 		STATE_SPAWN,
 		STATE_IDLE,
 		STATE_ATK,
+		STATE_TURN,
 		STATE_MOVE,
 		STATE_CHASE,
 		STATE_HIT,
+		STATE_HITEND,
 		STATE_DEAD,
 		STATE_END
 	};
@@ -342,6 +356,13 @@ namespace Goblin {
 		Goblin_Turn_L,                            //16	frame:[31]
 		Goblin_Turn_R,                            //17	frame:[31]
 		Goblin_Run_F,                             //18	frame:[17]
+		Goblin_Death,                             //19	frame:[51]
+		Goblin_DeathPose,                         //20	frame:[1]
+		Goblin_Knock_b_Apex,                      //21	frame:[23]
+		Goblin_Knock_b_Fall,                      //22	frame:[23]
+		Goblin_Knock_b_Idle,                      //23	frame:[81]
+		Goblin_Knock_b_Land,                      //24	frame:[34]
+		Goblin_Knock_b_Recorver,                  //25	frame:[26]
 		End
 	};
 }

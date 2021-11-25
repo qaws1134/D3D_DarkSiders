@@ -8,6 +8,19 @@
 #include "Struct.h"
 #include "Enum.h"
 //#include "NaviMesh.h"
+
+
+
+enum class SpawnSet
+{
+	GoblinFiledSp1,
+	GoblinFiledSp2,
+
+	GrinnerFiledSp,
+	GoblinSp,
+	GrinnerSp,
+	End
+};
 class CGameMgr : public CBase
 {
 
@@ -22,10 +35,6 @@ public:
 	_uint				GetPlayerNaviIdx() { return m_iNaviIdx; }
 
 	void				SetDevice(LPDIRECT3DDEVICE9 pGraphicDev) { m_pGraphicDev = pGraphicDev; }
-	//void				SetNavi(CNaviMesh* pNavi) { m_pNaviMesh = pNavi; }
-
-
-	//CNaviMesh*			GetNaviMesh() { return m_pNaviMesh; }
 
 	CGameObject*		GetPlayer() { return m_pPlayer; }
 	vector<STONE>		GetStoneVec() { return m_vecStone; }
@@ -36,6 +45,16 @@ public:
 
 	POPTION				GetParticleInfo(PARTICLEEFF::TYPE eParticle);
 
+	//카메라
+	void CameraEvent();
+	void SetCamera(CGameObject* pObj) { m_pCamera = pObj; }
+	CGameObject* GetCamera() { return m_pCamera; }
+
+	//돈
+	void TakeSoul(_uint iSoul) { m_iSoul += iSoul; }
+	void SetSoul(_uint iSoul) { m_iSoul = iSoul; }
+	_uint GetSoul() { return m_iSoul; }
+
 
 
 	//오브젝트풀
@@ -44,7 +63,6 @@ public:
 	HRESULT InitEnemyBullet();
 	void RetunEnemyBullet(CGameObject* pObj);
 	CGameObject* GetEnemyBullet(_uint eType);
-
 
 
 	HRESULT InitPlayerBullet();
@@ -61,11 +79,20 @@ public:
 	HRESULT InitParticle();
 	void RetunParticle(CGameObject* pObj);
 	CGameObject* GetParticle(_uint eType);
+
+	HRESULT InitItem();
+	void RetunItem(CGameObject* pObj);
+	CGameObject* GetItem(_uint eType);
+
+
+	void SpawnSet(_uint idx);
+
+
 private:
 	LPDIRECT3DDEVICE9 m_pGraphicDev;
 	//플레이어 저장 
 	CGameObject* m_pPlayer = nullptr;
-
+	CGameObject* m_pCamera = nullptr;
 	_float m_fSoul;
 
 	vector<STONE> m_vecStone;
@@ -76,13 +103,19 @@ private:
 
 	queue<CGameObject*> m_queEffect;
 	queue<CGameObject*> m_queParticle;
+	queue<CGameObject*> m_queItem;
 
 	_uint m_iBulletIdx = 0;
 	_uint m_iEffectIdx = 0;
 	_uint m_iParticleIdx = 0;
 	_uint m_iNaviIdx = 0;
+	_uint m_iItemIdx = 0;
 
 
+	list<_uint>m_listEvent;
+	
+
+	_uint m_iSoul = 0;
 	//CNaviMesh* m_pNaviMesh = nullptr;
 
 private:

@@ -170,6 +170,7 @@
     <ClInclude Include="..\Code\GameMgr.h" />
     <ClInclude Include="..\Code\Goblin.h" />
     <ClInclude Include="..\Code\Grinner.h" />
+    <ClInclude Include="..\Code\Item.h" />
     <ClInclude Include="..\Code\Loading.h" />
     <ClInclude Include="..\Code\LoadMgr.h" />
     <ClInclude Include="..\Code\Logo.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="..\Code\GameMgr.cpp" />
     <ClCompile Include="..\Code\Goblin.cpp" />
     <ClCompile Include="..\Code\Grinner.cpp" />
+    <ClCompile Include="..\Code\Item.cpp" />
     <ClCompile Include="..\Code\Loading.cpp" />
     <ClCompile Include="..\Code\LoadMgr.cpp" />
     <ClCompile Include="..\Code\Logo.cpp" />

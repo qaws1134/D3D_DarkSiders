@@ -94,7 +94,8 @@ protected:
 	_float m_fHitTime;
 	_float m_fHitSpeed;
 	_bool	m_bHit = false;
-
+	
+	
 	CHARINFO m_tCharInfo;
 	_vec3 m_vPos;
 

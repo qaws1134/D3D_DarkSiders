@@ -416,7 +416,7 @@ HRESULT CEffect::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	pEffect->SetMatrix("g_matView", &matView);
 	pEffect->SetMatrix("g_matProj", &matProj);
 
-	m_pTextureCom->Set_Texture(pEffect, "g_BaseTexture", m_fFrame);
+	m_pTextureCom->Set_Texture(pEffect, "g_BaseTexture", (_uint)m_fFrame);
 
 	return S_OK;
 }

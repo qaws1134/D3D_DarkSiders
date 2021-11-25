@@ -17,7 +17,6 @@ private:
 public:
 	void			Set_CellIndex(const _ulong& dwIndex) { m_dwIndex = dwIndex; }
 	_uint			Get_CellIndex() { return  m_dwIndex; }
-
 	void			Add_Cell( _vec3 vPosA, _vec3 vPosB, _vec3 vPosC);
 public:
 	HRESULT			Ready_NaviMesh();
@@ -26,7 +25,7 @@ public:
 	_vec3			MoveOn_NaviMesh(const _vec3* pTargetPos, const _vec3* pTargetDir, const _float& fSpeed, const _float& fTimeDelta, class CCalculator* pCalcul);
 	_vec3			MoveStepOn_NaviMesh(const _vec3* pTargetPos, MOVETYPE eMoveType, _float* fSpeed, const _float& fPower, const _float& fMaxSpeed, const _vec3* pTargetDir, const _float& fTimeDelta, class CCalculator* pCalcul);
 	_vec3			MoveJumpOn_NaviMesh(const _vec3* pTargetPos, MOVETYPE eMoveType, _float* fSpeed, const _float& fPower, const _float& fMaxSpeed, const _vec3* pTargetDir, const _float& fTimeDelta);
-
+	_float			GetNaviMeshY(_uint iIdx);
 	
 	HRESULT			Link_Cell(void);
 	//속도 ,증감량, 지속시간

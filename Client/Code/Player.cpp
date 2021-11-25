@@ -4,6 +4,7 @@
 #include "Export_Function.h"
 #include "UIMgr.h"
 #include "GameMgr.h"
+#include "StaticCamera.h"
 #define	  MOVEROTSPEED 360.f
 
 
@@ -30,6 +31,7 @@ HRESULT CPlayer::Ready_Object(void)
 	//m_pTranssformCom->Set_Scale(0.01f, 0.01f, 0.01f);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
+	//m_pTransformCom->Set_Rot(0.f, D3DXToRadian(45.f), 0.f);
 	m_pTransformCom->Update_Component(0.f);
 	m_pMeshCom->Set_AnimationIndex(0);
 	m_eCharState = War::CHAR_IDLE;
@@ -294,12 +296,6 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	}
 
 	//막기
-	if (Key_Pressing(KEY_MBUTTON))
-	{
-		m_eMachineState = War::BLOCK;
-		m_eCharState = War::COMBAT;
-		m_fCToISpeed = 0.f;
-	}
 
 	if (m_eDir != War::IDLE)
 	{
@@ -315,6 +311,12 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		}
 	}
 
+	if (Key_Pressing(KEY_MBUTTON))
+	{
+		m_eMachineState = War::BLOCK;
+		m_eCharState = War::COMBAT;
+		m_fCToISpeed = 0.f;
+	}
 
 	//속성 선택창
 	if (Key_Pressing(KEY_TAB))
@@ -463,6 +465,7 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_fJumpY = m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, 1.f, fTimeDelta, m_pCalculatorCom).y;
 
+		_uint Idx = m_pNavi->Get_CellIndex();
 		CGameMgr::GetInstance()->SetPlayerNaviIdx(m_pNavi->Get_CellIndex());
 
 	}
@@ -579,7 +582,7 @@ void CPlayer::StateChange()
 			break;
 		case War::JUMP:
 
-			m_eCurAniState = War::War_Jump;
+ 			m_eCurAniState = War::War_Jump;
 		
 			m_bBlend = false;
 			m_fJumpPower = 15.f;
@@ -1094,11 +1097,14 @@ void CPlayer::StateActer(_float fDeltaTime)
 			m_fAddPower = 0.f;
 		}
 		//점프상태 판단 
-		_vec3 vPos;
-		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-		if (vPos.y < m_fJumpY)
+		if (m_pMeshCom->Is_Animationset(0.1))
 		{
-			m_bJumpEnd = true;
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			if (vPos.y < m_fJumpY)
+			{
+				m_bJumpEnd = true;
+			}
 		}
 		DirSet(m_eDir, fDeltaTime, MOVEROTSPEED);
 		m_bGlideEnd = GlideEndTimer(fDeltaTime);
@@ -1952,15 +1958,10 @@ void CPlayer::StateLinker(_float fDeltaTime)
 			{
 				m_eCurAniState = War::War_Jump_Combat_Land_Run;
 			}
-			else if (m_eKeyState == War::SPACE)
-			{
-				m_eCurAniState = War::War_Jump_Double;
-			}
 			else if (m_eKeyState == War::LBUTTON)
 			{
 				m_eCurAniState = War::War_Atk_Air_Light_01;
 			}
-
 			else
 			{
 				m_eCurAniState = War::War_Jump_Combat_Land;
@@ -2064,7 +2065,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Light_03:
-		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.1))
 		{
 			//키 상태가 확인되면 
 			if (m_eKeyState == War::LBUTTON)
@@ -2663,8 +2664,14 @@ void CPlayer::DirSet(War::DIR eDir, _float fTimeDelta,_float fAngleSpeed)
 	
 	_vec3 vLook;
 	m_pTransformCom->Get_INFO(INFO_LOOK, &vLook);
-	_vec3 vRight = _vec3(1.f, 0.f, 0.f);
+	CGameObject* pCamera = CGameMgr::GetInstance()->GetCamera();
+	if (!pCamera)
+		return;
+	_vec3 vRight;
+	//_vec3 vRight = _vec3(1.f, 0.f, 0.f);
 	_vec3 vCross;
+	dynamic_cast<CTransform*>(pCamera->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_RIGHT, &vRight);
+	D3DXVec3Normalize(&vRight, &vRight);
 	D3DXVec3Cross(&vCross, &vLook, &vRight);
 
 	D3DXVec3Normalize(&vLook, &vLook);
@@ -2843,31 +2850,53 @@ void CPlayer::DirSet(War::DIR eDir, _float fTimeDelta,_float fAngleSpeed)
 void CPlayer::DirSet_Combo()
 {
 	_vec3 vRot= m_pTransformCom->Get_Rot();
+
+	//_vec3 vLook;
+	//m_pTransformCom->Get_INFO(INFO_LOOK, &vLook);
+	//_vec3 vRight = _vec3(0.f, 0.f, 1.f);
+	//_vec3 vCross;
+	//D3DXVec3Normalize(&vRight, &vRight);
+	//D3DXVec3Cross(&vCross, &vLook, &vRight);
+
+	//D3DXVec3Normalize(&vLook, &vLook);
+	//_float fCos = D3DXVec3Dot(&vLook, &vRight);
+	//_float fAngle = D3DXToDegree(acosf(fCos));
+
+	//_float fAngleOffset = 3.f;
+
+	//if (vCross.y < 0.f)
+	//{
+	//	fAngle = 360.f - fAngle;
+	//}
+
+	_float fOffsetAngle = dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->GetRotY();
+
+	//fRadius*cosf(m_fAngle) - fRadius*sinf(m_fAngle)
 	switch (m_eDir)
 	{
 	case War::UP: 
-		vRot.y = 0.f;
+		vRot.y = D3DXToRadian(fOffsetAngle);
 		break;
 	case War::UP_LEFT:
-		vRot.y = D3DXToRadian(315.f);
+		vRot.y = D3DXToRadian(315.f + fOffsetAngle);
 		break;
 	case War::UP_RIGHT:
-		vRot.y = D3DXToRadian(45.f);
+		vRot.y = D3DXToRadian(45.f + fOffsetAngle);
 		break;
 	case War::LEFT:
-		vRot.y = D3DXToRadian(270.f);
+		vRot.y = D3DXToRadian(270.f + fOffsetAngle);
 		break;
 	case War::RIGHT:
-		vRot.y = D3DXToRadian(90.f);
+		vRot.y = D3DXToRadian(90.f + fOffsetAngle);
 		break;
 	case War::DOWN:
-		vRot.y = D3DXToRadian(180.f);
+		vRot.y = D3DXToRadian(180.f + fOffsetAngle);
 		break;
 	case War::DOWN_LEFT:
-		vRot.y = D3DXToRadian(225.f);
+		vRot.y = D3DXToRadian(225.f + fOffsetAngle);
 		break;
 	case War::DOWN_RIGHT:
-		vRot.y = D3DXToRadian(135.f);
+		vRot.y = D3DXToRadian(135.f + fOffsetAngle);
 		break;
 	case War::IDLE:
 		break;

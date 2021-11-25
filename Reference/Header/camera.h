@@ -29,7 +29,7 @@ protected:
 public:
 	virtual HRESULT Ready_Object(void) override;
 	virtual _int Update_Object(const _float& fTimeDelta) override;
-
+	virtual void SetOption(void* pArg) {}
 protected:
 	//_vec3			m_vEye, m_vAt, m_vUp;
 	//_float			m_fFov, m_fAspect, m_fNear, m_fFar;

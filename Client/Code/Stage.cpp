@@ -52,12 +52,21 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 		CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev,tStone);
 		CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
 	}
-
+	//CGameObject* pObj= nullptr;
+	if (Key_Down(KEY_NUM5))
+	{
+		CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
+	}
+	if (Key_Down(KEY_NUM6))
+	{
+		CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+	}
 	if (Key_Down(KEY_NUM4))
 	{
 		CGameMgr::GetInstance()->GetEnemyBullet(BULLET::BULLET_CALLLIGHTNING);
 		CEffMgr::GetInstance()->SpawnEff(EFFECT::EFFECT_CALLLIGHTNING_START);
 	}
+	CGameMgr::GetInstance()->CameraEvent();
 
 	//if (Key_Down(KEY_K))
 	//{
@@ -132,6 +141,8 @@ HRESULT CStage::Ready_Layer_Environment(const _tchar* pLayerTag)
 	//auto iter_find = m_mapLayer.find(L"GameLogic");
 	//pGameObject->SetTarget(iter_find->second->Get_GameObject(L"Player"));
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"StaticCamera", pGameObject), E_FAIL);
+
+	CGameMgr::GetInstance()->SetCamera(pGameObject);
 	//CAMERA_DESC CameraDesc;
 	//CameraDesc.fFovY = D3DXToRadian(60.f);
 	//CameraDesc.fAspect = (_float)WINCX / WINCY;

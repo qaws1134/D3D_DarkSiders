@@ -29,8 +29,10 @@ public:
 
 public:
 	void		StateChange();
+	void		StateActor(_float fDeltaTime);
 	void		StateLinker(_float fDeltaTime);		//다음 동작 연결 
-
+	virtual void		SetOption(void* pArg);
+	
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 
 
@@ -69,11 +71,14 @@ private:
 	Player_Barrier::Ani		m_ePreAniState;
 	Player_Barrier::Ani		m_eCurAniState;
 
+	_float m_fFrameSpeed = 0.f;
 
+	_float m_fSpawnTime;
+	_float m_fSpawnSpeed = 10.f;
+	_bool	m_bSpawn = false;
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
-
-
+	
 
 public:
 	static CPlayer_Barrier*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

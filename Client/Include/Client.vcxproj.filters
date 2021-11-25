@@ -219,6 +219,9 @@
     <ClInclude Include="..\Code\Player_Barrier.h">
       <Filter>02. GameObject\10. Player_Barrier</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Item.h">
+      <Filter>02. GameObject\05. Item</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -304,6 +307,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Player_Barrier.cpp">
       <Filter>02. GameObject\10. Player_Barrier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Item.cpp">
+      <Filter>02. GameObject\05. Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

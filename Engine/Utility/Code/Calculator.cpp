@@ -377,7 +377,7 @@ _bool CCalculator::Collision_Sphere(const _vec3 * pDestCenter, const _float * pD
 	}
 	else
 	{
-		fDstRad = *pDestRadius;
+		fDstRad = *pDestRadius*0.01f;
 		fSrcRad = *pSourRadius;
 	}
 	_vec3	vDestCenter, vSourCenter, vDistance;

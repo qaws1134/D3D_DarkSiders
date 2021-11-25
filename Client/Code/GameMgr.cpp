@@ -5,6 +5,10 @@
 #include "Effect.h"
 #include "ParticleSystem.h"
 #include "EffMgr.h"
+#include "Item.h"
+#include "SpawnMgr.h"
+#include "Grinner.h"
+#include "StaticCamera.h"
 #include "Export_Function.h"
 
 
@@ -149,11 +153,71 @@ STONE CGameMgr::GetStone(UI::STONE eStone)
 	return tStone;
 }
 
+void CGameMgr::CameraEvent()
+{
+	for (auto iter : m_listEvent)
+	{
+		if (iter == m_iNaviIdx)
+			return;
+	}
+	switch (m_iNaviIdx)
+	{
+	case 0 :
+		m_pCamera->SetOption(&m_iNaviIdx);
+		m_listEvent.emplace_back(m_iNaviIdx);
+		break;
+	case 4:
+		SpawnSet((_uint)SpawnSet::GoblinFiledSp1);
+		m_pCamera->SetOption(&m_iNaviIdx);
+		m_listEvent.emplace_back(m_iNaviIdx);
+		break;
+	case 14:
+	{
+		_uint eStateType = (_uint)Player_Barrier::STATE_CLEOSE;
+		CGameObject* pObj = Get_GameObject(L"PlayerBarrier", L"PlayerBarrier");
+		pObj->SetOption(&eStateType);
+		dynamic_cast<CStaticCamera*>(m_pCamera)->SetTarget(pObj);
+		m_pCamera->SetOption(&m_iNaviIdx);
+		m_listEvent.emplace_back(m_iNaviIdx);
+
+
+
+			//문닫히기 이벤트
+			//포탈 스폰, 점프 스폰 
+			//이벤트
+	}
+		break;
+	case 22:
+		m_pCamera->SetOption(&m_iNaviIdx);
+		m_listEvent.emplace_back(m_iNaviIdx);
+		//상자 정면으로 카메라 회전
+		break;
+	case 27:
+		m_pCamera->SetOption(&m_iNaviIdx);
+		m_listEvent.emplace_back(m_iNaviIdx);
+		break;
+
+	case 31:
+		//카메라 보스쪽으로 회전
+		m_pCamera->SetOption(&m_iNaviIdx);
+		m_listEvent.emplace_back(m_iNaviIdx);
+		break;
+	case 43:
+		//보스 시작씬 이후 보스쪽으로 회전
+		m_pCamera->SetOption(&m_iNaviIdx);
+		m_listEvent.emplace_back(m_iNaviIdx);
+		break;
+	default:
+		break;
+	}
+}
+
 HRESULT CGameMgr::InitObjPool()
 {
 	InitEnemyBullet();
 	InitPlayerBullet();
 	InitEffect();
+	InitItem();
 	//InitParticle();
 	//파티클
 	//이펙트
@@ -327,6 +391,92 @@ CGameObject * CGameMgr::GetParticle(_uint eType)
 		m_queParticle.pop();
 	}
 	return pObj;
+}
+
+HRESULT CGameMgr::InitItem()
+{
+	CGameObject* pObj = nullptr;
+	USES_CONVERSION;
+	for (_uint i = 0; i < 20; i++)
+	{
+		wstring wstrIndxKey = to_wstring(m_iItemIdx);
+		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
+		pObj = CItem::Create(m_pGraphicDev);
+		pObj->SetActive(false);
+		Add_GameObject(L"Item", pConvObjTag, pObj);
+		m_queItem.emplace(pObj);
+		m_iItemIdx++;
+	}
+	return S_OK;
+}
+
+void CGameMgr::RetunItem(CGameObject * pObj)
+{
+	_uint eType = DROPITEM::ITEM_END;
+	dynamic_cast<CItem*>(pObj)->SetOption(&eType);
+
+	m_queItem.emplace(pObj);
+}
+
+CGameObject * CGameMgr::GetItem(_uint eType)
+{
+	if (m_queItem.empty())
+	{
+		InitItem();
+	}
+	CGameObject* pObj = m_queItem.front();
+	dynamic_cast<CItem*>(pObj)->SetOption(&eType);
+	m_queItem.pop();
+	
+	return pObj;
+}
+
+void CGameMgr::SpawnSet(_uint idx)
+{
+	vector<CGameObject*> m_vecEnemy;
+	switch (idx)
+	{
+	case (_uint)SpawnSet::GoblinFiledSp1:
+	{
+		_uint Spawn0 = Goblin::SPAWN_APEX;
+		_uint Spawn2 = Goblin::SPAWN_SIT;
+		m_vecEnemy = CSpawnMgr::GetInstance()->GetGoblinVec();
+		m_vecEnemy[0]->SetOption(&Spawn0);
+		m_vecEnemy[1]->SetOption(&Spawn0);
+		m_vecEnemy[2]->SetOption(&Spawn2);
+		m_vecEnemy[3]->SetOption(&Spawn2);
+		m_vecEnemy[4]->SetOption(&Spawn0);
+		//m_vecEnemy[5]->SetOption(&Spawn0);
+		//m_vecEnemy[6]->SetOption(&Spawn0);
+		//m_vecEnemy[7]->SetOption(&Spawn0);
+
+		dynamic_cast<CStaticCamera*>(m_pCamera)->SetTarget(m_vecEnemy[0]);
+		//스폰 이벤트가 끝나면 
+	}
+		break;
+	case (_uint)SpawnSet::GoblinFiledSp2:
+	{
+		//_uint Spawn2 = Goblin::SPAWN_SIT;
+		//m_vecEnemy = CSpawnMgr::GetInstance()->GetGoblinVec();
+		//m_vecEnemy[2]->SetOption(&Spawn2);
+		//m_vecEnemy[3]->SetOption(&Spawn2);
+		////dynamic_cast<CStaticCamera*>(m_pCamera)->SetTarget(m_vecEnemy[0]);
+	}
+	break;
+	case (_uint)SpawnSet::GrinnerFiledSp:
+	{
+		_uint Spawn0 = Grinner::SPAWN_APEX;
+		//_uint Spawn1 = Grinner::SPAWN_POTRAL;
+		m_vecEnemy = CSpawnMgr::GetInstance()->GetGrinnerVec();
+		//dynamic_cast<CGrinner*>(m_vecEnemy[0])->
+		m_vecEnemy[0]->SetOption(&Spawn0);
+		m_vecEnemy[1]->SetOption(&Spawn0);
+		m_vecEnemy[2]->SetOption(&Spawn0);
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 

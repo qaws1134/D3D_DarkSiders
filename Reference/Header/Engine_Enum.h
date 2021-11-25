@@ -35,6 +35,7 @@ namespace Engine
 		CHECK_WEAPON,
 		CHECK_PLAYER_HIT,
 		CHECK_BULLET,
+		CHECK_ITEM,
 		CHECK_END
 	};
 

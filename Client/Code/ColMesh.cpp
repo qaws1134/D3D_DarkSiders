@@ -75,6 +75,8 @@ void CColMesh::Render_Object(void)
 }
 
 
+
+
 CColMesh * CColMesh::Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3 vPos, _float fRadius,wstring pBone)
 {
 	CColMesh*	pInstance = new CColMesh(pGraphicDev);

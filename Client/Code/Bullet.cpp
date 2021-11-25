@@ -143,11 +143,22 @@ void CBullet::SetOption(void * pArg)
 		m_fLifeSpeed = 0.0f;
 		m_fLifeTimer = 4.f;
 		m_tColSphere.fRadius = 0.5f;
-		m_fMoveSpeed = 0.2f;
+		m_fMoveSpeed = 0.4f;
 		m_LifeTime = true;
 		m_bActive = true;
 		m_tCharInfo.fAtk = 1.f;
 		m_wstrBulletType = L"Barfin";
+		m_eID = BULLET::BULLET_ENEMY;
+		break;
+	case BULLET::BULLET_GOBLINSPEAR:
+		m_fLifeSpeed = 0.0f;
+		m_fLifeTimer = 4.f;
+		m_tColSphere.fRadius = 0.5f;
+		m_fMoveSpeed = 0.4f;
+		m_LifeTime = true;
+		m_bActive = true;
+		m_tCharInfo.fAtk = 1.f;
+		m_wstrBulletType = L"Spear";
 		m_eID = BULLET::BULLET_ENEMY;
 		break;
 	case BULLET::BULLET_END:

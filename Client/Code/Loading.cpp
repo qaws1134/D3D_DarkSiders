@@ -154,12 +154,19 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Chest", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Chest/", L"Chest.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"PlayerBarrier", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/PlayerBarrier/", L"PlayerBarrier.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
 
-	//FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner0", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
-	//FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner1", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
-	//FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner2", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
+	
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin0", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin1", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin2", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin3", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin4", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+
+	
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner0", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner1", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner2", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
 #pragma endregion DYNAMICMESH
 
 #pragma region STATICMESH	

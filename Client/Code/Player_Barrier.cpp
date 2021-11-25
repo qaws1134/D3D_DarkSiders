@@ -2,7 +2,7 @@
 #include "Player_Barrier.h"
 #include "Enum.h"
 #include "Export_Function.h"
-
+#include "GameMgr.h"
 
 
 CPlayer_Barrier::CPlayer_Barrier(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -27,11 +27,13 @@ HRESULT CPlayer_Barrier::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
-	m_pTransformCom->Set_Rot(0.f, D3DXToRadian(-90.f), 0.f);	//파싱하면서 바꿀꺼임 
+	//m_pTransformCom->Set_Rot(0.f, D3DXToRadian(-90.f), 0.f);	//파싱하면서 바꿀꺼임 
 	m_pTransformCom->Update_Component(0.f);
 	m_pMeshCom->Set_AnimationIndex(Player_Barrier::STATE_IDLE_OPEN);
 
-	m_eCurAniState = Player_Barrier::PlayerBarrer_Close;
+	m_fSpawnTime = 5.f;
+	m_bActive = false;
+	m_eCurAniState = Player_Barrier::PlayerBarrer_Close; 
 
 	return S_OK;
 }
@@ -46,10 +48,15 @@ _int CPlayer_Barrier::Update_Object(const _float& fTimeDelta)
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
 	StateChange();
+	StateActor(fTimeDelta);
 	StateLinker(fTimeDelta);
-	m_pMeshCom->Play_Animation(fTimeDelta);
-	Add_RenderGroup(RENDER_NONALPHA, this);
 
+
+	m_pMeshCom->Play_Animation(m_fFrameSpeed);
+	if (m_bActive)
+	{
+		Add_RenderGroup(RENDER_NONALPHA, this);
+	}
 	return iExit;
 }
 
@@ -141,12 +148,21 @@ void CPlayer_Barrier::StateChange()
 		switch (m_eMachineState)
 		{
 		case Player_Barrier::STATE_IDLE_OPEN:
+			m_eCurAniState = Player_Barrier::PlayerBarrer_Close;
+			m_bActive = false;
 			break;
 		case Player_Barrier::STATE_IDLE_CLOSE:
+			m_eCurAniState = Player_Barrier::PlayerBarrer_Open;
+			m_fSpawnSpeed = 0.f;
+			m_bActive = true;
 			break;
 		case Player_Barrier::STATE_OPEN:
+			m_eCurAniState = Player_Barrier::PlayerBarrer_Open;
+			m_bActive = true;
 			break;
 		case Player_Barrier::STATE_CLEOSE:
+			m_eCurAniState = Player_Barrier::PlayerBarrer_Close;
+			m_bActive = true;
 			break;
 		case Player_Barrier::STATE_END:
 			break;
@@ -176,9 +192,37 @@ void CPlayer_Barrier::StateChange()
 	}
 
 }
-//다음 동작으로 자동으로 연결 
-void CPlayer_Barrier::StateLinker(_float fDeltaTime)
+void CPlayer_Barrier::StateActor(_float fDeltaTime)
 {
+	switch (m_eMachineState)
+	{
+	case Player_Barrier::STATE_IDLE_OPEN:
+		m_fFrameSpeed = 0.f;
+		break;
+	case Player_Barrier::STATE_IDLE_CLOSE:
+		if (!m_bSpawn)
+		{
+			m_fSpawnSpeed += fDeltaTime;
+			if (m_fSpawnSpeed > m_fSpawnTime)
+			{
+				CGameMgr::GetInstance()->SpawnSet((_uint)SpawnSet::GrinnerFiledSp);
+				m_bSpawn = true;
+
+			}
+		}
+		m_fFrameSpeed = 0.f;
+		break;
+	case Player_Barrier::STATE_OPEN:
+		m_fFrameSpeed = fDeltaTime;
+		break;
+	case Player_Barrier::STATE_CLEOSE:
+		m_fFrameSpeed = fDeltaTime;
+		break;
+	case Player_Barrier::STATE_END:
+		break;
+	default:
+		break;
+	}
 	switch (m_eCurAniState)
 	{
 	case Player_Barrier::PlayerBarrer_Close:
@@ -190,6 +234,39 @@ void CPlayer_Barrier::StateLinker(_float fDeltaTime)
 	default:
 		break;
 	}
+}
+//다음 동작으로 자동으로 연결 
+void CPlayer_Barrier::StateLinker(_float fDeltaTime)
+{
+	switch (m_eCurAniState)
+	{
+	case Player_Barrier::PlayerBarrer_Close:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = Player_Barrier::STATE_IDLE_CLOSE;
+		}
+		break;
+	case Player_Barrier::PlayerBarrer_Open:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = Player_Barrier::STATE_IDLE_OPEN;
+		}
+		break;
+	case Player_Barrier::End:
+		break;
+	default:
+		break;
+	}
+
+}
+
+void CPlayer_Barrier::SetOption(void * pArg)
+{
+	if (pArg)
+	{
+		memcpy(&m_eMachineState, pArg, sizeof(_uint));
+	}
+	m_bActive = true;
 
 }
 

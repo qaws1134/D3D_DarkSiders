@@ -19,6 +19,9 @@ public:
 	//매시 스폰
 	CGameObject*  Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag);
 
+	vector<CGameObject*>GetGoblinVec() { return m_vecGoblin; }
+	vector<CGameObject*>GetGrinnerVec() { return m_vecGrinner; }
+
 
 private:
 	virtual void Free(void) override;
@@ -27,7 +30,10 @@ private:
 	_uint m_iBuidingIdx = 0;
 	_uint m_iEnemyIdx = 0;
 	_uint m_iGrinnerIdx = 0;
-	
+	_uint m_iGoblinIdx = 0;
+	vector<CGameObject*>m_vecGoblin;
+	vector<CGameObject*>m_vecGrinner;
+
 };
 
 
