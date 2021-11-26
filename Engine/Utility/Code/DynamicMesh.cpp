@@ -55,6 +55,8 @@ _bool CDynamicMesh::Is_Animationset(_double dRadius)
 
 
 
+
+
 _vec3 CDynamicMesh::GetBonePos(const char * pFrameName)
 {
 	_vec3 vBonePos;

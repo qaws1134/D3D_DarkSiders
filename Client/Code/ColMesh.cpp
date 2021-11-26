@@ -12,7 +12,6 @@ CColMesh::CColMesh(LPDIRECT3DDEVICE9 pGraphicDev)
 CColMesh::CColMesh(const CColMesh& rhs)
 	: CGameObject(rhs)
 {
-
 }
 
 CColMesh::~CColMesh(void)

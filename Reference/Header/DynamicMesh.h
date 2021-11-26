@@ -24,12 +24,12 @@ public:
 	_bool			Is_Animationset(_double dRadius);
 	_uint			GetMaxNumAnimationSet() { if (!m_pAniCtrl)return 0;  return m_pAniCtrl->GetMaxNumAnimationSets(); }
 
-
 	_vec3			GetBonePos(const char* pFrameName);
 
 	map<const char*, map<_ulong, const char*>> GetBoneNameList() { return m_mapBoneName; }
 
 	D3DXFRAME*		GetRootFrame() { return m_pRootFrame; }
+
 
 	//list<D3DXMESHCONTAINER_DERIVED*> GetMeshContainerList() { return m_MeshContainerList; }
 	//컨테이너 리스트 받아서 포지션값들을 그냥 저장해서 넘겨줒 ㅏ

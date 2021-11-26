@@ -15,6 +15,7 @@ private:
 
 public:
 	HRESULT LoadData(wstring szFilePath);
+	HRESULT LoadStartStageData(wstring szFilePath);
 	HRESULT LoadColTool(wstring szFilePath);
 	HRESULT LoadMeshTool(wstring szFilePath);
 

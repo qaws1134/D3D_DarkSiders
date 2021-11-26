@@ -103,20 +103,44 @@
     <Filter Include="02. GameObject\07. Effect\MeshEff">
       <UniqueIdentifier>{e8ab5e78-001e-4f51-ab19-2d9bb96a08ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\01. Character\03. Grinner">
-      <UniqueIdentifier>{5d097f65-5000-40b1-b0be-ad33a1a7a479}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObject\09. Chest">
       <UniqueIdentifier>{8c73c223-0060-4872-83fa-d8bc26267506}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObject\01. Character\04. Goblin">
-      <UniqueIdentifier>{603d41a5-2a58-4ce8-a49b-475550754cba}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObject\10. Player_Barrier">
       <UniqueIdentifier>{bcc70cae-44f7-49ce-aad1-77d1d56fda5f}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObject\11. WaterFall">
       <UniqueIdentifier>{cd84f340-e468-4dfc-871e-43587c2271a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\02. NPC\Dis">
+      <UniqueIdentifier>{d988eb84-caa4-4fc2-b39e-b561ec12330b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\02. NPC\Vulgrim">
+      <UniqueIdentifier>{c4441090-d9d5-4b12-85c4-5bf60dcbf038}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\03.Enemy">
+      <UniqueIdentifier>{00eb9f4a-976e-4039-8dde-d9d707284f6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\03.Enemy\Grinner">
+      <UniqueIdentifier>{5d097f65-5000-40b1-b0be-ad33a1a7a479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\03.Enemy\Goblin">
+      <UniqueIdentifier>{603d41a5-2a58-4ce8-a49b-475550754cba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\01. Character\03.Enemy\Angel">
+      <UniqueIdentifier>{7cd60af5-5c36-4bd8-93a4-1ea4324a7db0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\12. JumpBall">
+      <UniqueIdentifier>{8b852225-bf74-49f7-8a21-ccac7450d34c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Scene\03.StartStage">
+      <UniqueIdentifier>{0037cdb7-e5ee-4d77-9620-c8b50826b5aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\13.Serpent">
+      <UniqueIdentifier>{9132482f-f5be-4a59-b388-074e5b552630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\00. BackGround\Main">
+      <UniqueIdentifier>{70454198-d2e7-46b6-9b7f-58192c633fc8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -202,10 +226,10 @@
       <Filter>02. GameObject\08.Map</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Grinner.h">
-      <Filter>02. GameObject\01. Character\03. Grinner</Filter>
+      <Filter>02. GameObject\01. Character\03.Enemy\Grinner</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Goblin.h">
-      <Filter>02. GameObject\01. Character\04. Goblin</Filter>
+      <Filter>02. GameObject\01. Character\03.Enemy\Goblin</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Chest.h">
       <Filter>02. GameObject\09. Chest</Filter>
@@ -221,6 +245,27 @@
     </ClInclude>
     <ClInclude Include="..\Code\Item.h">
       <Filter>02. GameObject\05. Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Dis.h">
+      <Filter>02. GameObject\01. Character\02. NPC\Dis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Vulgrim.h">
+      <Filter>02. GameObject\01. Character\02. NPC\Vulgrim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Angel.h">
+      <Filter>02. GameObject\01. Character\03.Enemy\Angel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\JumpBall.h">
+      <Filter>02. GameObject\12. JumpBall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Serpent.h">
+      <Filter>02. GameObject\13.Serpent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\StartStage.h">
+      <Filter>01. Scene\03.StartStage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\MainLogo.h">
+      <Filter>02. GameObject\00. BackGround\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -291,10 +336,10 @@
       <Filter>02. GameObject\08.Map</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Grinner.cpp">
-      <Filter>02. GameObject\01. Character\03. Grinner</Filter>
+      <Filter>02. GameObject\01. Character\03.Enemy\Grinner</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Goblin.cpp">
-      <Filter>02. GameObject\01. Character\04. Goblin</Filter>
+      <Filter>02. GameObject\01. Character\03.Enemy\Goblin</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Chest.cpp">
       <Filter>02. GameObject\09. Chest</Filter>
@@ -310,6 +355,27 @@
     </ClCompile>
     <ClCompile Include="..\Code\Item.cpp">
       <Filter>02. GameObject\05. Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Dis.cpp">
+      <Filter>02. GameObject\01. Character\02. NPC\Dis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Vulgrim.cpp">
+      <Filter>02. GameObject\01. Character\02. NPC\Vulgrim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Angel.cpp">
+      <Filter>02. GameObject\01. Character\03.Enemy\Angel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\JumpBall.cpp">
+      <Filter>02. GameObject\12. JumpBall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Serpent.cpp">
+      <Filter>02. GameObject\13.Serpent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\StartStage.cpp">
+      <Filter>01. Scene\03.StartStage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MainLogo.cpp">
+      <Filter>02. GameObject\00. BackGround\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -72,7 +72,6 @@ _int CGoblin::Update_Object(const _float& fTimeDelta)
 	StateActor(fTimeDelta);
 	StateLinker(fTimeDelta);
 
-	m_pMeshCom->Play_Animation(fTimeDelta);
 	Add_RenderGroup(RENDER_NONALPHA, this);
 	return iExit;
 }
@@ -145,8 +144,9 @@ HRESULT CGoblin::Add_Component()
 void CGoblin::Render_Object(void)
 {
 	_float fTimeDelta = Get_TimeDelta(L"Timer_Immediate");
-	//StateLinker(fTimeDelta);
-	
+
+	m_pMeshCom->Set_AnimationIndex(m_eCurAniState, m_bBlend);
+	m_pMeshCom->Play_Animation(fTimeDelta);
 
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
@@ -190,6 +190,7 @@ void CGoblin::StateChange()
 		{
 		case Goblin::STATE_SPAWN_IDLE:
 			m_eCurAniState = Goblin::Goblin_Idle;
+			m_pNavi->Set_CellIndex(m_iNaviIdx);
 			m_bSpear = false;
 			break;
 		case Goblin::STATE_SPAWN:
@@ -210,7 +211,7 @@ void CGoblin::StateChange()
 			if (m_ePreMachineState == Goblin::STATE_HIT)
 				m_fPatternTimer = 1.f;
 			else
-				m_fPatternTimer = 1.f;
+				m_fPatternTimer = 0.5f;
 		}
 		break;
 		case Goblin::STATE_ATK:
@@ -265,7 +266,21 @@ void CGoblin::StateChange()
 		case Goblin::STATE_HITEND:
 			break;
 		case Goblin::STATE_DEAD:
+			{
 			m_eCurAniState = Goblin::Goblin_Death;
+			CGameObject* pObj;
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			for (_uint i = 0; i < RandNext(5,20); i++)
+			{
+				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
+				pObj->SetPos(vPos, ID_DYNAMIC);
+				dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(29);
+
+			}
+			if(RandNext(0,2)==0)
+				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+			}
 			break;
 		case Goblin::STATE_END:
 			break;
@@ -375,10 +390,6 @@ void CGoblin::StateChange()
 			break;
 		}
 		m_ePreAniState = m_eCurAniState;
-		m_pMeshCom->Set_AnimationIndex(m_eCurAniState, m_bBlend);
-
-
-
 	}
 
 }
@@ -390,7 +401,8 @@ void CGoblin::StateActor(_float fDeltaTime)
 	m_fMoveSpeed = 5.f;
 	m_pTransformCom->Get_INFO(INFO_POS, &vInitPos);
 
-
+	if(!m_bSpawnEnd)
+		m_pNavi->Set_CellIndex(m_iNaviIdx);
 	vPos = m_pNavi->MoveOn_NaviMesh(&vInitPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom);
 	m_fNaviY = vPos.y;
 	
@@ -693,7 +705,7 @@ void CGoblin::StateActor(_float fDeltaTime)
 		{
 			if (!m_bSpawnAniEnd)
 			{
-				if (m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fSpawnSpeed, 200.f, 0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime))
+				if (m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fSpawnSpeed, 300.f, 0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime))
 				{
 					m_bSpawnAniEnd = true;
 				}
@@ -799,10 +811,15 @@ void CGoblin::StateLinker(_float fDeltaTime)
 		//	m_eMachineState = Goblin::STATE_IDLE;
 		//	m_pTransformCom->Set_PosY(m_fNaviY);
 		//}
-		if (m_pMeshCom->Is_Animationset(0.9))
+		if (m_pMeshCom->Is_Animationset(0.7))
 		{
 			m_pTransformCom->Set_PosY(m_fNaviY);
-
+		}
+		if (m_pMeshCom->Is_Animationset(0.9))
+		{
+			m_bSpawnEnd = true;
+			m_bSpawnAniEnd = true;
+			
 			m_eMachineState = Goblin::STATE_IDLE;
 		}
 		break;
@@ -959,6 +976,10 @@ void CGoblin::SetAtkPattern()
 	case 2:
 		m_eCurAniState = Goblin::Goblin_Attack_Spear;
 		break;
+	case 3:
+		m_eCurAniState = Goblin::Goblin_Attack_Dash_Back;
+		break;
+
 	}
 
 }
@@ -1071,6 +1092,7 @@ void CGoblin::SetOption(void * pArg)
 	}
 
 	m_eMachineState = Goblin::STATE_SPAWN;
+
 }
 
 

@@ -53,7 +53,7 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 
 				if (!m_bApexEnd)
 				{
-					if (m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fSpeed, 50.f, 0.f, &_vec3(0.f, 1.f, 0.f), fTimeDelta))
+					if (m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fSpeed, 20.f, 0.f, &_vec3(0.f, 1.f, 0.f), fTimeDelta))
 					{
 						m_bApexEnd = true;
 					}
@@ -86,6 +86,7 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 				m_pTransformCom->Move_Pos(&m_vDir, m_fChaseSpeed);
 			}
 		}
+
 
 		if (m_bCol)
 		{
@@ -156,7 +157,7 @@ void CItem::SetOption(void * pArg)
 		m_bMoveEnd = false;
 		m_fAngle = GetRandomFloat(0.f, 360.f);
 		m_fSpeed = GetRandomFloat(5.f, 10.f);
-		m_fMoveSpeed = GetRandomFloat(0.03f, 0.06f);
+		m_fMoveSpeed = GetRandomFloat(0.05f, 0.15f);
 		m_fLifeSpeed = 0.f;
 
 		break;
@@ -168,7 +169,7 @@ void CItem::SetOption(void * pArg)
 		m_pTransformCom->Set_Scale(0.5f, 0.5f, 0.5f);
 		m_fAngle = GetRandomFloat(0.f, 360.f);
 		m_fSpeed = GetRandomFloat(5.f, 10.f);
-		m_fMoveSpeed = GetRandomFloat(0.03f, 0.06f);
+		m_fMoveSpeed = GetRandomFloat(0.05f, 0.15f);
 		m_fLifeSpeed = 0.f;
 		break;
 	case DROPITEM::ITEM_END:
@@ -319,7 +320,7 @@ HRESULT CItem::Add_Component(void)
 	pComponent=	m_pNavi = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
 	NULL_CHECK_RETURN(m_pNavi,E_FAIL );
 	m_mapComponent[ID_STATIC].emplace(L"Com_Navi", pComponent);
-
+	//m_pNavi->Set_CellIndex();
 	return S_OK;
 }
 

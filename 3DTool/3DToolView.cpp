@@ -195,10 +195,17 @@ void CMy3DToolView::OnInitialUpdate()
 	Ready_Prototype(L"Chest", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Chest/", L"Chest.X"));
 	Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X"));
 	Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X"));
+	Ready_Prototype(L"Vulgrim", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Vulgrim/", L"Vulgrim.X"));
+	Ready_Prototype(L"Dis", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Dis/", L"Dis.X"));
+	Ready_Prototype(L"Angel", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Angel/", L"Angel.X"));
+	Ready_Prototype(L"Serpent", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Serpent/", L"Serpent.X"));
+
 
 	Ready_Prototype(L"Orb", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"Orb.X"));
 	Ready_Prototype(L"WaterBoss_Bullet", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterBoss_Bullet.X"));
 	Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterFloor.X"));
+	Ready_Prototype(L"Center", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Center/", L"Center.X"));
+	Ready_Prototype(L"CenterRoad", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Center/", L"CenterRoad.X"));
 
 
 

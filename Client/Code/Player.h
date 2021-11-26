@@ -51,6 +51,23 @@ public:
 	_float		m_fGlideEndTime;
 	_bool		m_bGlideOn = false;
 
+
+
+	void		InteractionTimer(_float fDeltaTime);
+	_bool		GetInteraction() {  return m_bInteraction; }
+	void		ResetInteraction() { m_fInteractionSpeed = 1.f; }
+	_bool		m_bInteraction = false;
+	_float		m_fInteractionTime = 1.f;
+	_float		m_fInteractionSpeed= 1.f;
+	_bool		m_bInteractionOn = false;
+
+	void SetOnUI(_bool bUIOn) { m_bUIOn = bUIOn; }
+
+	_float m_fFrameSpeed = 0.f;
+	_float	m_fChestOpenTime = 1.f;
+	_float	m_fChestOpenSpeed = 1.f;
+	_bool m_bChestOpen = false;
+
 #pragma region Set ÇÔ¼ö
 public:
 	void		Set_Element(War::WEAPON_ELEMENT eElement) { m_eElement = eElement; }
@@ -143,6 +160,7 @@ private:
 	_double m_dAtkActiveEnd= 0.0;
 
 	
+
 	_vec3	m_vHitDir;
 
 public:

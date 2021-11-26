@@ -21,6 +21,13 @@ enum class SpawnSet
 	GrinnerSp,
 	End
 };
+enum class CamEvent
+{
+	Open_Dis,
+	Open_Vulgrim,
+	End
+};
+
 class CGameMgr : public CBase
 {
 
@@ -47,6 +54,7 @@ public:
 
 	//카메라
 	void CameraEvent();
+	void CameraEvent( CGameObject* pTargetObj);
 	void SetCamera(CGameObject* pObj) { m_pCamera = pObj; }
 	CGameObject* GetCamera() { return m_pCamera; }
 
@@ -55,6 +63,7 @@ public:
 	void SetSoul(_uint iSoul) { m_iSoul = iSoul; }
 	_uint GetSoul() { return m_iSoul; }
 
+	_bool	EventAngel();
 
 
 	//오브젝트풀

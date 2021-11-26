@@ -58,7 +58,6 @@ _int CGrinner::Update_Object(const _float& fTimeDelta)
 	{
 		m_pNavi = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
 		m_mapComponent[ID_STATIC].emplace(L"Com_Navi", m_pNavi);
-		m_pNavi->Set_CellIndex();
 		//m_fInitY = 
 	}
 		//m_pNavi =  CGameMgr::GetInstance()->GetNaviMesh();
@@ -75,7 +74,8 @@ _int CGrinner::Update_Object(const _float& fTimeDelta)
 	StateLinker(fTimeDelta);
 
 	//m_pMeshCom->Play_Animation(fTimeDelta);
-	Add_RenderGroup(RENDER_NONALPHA, this);
+	if(m_bActive)
+		Add_RenderGroup(RENDER_NONALPHA, this);
 	return iExit;
 }
 
@@ -268,7 +268,21 @@ void CGrinner::StateChange()
 			//m_bHitStart = false;
 			break;
 		case Grinner::STATE_DEAD:
+		{
 			m_eCurAniState = Grinner::Grinner_Death;
+			CGameObject* pObj;
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			for (_uint i = 0; i < RandNext(10, 20); i++)
+			{
+				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
+				pObj->SetPos(vPos, ID_DYNAMIC);
+				dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(29);
+
+			}
+			if (RandNext(0, 2) == 0)
+				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+		}
 			break;
 		case Grinner::STATE_END:
 			break;
@@ -344,12 +358,13 @@ void CGrinner::StateChange()
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			break;
 		case Grinner::Grinner_Jump_Apex:
-
+			m_fSpawnSpeed = 50.f;
 			m_bBlend = true;
 			break;
 		case Grinner::Grinner_Jump_Fall:
 			break;
 		case Grinner::Grinner_Jump_Land:
+			m_bBlend = false;
 			break;
 		case Grinner::Grinner_Jump_Launch:
 			break;
@@ -409,6 +424,8 @@ void CGrinner::StateActor(_float fDeltaTime)
 	_vec3 vInitPos;
 	m_fMoveSpeed = 5.f;
 	m_pTransformCom->Get_INFO(INFO_POS, &vInitPos);
+	if(!m_bSpawnEnd)
+		m_pNavi->Set_CellIndex(m_iNaviIdx);
 	vPos = m_pNavi->MoveOn_NaviMesh(&vInitPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom);
 	m_fNaviY = vPos.y;
 	DirSet(fDeltaTime, m_fAngleSpeed,false);
@@ -416,6 +433,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 	switch (m_eMachineState)
 	{
 	case Grinner::STATE_SPAWN_IDLE:
+		
 		break;
 	case Grinner::STATE_SPAWN:
 		if (m_bTurnStartCross != m_bTurnCross)
@@ -426,15 +444,17 @@ void CGrinner::StateActor(_float fDeltaTime)
 			//	m_bSpawnEnd = true;
 			//}
 		}
-
-		if (!m_bSpawnEnd)
+		if (m_bNexAni)
 		{
-			//m_fSpawnSpeed = m_fInitSpawnSpeed;
-			_vec3 vPos;
-			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-			if (vPos.y <= m_fNaviY)
+			if (!m_bSpawnEnd)
 			{
-				m_bSpawnEnd = true;
+				//m_fSpawnSpeed = m_fInitSpawnSpeed;
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+				if (vPos.y <= m_fNaviY)
+				{
+					m_bSpawnEnd = true;
+				}
 			}
 		}
 		break;
@@ -792,13 +812,9 @@ void CGrinner::StateActor(_float fDeltaTime)
 		{
 			if (!m_bSpawnDir)
 				DirSet(fDeltaTime, m_fAngleSpeed, true);
-			if (!m_bNexAni)
-			{
-				m_bSpawnEnd = false;
-				m_bNexAni = true;
-			}
-			m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fSpawnSpeed, 200.f, 0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime);
-			m_pTransformCom->Move_Pos(&m_vTargetDir, m_fMoveSpeed*0.3f, fDeltaTime);
+
+			m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fSpawnSpeed, 100.f, 0.f, &_vec3(0.f, 1.f, 0.f), fDeltaTime);
+			m_pTransformCom->Move_Pos(&m_vTargetDir, m_fMoveSpeed*0.5f, fDeltaTime);
 		}
 
 		break;
@@ -809,11 +825,11 @@ void CGrinner::StateActor(_float fDeltaTime)
 				DirSet(fDeltaTime, m_fAngleSpeed, true);
 			if (!m_bNexAni)
 			{
-				m_bSpawnEnd = false;
+				m_bHitAniEnd = true;
 				m_bNexAni = true;
 			}
 			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fSpawnSpeed, 150.f, 200.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
-			m_pTransformCom->Move_Pos(&m_vTargetDir, m_fMoveSpeed*0.3f, fDeltaTime);
+			m_pTransformCom->Move_Pos(&m_vTargetDir, m_fMoveSpeed*0.5f, fDeltaTime);
 		}
 		break;
 	case Grinner::Grinner_Jump_Land:
@@ -959,15 +975,21 @@ void CGrinner::StateLinker(_float fDeltaTime)
 	case Grinner::Grinner_Impact_Flinch_R:
 	case Grinner::Grinner_Impact_L:
 	case Grinner::Grinner_Impact_R:
-	case Grinner::Grinner_Jump_Land:
 	case Grinner::Grinner_PotalSpawn:
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = Grinner::STATE_IDLE;
 		}
 		break;
+	case Grinner::Grinner_Jump_Land:
+		if (m_pMeshCom->Is_Animationset(0.9))
+		{
+			m_eMachineState = Grinner::STATE_IDLE;
+		}
+		break;
+
 	case Grinner::Grinner_Jump_Apex:
-		if (m_pMeshCom->Is_AnimationsetFinish())
+		if (m_pMeshCom->Is_Animationset(0.65))
 		{
 			m_eCurAniState = Grinner::Grinner_Jump_Fall;
 		}
@@ -1239,5 +1261,7 @@ void CGrinner::SetOption(void * pArg)
 	}
 
 	m_eMachineState = Grinner::STATE_SPAWN;
+	m_pNavi->Set_CellIndex(m_iNaviIdx);
+	m_bActive = true;
 }
 

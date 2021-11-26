@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Logo.h"
 #include "Stage.h"
+#include "MainLogo.h"
+#include "StartStage.h"
 #include "Export_Function.h"
 
 CLogo::CLogo(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -20,9 +22,10 @@ HRESULT CLogo::Ready_Scene(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(), E_FAIL);
 
 	FAILED_CHECK_RETURN(Ready_Layer_Environment(L"Environment"), E_FAIL);
-	//FAILED_CHECK_RETURN(Ready_Layer_GameLogic(L"GameLogic"), E_FAIL);
 
-	m_pLoading = CLoading::Create(m_pGraphicDev, CLoading::LOADING_STAGE);
+	FAILED_CHECK_RETURN(Ready_Layer_GameLogic(L"GameLogic"), E_FAIL);
+
+	m_pLoading = CLoading::Create(m_pGraphicDev, CLoading::LOADING_START);
 	NULL_CHECK_RETURN(m_pLoading, E_FAIL);
 
 	return S_OK;
@@ -32,21 +35,33 @@ Engine::_int CLogo::Update_Scene(const _float& fTimeDelta)
 {
 	_int		iExit = CScene::Update_Scene(fTimeDelta);
 
-	if (true == m_pLoading->Get_Finish())
+
+	if (Key_Down(KEY_SPACE))
 	{
-		if (GetAsyncKeyState(VK_RETURN) & 0x8000)
-		{
-			CScene*		pScene = nullptr;
+		CGameObject* pObj =Get_GameObject(L"GameLogic", L"MainLogo");
+		pObj->SetActive(false);
+		m_bSceneStart = true;
 
-			pScene = CStage::Create(m_pGraphicDev);
-			NULL_CHECK_RETURN(pScene, E_FAIL);
-
-			FAILED_CHECK_RETURN(Set_Scene(pScene), E_FAIL);
-
-			return iExit;
-		}
 	}
 
+
+	if (m_bSceneStart)
+	{
+		if (true == m_pLoading->Get_Finish())
+		{
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+			{
+				CScene*		pScene = nullptr;
+
+				pScene = CStartStage::Create(m_pGraphicDev);
+				NULL_CHECK_RETURN(pScene, E_FAIL);
+
+				FAILED_CHECK_RETURN(Set_Scene(pScene), E_FAIL);
+
+				return iExit;
+			}
+		}
+	}
 	return iExit;
 }
 
@@ -59,11 +74,18 @@ HRESULT CLogo::Ready_Layer_Environment(const _tchar* pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
-	 //BackGround
+
+
+
+
+
+	/*pGameObject = CMainLogo::Create(m_pGraphicDev);
+	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"MainLogo", pGameObject), E_FAIL);*/
+	//BackGround
 	pGameObject = CBackGround::Create(m_pGraphicDev);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"BackGround", pGameObject), E_FAIL);
-
 	
 	m_mapLayer.emplace(pLayerTag, pLayer);
 
@@ -77,10 +99,10 @@ HRESULT CLogo::Ready_Layer_GameLogic(const _tchar* pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
-	//BackGround
-	pGameObject = CBackGround::Create(m_pGraphicDev);
+
+	pGameObject = CMainLogo::Create(m_pGraphicDev);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"BackGround", pGameObject), E_FAIL);
+	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"MainLogo", pGameObject), E_FAIL);
 
 
 	m_mapLayer.emplace(pLayerTag, pLayer);

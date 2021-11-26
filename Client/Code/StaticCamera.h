@@ -25,6 +25,8 @@ public:
 
 	virtual void SetTarget(CGameObject* pTarget);
 	void ReleaseTarget();
+	void ReleaseView();	//이전으로 돌림
+	void SetEventView();
 
 	_float GetRotY() { return D3DXToDegree(m_fCamRotateY); }
 	void Move(_float fDeltaTime);
@@ -50,20 +52,21 @@ private:
 	_float m_fPreCamRotateY = 0.f;
 	_float m_fPreCamRotateX = D3DXToRadian(45.f);
 
-
-
 	//이벤트 조작
 	_uint	 m_iEventIdx = 0;
 	_float	 m_fEventAngle = 0.f;
 	_float	 m_fEventAngleSpeed = 0.f;
 	vector<CAMEVENT> m_vecCamEvent;
-
+	_bool	m_bEventView = false;
+	_bool	m_EventViewEnd = false;
+	CAMEVENT m_tCamEvent;
 
 	CGameObject* m_pPreTarget  = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 
 	_matrix m_matWorld;
 
+	_bool m_bCross = false;
 
 	_float m_fEventTime = 0.f;
 	_float m_fEventSpeed = 8.f;

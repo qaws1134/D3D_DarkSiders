@@ -198,6 +198,115 @@ namespace UI
 	
 }
 
+namespace Angel
+{
+
+	enum STATE
+	{
+		STATE_SPAWN_IDLE,
+		STATE_SPAWN,
+		STATE_IDLE,
+		STATE_ATK,
+		STATE_TURN,
+		STATE_MOVE,
+		STATE_CHASE,
+		STATE_HIT,
+		STATE_HITEND,
+		STATE_DEAD,
+		STATE_END
+	};
+	enum Ani {
+		Angel_Atk_Combo,                          //0	frame:[147]
+		Angel_Atk_Dash,                           //1	frame:[63]
+		Angel_Atk_Dragon_Start,                   //2	frame:[36]
+		Angel_Atk_Dragon_Hold,                    //3	frame:[41]
+		Angel_Atk_Dragon_End,                     //4	frame:[81]
+		Angel_Atk_Swipe_L,                        //5	frame:[56]
+		Angel_Atk_Swipe_R,                        //6	frame:[49]
+		Angel_Fly_F_Start,                        //7	frame:[26]
+		Angel_Fly_F,                              //8	frame:[51]
+		Angel_Fly_Idle,                           //9	frame:[26]
+		Angel_Death_War,                          //10	frame:[99]
+		Angel_DeathPose_War,                      //11	frame:[91]
+		Angel_Impact_F,                           //12	frame:[36]
+		Angel_Idle,                               //13	frame:[41]
+		Angel_Impact_L,                           //14	frame:[36]
+		Angel_Impact_R,                           //15	frame:[36]
+		Angel_Impact_Flinch_F,                    //16	frame:[36]
+		Angel_Impact_Flinch_L,                    //17	frame:[36]
+		Angel_Impact_Flinch_R,                    //18	frame:[36]
+		Angel_Knock_B_Start,                      //19	frame:[6]
+		Angel_Knock_B_Idle,                       //20	frame:[121]
+		Angel_Knock_B_Land,                       //21	frame:[33]
+		Angel_Knock_B_Fall,                       //22	frame:[29]
+		Angel_Knock_B_Apex,                       //23	frame:[26]
+		Angel_Run_F,                              //24	frame:[31]
+		Angel_Turn_90_L,                          //25	frame:[31]
+		Angel_Turn_90_R,                          //26	frame:[31]
+		Angel_Turn_180_L,                         //27	frame:[41]
+		Angel_Turn_180_R,                         //28	frame:[41]
+		Angel_Walk_B,                             //29	frame:[41]
+		End
+	};
+}
+
+namespace Serpent
+{
+	enum STATE
+	{
+		STATE_OPEN,
+		STATE_CLEOSE,
+		STATE_END
+	};
+
+
+	enum Ani {
+		Serpent_Open,                             //0	frame:[65]
+		Serpent_Open_Idle,                        //1	frame:[2]
+		Serpent_Close,                            //2	frame:[65]
+		Serpent_Close_Idle,                       //3	frame:[2]
+		End
+	};
+}
+
+namespace Vulgrim
+{
+	enum STATE
+	{
+		STATE_IDLE,	
+		STATE_BUY,
+		STATE_END
+	};
+
+	enum Ani{
+		Vulgrim_Idle,                             //0	frame:[101]
+		Vulgrim_Buy_Item_02,                      //1	frame:[121]
+		End
+	};
+}
+
+namespace Dis
+{
+	enum STATE
+	{
+		STATE_IDLE,
+		STATE_ACTIVE,
+		STATE_SPAWN,
+		STATE_SPAWN_IDLE,
+		STATE_BUY,
+		STATE_END
+	};
+	enum Ani{
+		Dis_Idle,                                 //0	frame:[91]
+		Dis_Active_Idle,                          //1	frame:[91]
+		Dis_Active_to_Idle,                       //2	frame:[61]
+		Dis_Idle_to_Active,                       //3	frame:[61]
+		Dis_Spawn,                                //4	frame:[121]
+		Dis_Active_Emote_Purchase,                //5	frame:[91]
+		End
+	};
+}
+
 namespace Player_Barrier
 {
 	enum STATE
@@ -227,16 +336,17 @@ namespace Chest
 		STATE_OPEN,
 		STATE_OPEND,
 		STATE_HIT,
+		STATE_DEAD,
 		STATE_END
 	};
 
 	enum Ani {
-		Check_Idle,                               //0	frame:[101]
-		Check_Start,                              //1	frame:[101]
-		Check_Opened,                             //2	frame:[8]
-		Check_Open,                               //3	frame:[74]
-		Check_Impact,                             //4	frame:[26]
-		Check_Closed,                             //5	frame:[6]
+		Chest_Idle,                               //0	frame:[101]
+		Chest_Start,                              //1	frame:[101]
+		Chest_Opened,                             //2	frame:[8]
+		Chest_Open,                               //3	frame:[74]
+		Chest_Impact,                             //4	frame:[26]
+		Chest_Closed,                             //5	frame:[6]
 		End
 	};
 }
@@ -419,6 +529,7 @@ namespace War {
 		JUMPATTACK,
 		DASH,
 		HIT,
+		CHEST_OPNE,
 		STATE_END
 	};
 
@@ -522,6 +633,7 @@ namespace WaterBoss {
 	//패턴상태 
 	enum STATE
 	{
+		STATE_SPAWN,
 		STATE_IDLE,
 		STATE_CALL_LIGHTNING,
 		STATE_ORB,

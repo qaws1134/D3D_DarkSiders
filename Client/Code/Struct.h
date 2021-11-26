@@ -61,6 +61,9 @@ typedef struct tagCameraEvent
 	_float  fEventFov;
 	_float  fEventFovSpeed;
 
+	_float fEventAngleX;
+	_float fEventAngleXSpeed;
+
 	_bool	bEventEnd;
 }CAMEVENT;
 

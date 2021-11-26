@@ -154,6 +154,9 @@ void CWaterBoss::StateChange()
 	{
 		switch (m_eMachineState)
 		{
+		case WaterBoss::STATE_SPAWN:
+			m_eCurAniState = WaterBoss::Atk_Tentade_Pummel;
+			break;
 		case WaterBoss::STATE_IDLE:
 			m_fPatternSpeed = 0.f;
 			m_eCurAniState = WaterBoss::Idle;
@@ -265,7 +268,14 @@ void CWaterBoss::StateActor(_float fDeltaTime)
 
 		break;
 	case WaterBoss::Atk_TentadeSlam_FL:
+	{
 		AtkColActive(0.2, 0.3, 2);
+
+		if (m_eMachineState == WaterBoss::STATE_SPAWN)
+		{
+			//ÃÑ¾Ë »ý¼º x 
+		}
+	}
 		break;
 	case WaterBoss::Atk_TentadeSlam_FL_02:
 		AtkColActive(0.2, 0.3, 2);
@@ -527,6 +537,11 @@ void CWaterBoss::SetSlamPattern()
 	}
 }
 
+void CWaterBoss::SetOption(void * pArg)
+{
+	m_eMachineState = WaterBoss::STATE_SPAWN;
+}
+
 void CWaterBoss::AtkColActive(double dStart, double dEnd,_uint iWeaponIdx)
 {
 	auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder((L"Col_Weapon"+to_wstring(iWeaponIdx)).c_str()));
@@ -542,4 +557,5 @@ void CWaterBoss::AtkColActive(double dStart, double dEnd,_uint iWeaponIdx)
 		iter_find->second->SetActive(true);
 	}
 }
+
 

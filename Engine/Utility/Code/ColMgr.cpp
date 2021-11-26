@@ -59,6 +59,7 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 
 
 				fDstRadi -= 150.f;
+				
 				//fSrcRadi -= 200.f;
 				//===========================밀어내기 ====================================
 				if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
@@ -240,11 +241,6 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 			CColliderSphere* pDstCol = dynamic_cast<CColliderSphere*>(iter_Dst->second->Get_Component(L"Com_Collider", ID_STATIC));
 			CCalculator* pDstCalcul = dynamic_cast<CCalculator*>(iter_Dst->second->Get_Component(L"Com_Calculator", ID_STATIC));
 
-			//플레이어 트랜스폼
-			CTransform* pDstTransform = dynamic_cast<CTransform*>(pDst.second->Get_Component(L"Com_Transform", ID_DYNAMIC));
-			_vec3 vDstPos;
-			pDstTransform->Get_INFO(INFO_POS, &vDstPos);
-
 			for (auto& pSrc : _Src)
 			{
 				if(!pSrc.second->GetActive())
@@ -265,10 +261,45 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 				}
 			}
 		}
-		
-
 	}
+	else if (eColCheck == CHECK_INTERACTION)
+	{
+		for (auto& pDst : _Dst)
+		{
+			//선택한 충돌체
+			auto& iter_Dst = find_if(pDst.second->GetColmap().begin(), pDst.second->GetColmap().end(), CTag_Finder(wstrDstTag.c_str()));
+			if (iter_Dst == pDst.second->GetColmap().end())
+				continue;
 
+			//충돌체 정보 
+			CColliderSphere* pDstCol = dynamic_cast<CColliderSphere*>(iter_Dst->second->Get_Component(L"Com_Collider", ID_STATIC));
+			CCalculator* pDstCalcul = dynamic_cast<CCalculator*>(iter_Dst->second->Get_Component(L"Com_Calculator", ID_STATIC));
+
+			for (auto& pSrc : _Src)
+			{
+
+
+				auto& iter_Src = find_if(pSrc.second->GetColmap().begin(), pSrc.second->GetColmap().end(), CTag_Finder(wstrSrcTag.c_str()));
+				if (iter_Src == pSrc.second->GetColmap().end())
+					continue;
+
+				CColliderSphere* pSrcCol = dynamic_cast<CColliderSphere*>(iter_Src->second->Get_Component(L"Com_Collider", ID_STATIC));
+				CCalculator* pSrcCal = dynamic_cast<CCalculator*>(iter_Src->second->Get_Component(L"Com_Calculator", ID_STATIC));
+
+
+				_float fDstRadi = *pDstCol->Get_Radius();
+				_float fSrcRadi = *pSrcCol->Get_Radius();
+
+				if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
+				{
+					//iter_Dst->second->SetCol(true);
+					iter_Src->second->SetCol(true);
+				}
+				else
+					iter_Src->second->SetCol(false);
+			}
+		}
+	}
 }
 
 void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
@@ -297,8 +328,12 @@ void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
 	case Engine::CHECK_ITEM:
 		*pDstTag = L"Col_Body";
 		*pSrcTag = L"";
-
 		break;
+	case Engine::CHECK_INTERACTION:
+		*pDstTag = L"Col_Body";
+		*pSrcTag = L"Col_Body";
+		break;
+
 	case Engine::CHECK_END:
 		break;
 	default:

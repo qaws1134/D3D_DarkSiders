@@ -74,6 +74,9 @@ public :
 	virtual void SetOption(void* arg = nullptr) {}
 	void SetHitTime(_float fHitTime) { m_fHitTime = fHitTime; }
 	void SetHitSpeed(_float fHitSpeed){ m_fHitSpeed = fHitSpeed; }
+
+	void	SetDead(_bool bDead) { m_bDead = bDead; }
+	_bool	GetDead() { return m_bDead; }
 protected:
 	LPDIRECT3DDEVICE9					m_pGraphicDev;
 	map<const _tchar*, CComponent*>		m_mapComponent[ID_END];
@@ -95,6 +98,7 @@ protected:
 	_float m_fHitSpeed;
 	_bool	m_bHit = false;
 	
+	_bool	m_bDead = false;
 	
 	CHARINFO m_tCharInfo;
 	_vec3 m_vPos;

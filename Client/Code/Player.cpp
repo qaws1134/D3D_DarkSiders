@@ -70,13 +70,14 @@ void CPlayer::Late_Ready_Object()
 
 _int CPlayer::Update_Object(const _float& fTimeDelta)
 {
+	m_fFrameSpeed = fTimeDelta;
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	Key_Input(fTimeDelta);
 	StateChange();
 	StateActer(fTimeDelta);
 	StateLinker(fTimeDelta);
 
-	m_pMeshCom->Play_Animation(fTimeDelta);
+	m_pMeshCom->Play_Animation(m_fFrameSpeed);
 	Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;
@@ -171,6 +172,71 @@ void CPlayer::Render_Object(void)
 }
 void CPlayer::Key_Input(const _float & fTimeDelta)
 {
+	InteractionTimer(fTimeDelta);
+	if (Key_Down(KEY_F))
+	{
+		m_bUIOn = true;
+		m_fInteractionSpeed = 0.f;
+	}
+
+
+	//속성 선택창
+	if (Key_Pressing(KEY_TAB))
+	{
+		if (!m_bUIOn)
+		{
+			CUIMgr::GetInstance()->SetActiveElementUI(true);
+			Stop_TimeDelta(L"Timer_Immediate", false);
+			m_bUIShowing = true;
+			m_bUIOn = true;
+		}
+	}
+	else
+	{
+		if (CUIMgr::GetInstance()->GetElemetUIActive())
+		{
+			CUIMgr::GetInstance()->SetActiveElementUI(false);
+			Stop_TimeDelta(L"Timer_Immediate", true);
+			m_bUIShowing = false;
+			m_bUIOn = false;
+		}
+	}
+
+	if (Key_Down(KEY_I))
+	{
+			if (!m_bUIOn)
+			{
+				CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+				CUIMgr::GetInstance()->SetActivePlayerInfo(true);
+
+				Stop_TimeDelta(L"Timer_Immediate",false);
+				m_bUIOn = true;
+			}
+			else
+			{
+				if (CUIMgr::GetInstance()->GetCoreTreeUIActive())
+				{
+					CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
+					CUIMgr::GetInstance()->SetActivePlayerInfo(false);
+
+					Stop_TimeDelta(L"Timer_Immediate", true);
+					m_bUIOn = false;
+				}
+			}
+
+	}
+	if (Key_Down(KEY_NUM0))
+	{
+		m_pTransformCom->Set_Pos(0.f, 0.f, 0.f);
+	}
+
+	if (m_eMachineState == War::HIT)
+		return;
+	
+	//if (m_bUIOn)
+	//{
+	//	return;
+	//}
 	m_pTransformCom->Get_INFO(INFO_LOOK, &m_vDir);
 	m_pTransformCom->Get_INFO(INFO_RIGHT, &m_vRight);
 	m_eDir = War::IDLE;
@@ -179,9 +245,9 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	if (iter_find != m_mapColider.end())
 		iter_find->second->SetActive(false);
 
-	if (m_eMachineState != War::ATTACK && 
-		m_eMachineState != War::DASH&& 
-		m_eMachineState != War::JUMP&& 
+	if (m_eMachineState != War::ATTACK &&
+		m_eMachineState != War::DASH&&
+		m_eMachineState != War::JUMP&&
 		m_eMachineState != War::JUMP_CB&&
 		m_eMachineState != War::HIT)
 	{
@@ -191,8 +257,8 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 			m_eMachineState = War::STATE_IDLE_CB;
 
 	}
-	if (m_eMachineState == War::HIT)
-		return;
+
+
 
 
 	if (Key_Pressing(KEY_W))
@@ -318,98 +384,77 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		m_fCToISpeed = 0.f;
 	}
 
-	//속성 선택창
-	if (Key_Pressing(KEY_TAB))
-	{
-		if (!m_bUIOn)
-		{
-			CUIMgr::GetInstance()->SetActiveElementUI(true);
-			Stop_TimeDelta(L"Timer_Immediate", false);
-			m_bUIShowing = true;
-			m_bUIOn = true;
-		}
-	}
-	else
-	{
-		if (CUIMgr::GetInstance()->GetElemetUIActive())
-		{
-			CUIMgr::GetInstance()->SetActiveElementUI(false);
-			Stop_TimeDelta(L"Timer_Immediate", true);
-			m_bUIShowing = false;
-			m_bUIOn = false;
-		}
-	}
 
-	//코어트리 UI
-	if (Key_Down(KEY_O))
-	{
-		if (!m_bUIOn)
-		{
-			CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
-			CUIMgr::GetInstance()->SetActivePlayerInfo(true);
+	////코어트리 UI
+	//if (Key_Down(KEY_O))
+	//{
+	//	if (!m_bUIOn)
+	//	{
+	//		CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
+	//		CUIMgr::GetInstance()->SetActivePlayerInfo(true);
 
-			Stop_TimeDelta(L"Timer_Immediate",false);
-			m_bUIOn = true;
-		}
-		else
-		{
-			if (CUIMgr::GetInstance()->GetCoreTreeUIActive())
-			{
-				CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
-				CUIMgr::GetInstance()->SetActivePlayerInfo(false);
+	//		Stop_TimeDelta(L"Timer_Immediate",false);
+	//		m_bUIOn = true;
+	//	}
+	//	else
+	//	{
+	//		if (CUIMgr::GetInstance()->GetCoreTreeUIActive())
+	//		{
+	//			CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
+	//			CUIMgr::GetInstance()->SetActivePlayerInfo(false);
 
-				Stop_TimeDelta(L"Timer_Immediate", true);
-				m_bUIOn = false;
-			}
-		}
-	}
+	//			Stop_TimeDelta(L"Timer_Immediate", true);
+	//			m_bUIOn = false;
+	//		}
+	//	}
+	//}
 
-	//상점 키 
-	if (Key_Down(KEY_P))
-	{
-		if (!m_bUIOn)
-		{
-			CUIMgr::GetInstance()->SetActiveStoreActiveUI(true);
+	////상점 키 
+	//if (Key_Down(KEY_P))
+	//{
+	//	if (!m_bUIOn)
+	//	{
+	//		CUIMgr::GetInstance()->SetActiveStoreActiveUI(true);
 
-			Stop_TimeDelta(L"Timer_Immediate", false);
-			m_bUIOn = true;
-		}
-		else
-		{
-			if (CUIMgr::GetInstance()->GetStoreUIActive())
-			{
-				CUIMgr::GetInstance()->SetActiveStoreActiveUI(false);
+	//		Stop_TimeDelta(L"Timer_Immediate", false);
+	//		m_bUIOn = true;
+	//	}
+	//	else
+	//	{
+	//		if (CUIMgr::GetInstance()->GetStoreUIActive())
+	//		{
+	//			CUIMgr::GetInstance()->SetActiveStoreActiveUI(false);
 
-				Stop_TimeDelta(L"Timer_Immediate", true);
-				m_bUIOn = false;
-			}
-		}
-	}
+	//			Stop_TimeDelta(L"Timer_Immediate", true);
+	//			m_bUIOn = false;
+	//		}
+	//	}
+	//}
 
-	if (Key_Down(KEY_I))
-	{
-		if (!m_bUIOn)
-		{
-			CUIMgr::GetInstance()->SetActiveStoreStoneUI(true);
+	//if (Key_Down(KEY_I))
+	//{
+	//	if (!m_bUIOn)
+	//	{
+	//		CUIMgr::GetInstance()->SetActiveStoreStoneUI(true);
 
-			Stop_TimeDelta(L"Timer_Immediate", false);
-			m_bUIOn = true;
-		}
-		else
-		{
-			if (CUIMgr::GetInstance()->GetStoreUIActive())
-			{
-				CUIMgr::GetInstance()->SetActiveStoreStoneUI(false);
+	//		Stop_TimeDelta(L"Timer_Immediate", false);
+	//		m_bUIOn = true;
+	//	}
+	//	else
+	//	{
+	//		if (CUIMgr::GetInstance()->GetStoreUIActive())
+	//		{
+	//			CUIMgr::GetInstance()->SetActiveStoreStoneUI(false);
 
-				Stop_TimeDelta(L"Timer_Immediate", true);
-				m_bUIOn = false;
-			}
-		}
-	}
-	if (Key_Down(KEY_NUM0))
-	{
-		m_pTransformCom->Set_Pos(0.f, 0.f, 0.f);
-	}
+	//			Stop_TimeDelta(L"Timer_Immediate", true);
+	//			m_bUIOn = false;
+	//		}
+	//	}
+	//}
+	//if (Key_Down(KEY_NUM0))
+	//{
+	//	m_pTransformCom->Set_Pos(0.f, 0.f, 0.f);
+	//}
 
 	//스텟 돌 확인 UI
 	//if (Key_Down(KEY_P))
@@ -431,10 +476,7 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	//	}
 	//}
 	//충돌체 상호작용
-	if (Key_Down(KEY_F))
-	{
-		
-	}
+
 	//m_pTransformCom->Move_Pos(&vDir, 5.f, fTimeDelta);
 
 	//if (Key_Down(KEY_NUM1))
@@ -702,6 +744,12 @@ void CPlayer::StateChange()
 			m_fHitSpeed = 0.f;
 			m_tCharInfo.fDmg = 0.f;
 			break;
+		case War::CHEST_OPNE:
+			m_eCurAniState = War::War_Idle;
+			m_bChestOpen = false;
+			m_fChestOpenSpeed = 0.f;
+			break;
+
 		case War::STATE_END:
 			break;
 		default:
@@ -909,6 +957,8 @@ void CPlayer::StateChange()
 			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Chest_Open:
+		
+			m_bBlend = false;
 			break;
 		case War::War_Death:
 			break;
@@ -1150,6 +1200,17 @@ void CPlayer::StateActer(_float fDeltaTime)
 			if (vPos.y < m_fJumpY)
 			{
 				m_bJumpEnd = true;
+			}
+		}
+		break;
+	case War::CHEST_OPNE:
+		if (!m_bChestOpen)
+		{
+			m_fChestOpenSpeed += fDeltaTime;
+			if (m_fChestOpenSpeed > m_fChestOpenTime)
+			{
+				m_bChestOpen = true;
+				m_eCurAniState = War::War_Chest_Open;
 			}
 		}
 		break;
@@ -1518,6 +1579,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		break;
 	}
 	case War::War_Atk_Vamp_Start:
+		AtkColLoop();
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.07))
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
@@ -1531,6 +1593,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		break;
 	case War::War_Atk_Vamp_Loop:
 		AtkColLoop();
+		break;
 	case War::War_Atk_Vamp_Finish:
 		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
@@ -1569,6 +1632,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		AtkColActive(0, dAttackCheckFrame - 0.2);
 		break;
 	case War::War_Chest_Open:
+
 		break;
 	case War::War_Death:
 		break;
@@ -1718,7 +1782,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Heavy_01:
-		AtkColActive(dAttackCheckFrame-0.1, dAttackCheckFrame );
+		AtkColActive(dAttackCheckFrame-0.2, dAttackCheckFrame );
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 		{
 			_vec3	vPos;
@@ -1758,11 +1822,11 @@ void CPlayer::StateActer(_float fDeltaTime)
 		}
 		else
 		{
-			if (!m_bNexAni)
-			{
-				m_bAttackMoveEnd = true;
-				m_bNexAni = true;
-			}
+			/*		if (!m_bNexAni)
+					{
+						m_bAttackMoveEnd = true;
+						m_bNexAni = true;
+					}*/
 
 			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 900.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
 
@@ -2435,6 +2499,11 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Chest_Open:
+
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eMachineState = War::STATE_IDLE;
+		}
 		break;
 	case War::War_Death:
 		break;
@@ -3026,5 +3095,17 @@ _bool CPlayer::GlideTimer(_float fTimeDelta)
  		return true;
 
 	return false;
+}
+
+void CPlayer::InteractionTimer(_float fDeltaTime)
+{
+	m_fInteractionSpeed += fDeltaTime;
+
+	if (m_fInteractionSpeed > m_fInteractionTime)
+	{
+		m_bInteraction = false;
+		return;
+	}
+	m_bInteraction = true;
 }
 

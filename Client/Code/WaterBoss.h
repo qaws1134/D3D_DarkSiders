@@ -38,6 +38,7 @@ public:
 
 	void		SetPattern();
 	void		SetSlamPattern();
+	virtual void SetOption(void * pArg);
 
 #pragma region Set ÇÔ¼ö
 public:

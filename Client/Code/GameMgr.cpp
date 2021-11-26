@@ -8,7 +8,10 @@
 #include "Item.h"
 #include "SpawnMgr.h"
 #include "Grinner.h"
+#include "Goblin.h"
+#include "Angel.h"
 #include "StaticCamera.h"
+#include "WaterBoss.h"
 #include "Export_Function.h"
 
 
@@ -160,6 +163,7 @@ void CGameMgr::CameraEvent()
 		if (iter == m_iNaviIdx)
 			return;
 	}
+
 	switch (m_iNaviIdx)
 	{
 	case 0 :
@@ -179,19 +183,29 @@ void CGameMgr::CameraEvent()
 		dynamic_cast<CStaticCamera*>(m_pCamera)->SetTarget(pObj);
 		m_pCamera->SetOption(&m_iNaviIdx);
 		m_listEvent.emplace_back(m_iNaviIdx);
-
-
-
-			//문닫히기 이벤트
-			//포탈 스폰, 점프 스폰 
-			//이벤트
 	}
+	case 16:
+	{
+		_uint Spawn0 = Grinner::SPAWN_APEX;
+		vector<CGameObject*> m_vecEnemy = CSpawnMgr::GetInstance()->GetGrinnerVec();
+
+		m_listEvent.emplace_back(m_iNaviIdx);
 		break;
+	}
+
 	case 22:
 		m_pCamera->SetOption(&m_iNaviIdx);
 		m_listEvent.emplace_back(m_iNaviIdx);
 		//상자 정면으로 카메라 회전
 		break;
+	case 25: 
+	{
+		CGameObject* pObj = Get_GameObject(L"Enemy", L"Angel");
+		dynamic_cast<CAngel*>(pObj)->SetNaviIdx(28);
+		pObj->SetOption();
+		m_listEvent.emplace_back(m_iNaviIdx);
+		break;
+	}
 	case 27:
 		m_pCamera->SetOption(&m_iNaviIdx);
 		m_listEvent.emplace_back(m_iNaviIdx);
@@ -203,13 +217,40 @@ void CGameMgr::CameraEvent()
 		m_listEvent.emplace_back(m_iNaviIdx);
 		break;
 	case 43:
+	{
 		//보스 시작씬 이후 보스쪽으로 회전
+		CGameObject* pObj = Get_GameObject(L"Enemy", L"WaterBoss");
+		_uint idx;
+		dynamic_cast<CWaterBoss*>(pObj)->SetOption(&idx);
+		dynamic_cast<CStaticCamera*>(m_pCamera)->SetTarget(pObj);
 		m_pCamera->SetOption(&m_iNaviIdx);
 		m_listEvent.emplace_back(m_iNaviIdx);
+	}
 		break;
 	default:
 		break;
 	}
+}
+
+void CGameMgr::CameraEvent(CGameObject* pTargetObj)
+{
+	if (pTargetObj == m_pCamera->GetTarget())
+	{
+		dynamic_cast<CStaticCamera*>(m_pCamera)->ReleaseView();
+		dynamic_cast<CStaticCamera*>(m_pCamera)->ReleaseTarget();
+	}
+	else
+	{
+		m_pCamera->SetTarget(pTargetObj);
+		dynamic_cast<CStaticCamera*>(m_pCamera)->SetEventView();
+	}
+}
+
+_bool CGameMgr::EventAngel()
+{
+	CGameObject* pObj = Get_GameObject(L"Enemy", L"Angel");
+	return pObj->GetDead();
+
 }
 
 HRESULT CGameMgr::InitObjPool()
@@ -441,14 +482,19 @@ void CGameMgr::SpawnSet(_uint idx)
 		_uint Spawn0 = Goblin::SPAWN_APEX;
 		_uint Spawn2 = Goblin::SPAWN_SIT;
 		m_vecEnemy = CSpawnMgr::GetInstance()->GetGoblinVec();
+		dynamic_cast<CGoblin*>(m_vecEnemy[0])->SetNaviIdx(5);
 		m_vecEnemy[0]->SetOption(&Spawn0);
+		dynamic_cast<CGoblin*>(m_vecEnemy[1])->SetNaviIdx(4);
 		m_vecEnemy[1]->SetOption(&Spawn0);
+		dynamic_cast<CGoblin*>(m_vecEnemy[2])->SetNaviIdx(10);
 		m_vecEnemy[2]->SetOption(&Spawn2);
+		dynamic_cast<CGoblin*>(m_vecEnemy[3])->SetNaviIdx(10);
 		m_vecEnemy[3]->SetOption(&Spawn2);
+		dynamic_cast<CGoblin*>(m_vecEnemy[4])->SetNaviIdx(5);
 		m_vecEnemy[4]->SetOption(&Spawn0);
-		//m_vecEnemy[5]->SetOption(&Spawn0);
-		//m_vecEnemy[6]->SetOption(&Spawn0);
-		//m_vecEnemy[7]->SetOption(&Spawn0);
+		////m_vecEnemy[5]->SetOption(&Spawn0);
+		////m_vecEnemy[6]->SetOption(&Spawn0);
+		////m_vecEnemy[7]->SetOption(&Spawn0);
 
 		dynamic_cast<CStaticCamera*>(m_pCamera)->SetTarget(m_vecEnemy[0]);
 		//스폰 이벤트가 끝나면 
@@ -468,9 +514,11 @@ void CGameMgr::SpawnSet(_uint idx)
 		_uint Spawn0 = Grinner::SPAWN_APEX;
 		//_uint Spawn1 = Grinner::SPAWN_POTRAL;
 		m_vecEnemy = CSpawnMgr::GetInstance()->GetGrinnerVec();
-		//dynamic_cast<CGrinner*>(m_vecEnemy[0])->
+		dynamic_cast<CGrinner*>(m_vecEnemy[0])->SetNaviIdx(14);
 		m_vecEnemy[0]->SetOption(&Spawn0);
+		dynamic_cast<CGrinner*>(m_vecEnemy[1])->SetNaviIdx(15);
 		m_vecEnemy[1]->SetOption(&Spawn0);
+		dynamic_cast<CGrinner*>(m_vecEnemy[2])->SetNaviIdx(17);
 		m_vecEnemy[2]->SetOption(&Spawn0);
 		break;
 	}

@@ -11,8 +11,12 @@
 #include "Grinner.h"
 #include "Player_Barrier.h"
 #include "WaterFall.h"
+#include "Dis.h"
+#include "Vulgrim.h"
 #include "Cell.h"
+#include "Angel.h"
 #include "Building.h"
+#include "Serpent.h"
 IMPLEMENT_SINGLETON(CSpawnMgr)
 CSpawnMgr::CSpawnMgr()
 
@@ -73,6 +77,15 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 
 		Add_GameObject(pConvLayerTag, L"WaterBoss", pGameObject);
 	}
+	else if (Objkey == L"Angel")
+	{
+		*pLayerTag = L"Enemy";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		pGameObject = CAngel::Create(CGameMgr::GetInstance()->GetDevice());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+
+		Add_GameObject(pConvLayerTag, L"Angel", pGameObject);
+	}
 	else if (Objkey == L"Grinner")
 	{
 		*pLayerTag = L"Enemy";
@@ -102,7 +115,7 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 	}
 	else if (Objkey == L"Chest")
 	{
-		*pLayerTag = L"Interaction";		//NPC, 상자 
+		*pLayerTag = L"Chest";		//NPC, 상자 
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		pGameObject = CChest::Create(CGameMgr::GetInstance()->GetDevice());
 		NULL_CHECK_RETURN(pGameObject, nullptr);
@@ -117,6 +130,33 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		//const _tchar* pConvObjTag = W2BSTR(L"PlayerBarrier").c_str());
 		NULL_CHECK_RETURN(pGameObject, nullptr);
 		Add_GameObject(pConvLayerTag, L"PlayerBarrier", pGameObject);
+	}
+	else if (Objkey == L"Vulgrim")
+	{
+		*pLayerTag = L"NPC";		
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		pGameObject = CVulgrim::Create(CGameMgr::GetInstance()->GetDevice());
+		//const _tchar* pConvObjTag = W2BSTR(L"PlayerBarrier").c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, L"Vulgrim", pGameObject);
+	}
+	else if (Objkey == L"Dis")
+	{
+		*pLayerTag = L"NPC";		
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		pGameObject = CDis::Create(CGameMgr::GetInstance()->GetDevice());
+		//const _tchar* pConvObjTag = W2BSTR(L"PlayerBarrier").c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, L"Dis", pGameObject);
+	}
+	else if (Objkey == L"Serpent")
+	{
+		*pLayerTag = L"Serpent";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		pGameObject = CSerpent::Create(CGameMgr::GetInstance()->GetDevice());
+		//const _tchar* pConvObjTag = W2BSTR(L"PlayerBarrier").c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, L"Serpent", pGameObject);
 	}
 	else if (Objkey == L"Eden_WaterFall0"|| Objkey == L"Eden_WaterFall1")
 	{

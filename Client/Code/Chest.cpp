@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "Chest.h"
 #include "Enum.h"
+#include "Player.h"
 #include "Export_Function.h"
+#include "GameMgr.h"
 
 
 
@@ -27,15 +29,12 @@ HRESULT CChest::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 	m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
-	m_pTransformCom->Set_Rot(0.f, D3DXToRadian(-90.f), 0.f);	//파싱하면서 바꿀꺼임 
 	m_pTransformCom->Update_Component(0.f);
-	m_pMeshCom->Set_AnimationIndex(Chest::Check_Closed);
+	m_pMeshCom->Set_AnimationIndex(Chest::Chest_Closed);
 
-	m_eCurAniState = Chest::Check_Closed;
+	m_eCurAniState = Chest::Chest_Closed;
 
-
-
-	SetCharInfo(50.f, 4.f);
+	SetCharInfo(10.f, 0.f);
 
 	return S_OK;
 }
@@ -49,9 +48,12 @@ _int CChest::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
+	if (CGameMgr::GetInstance()->EventAngel())
+	{
+		StateChange();
+		StateLinker(fTimeDelta);
+	}
 	Add_RenderGroup(RENDER_NONALPHA, this);
-	StateChange();
-	StateLinker(fTimeDelta);
 	m_pMeshCom->Play_Animation(fTimeDelta);
 
 	return iExit;
@@ -138,19 +140,40 @@ void CChest::Render_Object(void)
 
 void CChest::StateChange()
 {
+
+	auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(L"Col_Body"));
+	if (iter_find != m_mapColider.end())
+	{
+		if (iter_find->second->GetCol())
+		{
+			//ui띄우기 
+
+			if (dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->GetInteraction())
+			{
+				m_eMachineState = Chest::STATE_OPEN;
+				dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->SetOnUI(true);
+				dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->Set_PlayerState(War::CHEST_OPNE);
+				dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->ResetInteraction();
+			}
+		}
+	}
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
-
 		switch (m_eMachineState)
 		{
 		case Chest::STATE_IDLE:
 			break;
 		case Chest::STATE_OPEN:
+			m_eCurAniState = Chest::Chest_Start;
 			break;
 		case Chest::STATE_OPEND:
+			m_eCurAniState = Chest::Chest_Opened;
 			break;
 		case Chest::STATE_HIT:
+			break;
+		case Chest::STATE_DEAD:
+			m_eMachineState = Chest::STATE_OPEND;
 			break;
 		case Chest::STATE_END:
 			break;
@@ -164,19 +187,24 @@ void CChest::StateChange()
 	if (m_ePreAniState != m_eCurAniState)
 	{
 
+
 		switch (m_eCurAniState)
 		{
-		case Chest::Check_Idle:
+		case Chest::Chest_Idle:
 			break;
-		case Chest::Check_Start:
+		case Chest::Chest_Start:
 			break;
-		case Chest::Check_Opened:
+		case Chest::Chest_Opened:
 			break;
-		case Chest::Check_Open:
+		case Chest::Chest_Open:
+
+
+
+			m_bBlend = false;
 			break;
-		case Chest::Check_Impact:
+		case Chest::Chest_Impact:
 			break;
-		case Chest::Check_Closed:
+		case Chest::Chest_Closed:
 			break;
 		case Chest::End:
 			break;
@@ -191,19 +219,67 @@ void CChest::StateChange()
 //다음 동작으로 자동으로 연결 
 void CChest::StateLinker(_float fDeltaTime)
 {
+	switch (m_eMachineState)
+	{
+	case Chest::STATE_HIT:
+		m_eCurAniState = Chest::Chest_Impact;
+		m_eMachineState = Chest::STATE_IDLE;
+		break;
+	case Chest::STATE_END:
+		break;
+	default:
+		break;
+	}
+
+
+
 	switch (m_eCurAniState)
 	{
-	case Chest::Check_Idle:
+	case Chest::Chest_Idle:
+		if (m_pMeshCom->Is_Animationset(0.3))
+		{
+			m_eCurAniState = Chest::Chest_Open;
+			CGameObject* pObj;
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			for (_uint i = 0; i < 20; i++)
+			{
+				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
+				pObj->SetPos(vPos, ID_DYNAMIC);
+				dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(29);
+
+			}
+			pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+			dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(29);
+			pObj->SetPos(vPos, ID_DYNAMIC);
+		}
 		break;
-	case Chest::Check_Start:
+	case Chest::Chest_Start:
+		if (m_pMeshCom->Is_Animationset(0.5))
+		{
+			m_eCurAniState = Chest::Chest_Idle;
+		}
 		break;
-	case Chest::Check_Opened:
+	case Chest::Chest_Opened:
 		break;
-	case Chest::Check_Open:
+	case Chest::Chest_Open:
+		if(m_pMeshCom->Is_Animationset(0.6))
+			dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->SetOnUI(false);
+		
+
+
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Chest::Chest_Opened;
+		}
 		break;
-	case Chest::Check_Impact:
+	case Chest::Chest_Impact:
+		if (m_pMeshCom->Is_AnimationsetFinish())
+		{
+			m_eCurAniState = Chest::Chest_Closed;
+		}
 		break;
-	case Chest::Check_Closed:
+	case Chest::Chest_Closed:
 		break;
 	case Chest::End:
 		break;
@@ -213,6 +289,12 @@ void CChest::StateLinker(_float fDeltaTime)
 
 }
 
+void CChest::TakeDmg(_float Atk)
+{
+	m_tCharInfo.fDmg = Atk;
+	m_tCharInfo.fHp -= 1.f;
+	m_eMachineState = Chest::STATE_HIT;
+}
 
 
 HRESULT CChest::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)

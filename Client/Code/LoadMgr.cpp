@@ -23,9 +23,19 @@ CLoadMgr::~CLoadMgr(void)
 
 HRESULT CLoadMgr::LoadData(wstring szFilePath)
 {
-	LoadColTool(szFilePath+L"Colider24.dat");
-	LoadMeshTool(szFilePath+L"Map31Obj.dat");
-	//LoadMeshTool(szFilePath + L"Test3.dat");
+	LoadMeshTool(szFilePath+L"Map35Obj.dat");
+	//LoadColTool(szFilePath+L"Colider28.dat");
+	//LoadMeshTool(szFilePath+L"TestNpc.dat");
+	//LoadMeshTool(szFilePath+L"Test4.dat");
+	//LoadMeshTool(szFilePath + L"MapStart.dat");
+
+	return S_OK;
+}
+
+HRESULT CLoadMgr::LoadStartStageData(wstring szFilePath)
+{
+	LoadColTool(szFilePath + L"Colider28.dat");
+	LoadMeshTool(szFilePath + L"MapStart.dat");
 
 	return S_OK;
 }
@@ -102,6 +112,10 @@ HRESULT CLoadMgr::LoadMeshTool(wstring szFilePath)
 	DWORD dwObjSize = 0;
 	TCHAR* pBuf = nullptr;
 	MESH tMesh;
+
+	m_mapNaviData.clear();
+	m_mapStaticData.clear();
+	m_mapDynamicData.clear();
 
 
 	ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);

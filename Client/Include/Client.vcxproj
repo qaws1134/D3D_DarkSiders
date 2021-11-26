@@ -157,12 +157,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Code\Angel.h" />
     <ClInclude Include="..\Code\BackGround.h" />
     <ClInclude Include="..\Code\Building.h" />
     <ClInclude Include="..\Code\Bullet.h" />
     <ClInclude Include="..\Code\Chest.h" />
     <ClInclude Include="..\Code\ColMesh.h" />
     <ClInclude Include="..\Code\Define.h" />
+    <ClInclude Include="..\Code\Dis.h" />
     <ClInclude Include="..\Code\DynamicCamera.h" />
     <ClInclude Include="..\Code\Effect.h" />
     <ClInclude Include="..\Code\EffMgr.h" />
@@ -171,19 +173,24 @@
     <ClInclude Include="..\Code\Goblin.h" />
     <ClInclude Include="..\Code\Grinner.h" />
     <ClInclude Include="..\Code\Item.h" />
+    <ClInclude Include="..\Code\JumpBall.h" />
     <ClInclude Include="..\Code\Loading.h" />
     <ClInclude Include="..\Code\LoadMgr.h" />
     <ClInclude Include="..\Code\Logo.h" />
     <ClInclude Include="..\Code\MainApp.h" />
+    <ClInclude Include="..\Code\MainLogo.h" />
     <ClInclude Include="..\Code\Player.h" />
     <ClInclude Include="..\Code\Player_Barrier.h" />
+    <ClInclude Include="..\Code\Serpent.h" />
     <ClInclude Include="..\Code\SpawnMgr.h" />
     <ClInclude Include="..\Code\Stage.h" />
+    <ClInclude Include="..\Code\StartStage.h" />
     <ClInclude Include="..\Code\StaticCamera.h" />
     <ClInclude Include="..\Code\Struct.h" />
     <ClInclude Include="..\Code\Terrain.h" />
     <ClInclude Include="..\Code\UI.h" />
     <ClInclude Include="..\Code\UIMgr.h" />
+    <ClInclude Include="..\Code\Vulgrim.h" />
     <ClInclude Include="..\Code\WaterBoss.h" />
     <ClInclude Include="..\Code\WaterBoss_Orb.h" />
     <ClInclude Include="..\Code\WaterFall.h" />
@@ -193,11 +200,13 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Code\Angel.cpp" />
     <ClCompile Include="..\Code\BackGround.cpp" />
     <ClCompile Include="..\Code\Building.cpp" />
     <ClCompile Include="..\Code\Bullet.cpp" />
     <ClCompile Include="..\Code\Chest.cpp" />
     <ClCompile Include="..\Code\ColMesh.cpp" />
+    <ClCompile Include="..\Code\Dis.cpp" />
     <ClCompile Include="..\Code\DynamicCamera.cpp" />
     <ClCompile Include="..\Code\Effect.cpp" />
     <ClCompile Include="..\Code\EffMgr.cpp" />
@@ -205,18 +214,23 @@
     <ClCompile Include="..\Code\Goblin.cpp" />
     <ClCompile Include="..\Code\Grinner.cpp" />
     <ClCompile Include="..\Code\Item.cpp" />
+    <ClCompile Include="..\Code\JumpBall.cpp" />
     <ClCompile Include="..\Code\Loading.cpp" />
     <ClCompile Include="..\Code\LoadMgr.cpp" />
     <ClCompile Include="..\Code\Logo.cpp" />
     <ClCompile Include="..\Code\MainApp.cpp" />
+    <ClCompile Include="..\Code\MainLogo.cpp" />
     <ClCompile Include="..\Code\Player.cpp" />
     <ClCompile Include="..\Code\Player_Barrier.cpp" />
+    <ClCompile Include="..\Code\Serpent.cpp" />
     <ClCompile Include="..\Code\SpawnMgr.cpp" />
     <ClCompile Include="..\Code\Stage.cpp" />
+    <ClCompile Include="..\Code\StartStage.cpp" />
     <ClCompile Include="..\Code\StaticCamera.cpp" />
     <ClCompile Include="..\Code\Terrain.cpp" />
     <ClCompile Include="..\Code\UI.cpp" />
     <ClCompile Include="..\Code\UIMgr.cpp" />
+    <ClCompile Include="..\Code\Vulgrim.cpp" />
     <ClCompile Include="..\Code\WaterBoss.cpp" />
     <ClCompile Include="..\Code\WaterBoss_Orb.cpp" />
     <ClCompile Include="..\Code\WaterFall.cpp" />

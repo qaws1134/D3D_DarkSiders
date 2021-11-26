@@ -44,6 +44,19 @@ Engine::_int Engine::CScene::Update_Scene(const _float& fTimeDelta)
 	{
 		CColMgr::Col_Body(CHECK_ITEM, *GetMapObj(L"Player"), *GetMapObj(L"Item"), MESH_STATIC);
 	}
+	if (GetMapObj(L"Player") != nullptr &&GetMapObj(L"Chest") != nullptr)
+	{
+		CColMgr::Col_Body(CHECK_INTERACTION, *GetMapObj(L"Player"), *GetMapObj(L"Chest"), MESH_DYNAMIC);
+		CColMgr::Col_Body(CHECK_WEAPON, *GetMapObj(L"Player"), *GetMapObj(L"Chest"), MESH_DYNAMIC);
+	}
+	if (GetMapObj(L"Player") != nullptr &&GetMapObj(L"NPC") != nullptr)
+	{
+		CColMgr::Col_Body(CHECK_INTERACTION, *GetMapObj(L"Player"), *GetMapObj(L"NPC"), MESH_DYNAMIC);
+	}
+	if (GetMapObj(L"Player") != nullptr &&GetMapObj(L"Serpent") != nullptr)
+	{
+		CColMgr::Col_Body(CHECK_INTERACTION, *GetMapObj(L"Player"), *GetMapObj(L"Serpent"), MESH_DYNAMIC);
+	}
 	return iResult;
 }
 

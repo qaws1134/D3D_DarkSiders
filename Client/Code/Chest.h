@@ -33,7 +33,7 @@ public:
 
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 
-
+	virtual void TakeDmg(_float fAtk);
 #pragma region Set 함수
 public:
 
@@ -69,6 +69,8 @@ private:
 
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
+
+	_bool m_bSpawnItem = false;
 
 
 public:

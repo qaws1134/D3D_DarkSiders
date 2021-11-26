@@ -36,6 +36,8 @@ public:
 	_float GetRandomFloat(_float lowBound,_float highBound);
 	wstring m_wstrTexture;
 
+	
+
 	void LifeTime(_float fTimeDelta);
 private:
 	HRESULT			Add_Component(void);
