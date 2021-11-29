@@ -16,6 +16,8 @@
 #include "Cell.h"
 #include "Angel.h"
 #include "Building.h"
+#include "JumpBall.h"
+#include "EffectMesh.h"
 #include "Serpent.h"
 IMPLEMENT_SINGLETON(CSpawnMgr)
 CSpawnMgr::CSpawnMgr()
@@ -93,7 +95,7 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		const _tchar* pConvProtoTag = W2BSTR((Objkey+to_wstring(m_iGrinnerIdx)).c_str());
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
-		pGameObject = CGrinner::Create(CGameMgr::GetInstance()->GetDevice(),pConvProtoTag);
+		pGameObject = CGrinner::Create(CGameMgr::GetInstance()->GetDevice()/*,pConvProtoTag*/);
 		NULL_CHECK_RETURN(pGameObject, nullptr);
 		m_vecGrinner.emplace_back(pGameObject);
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
@@ -106,7 +108,7 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		const _tchar* pConvProtoTag = W2BSTR((Objkey + to_wstring(m_iGoblinIdx)).c_str());
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iEnemyIdx)).c_str());
-		pGameObject = CGoblin::Create(CGameMgr::GetInstance()->GetDevice(), pConvProtoTag);
+		pGameObject = CGoblin::Create(CGameMgr::GetInstance()->GetDevice()/*, pConvProtoTag*/);
 		NULL_CHECK_RETURN(pGameObject, nullptr);
 		m_vecGoblin.emplace_back(pGameObject);
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
@@ -158,6 +160,17 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		NULL_CHECK_RETURN(pGameObject, nullptr);
 		Add_GameObject(pConvLayerTag, L"Serpent", pGameObject);
 	}
+	else if (Objkey == L"WaterBossBullet")
+	{
+		*pLayerTag = L"JumpBall";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iBuidingIdx)).c_str());
+		pGameObject = CJumpBall::Create(CGameMgr::GetInstance()->GetDevice());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iBuidingIdx++;
+
+	}
 	else if (Objkey == L"Eden_WaterFall0"|| Objkey == L"Eden_WaterFall1")
 	{
 		//½ºÅ×Æ½ ¸Å½Ã 
@@ -169,6 +182,15 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		NULL_CHECK_RETURN(pGameObject, nullptr);
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
 		m_iBuidingIdx++;
+	}
+	else if (Objkey == L"FogEnvironment_Mesh")
+	{
+		*pLayerTag = L"Effect";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iBuidingIdx)).c_str());
+		pGameObject = CEffectMesh::Create(CGameMgr::GetInstance()->GetDevice(), Objkey.c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr);
+		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
 	}
 	else
 	{

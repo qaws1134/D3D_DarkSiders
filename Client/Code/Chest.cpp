@@ -171,6 +171,7 @@ void CChest::StateChange()
 			m_eCurAniState = Chest::Chest_Opened;
 			break;
 		case Chest::STATE_HIT:
+			m_eCurAniState = Chest::Chest_Impact;
 			break;
 		case Chest::STATE_DEAD:
 			m_eMachineState = Chest::STATE_OPEND;
@@ -212,8 +213,8 @@ void CChest::StateChange()
 			break;
 		}
 		m_ePreAniState = m_eCurAniState;
-		m_pMeshCom->Set_AnimationIndex(m_eCurAniState,m_bBlend);
 	}
+		m_pMeshCom->Set_AnimationIndex(m_eCurAniState,m_bBlend);
 
 }
 //다음 동작으로 자동으로 연결 
@@ -222,7 +223,6 @@ void CChest::StateLinker(_float fDeltaTime)
 	switch (m_eMachineState)
 	{
 	case Chest::STATE_HIT:
-		m_eCurAniState = Chest::Chest_Impact;
 		m_eMachineState = Chest::STATE_IDLE;
 		break;
 	case Chest::STATE_END:

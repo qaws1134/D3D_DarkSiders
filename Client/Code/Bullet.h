@@ -9,7 +9,8 @@ class CTransform;
 class CRenderer;
 class CCalculator;
 class CColliderSphere;
-
+class CStaticMesh;
+class CShader;
 END
 
 
@@ -26,7 +27,7 @@ public:
 	virtual void Render_Object(void) override;
 
 	void SetColSphere(COLLIDERSPHERE tColSphere) { m_tColSphere = tColSphere; }
-
+	HRESULT SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 	virtual void SetOption(void* pArg);
 
 	//타이머셋팅, 초기화
@@ -41,10 +42,13 @@ private:
 	HRESULT			Add_Component(void);
 
 private:
-	CTransform*		m_pTransformCom = nullptr;
-	CRenderer*		m_pRendererCom = nullptr;
-	CCalculator*	m_pCalculatorCom = nullptr;
+	CTransform*				m_pTransformCom = nullptr;
+	CRenderer*				m_pRendererCom = nullptr;
+	CCalculator*			m_pCalculatorCom = nullptr;
 	CColliderSphere*		m_pColliderCom = nullptr;
+	CStaticMesh*			m_pMesh = nullptr;
+	CShader*			m_pShaderCom = nullptr;
+
 
 	_vec3		m_vDir;
 	BULLET::TYPE m_eType;

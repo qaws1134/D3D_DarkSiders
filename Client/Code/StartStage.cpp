@@ -4,6 +4,8 @@
 #include "LoadMgr.h"
 #include "WaterBoss_Orb.h"
 #include "EffMgr.h"
+#include "Stage.h"
+#include "Logo.h"
 #include "Export_Function.h"
 
 
@@ -23,62 +25,40 @@ HRESULT CStartStage::Ready_Scene(void)
 	FAILED_CHECK_RETURN(CScene::Ready_Scene(), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_LightInfo(), E_FAIL);
 
-
 	FAILED_CHECK_RETURN(Ready_Layer_Environment(L"Environment"), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Layer_GameLogic(L"GameLogic"), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Layer_UI(L"UI"), E_FAIL);
-	
+
+
 	return S_OK;
 }
 
 Engine::_int CStartStage::Update_Scene(const _float& fTimeDelta)
 {
-	
+
 	Begin_Scene();
 
-	//m_fTime += fTimeDelta;
-	//POINT		ptMouse{};
+	_int iExit = CScene::Update_Scene(fTimeDelta);
+	if (Key_Down(KEY_L))
+	{
+		CGameMgr::GetInstance()->TakeSoul(100);
+		_int i = CGameMgr::GetInstance()->GetSoul();
+		//dynamic_cast<CUI*>(CGameMgr::GetInstance()->GetFontObj())->GetFont().wstrText = to_wstring(CGameMgr::GetInstance()->GetSoul());
+	}
+	if (m_bSceneStart)
+	{
 
-	//GetCursorPos(&ptMouse);
-	//ScreenToClient(g_hWnd, &ptMouse);
+		CScene*		pScene = nullptr;
 
-	//m_dwPosX = ptMouse.x;
-	//m_dwPosY = ptMouse.y;
+		pScene = CLogo::Create(m_pGraphicDev);
+		NULL_CHECK_RETURN(pScene, E_FAIL);
+		dynamic_cast<CLogo*>(pScene)->SetLoading(CLoading::LOADING_STAGE);
+		FAILED_CHECK_RETURN(Set_Scene(pScene), E_FAIL);
 
-	//if (Key_Down(KEY_L))
-	//{
-	//	_uint i = rand() % 20;
-	//	STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(i));
-	//	CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev,tStone);
-	//	CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
-	//}
-	////CGameObject* pObj= nullptr;
-	//if (Key_Down(KEY_NUM5))
-	//{
-	//	CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
-	//}
-	//if (Key_Down(KEY_NUM6))
-	//{
-	//	CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
-	//}
-	//if (Key_Down(KEY_NUM4))
-	//{
-	//	CGameMgr::GetInstance()->GetEnemyBullet(BULLET::BULLET_CALLLIGHTNING);
-	//	CEffMgr::GetInstance()->SpawnEff(EFFECT::EFFECT_CALLLIGHTNING_START);
-	//}
-	//CGameMgr::GetInstance()->CameraEvent();
-
-	//if (Key_Down(KEY_K))
-	//{
-	//	CGameObject*			pGameObject = nullptr;
-	//	pGameObject = CWaterBoss_Orb::Create(m_pGraphicDev);
-	//	NULL_CHECK_RETURN(pGameObject, E_FAIL);
-	//	Add_GameObject(L"GameLogic", L"WaterBoss_Orb_0", pGameObject);
-	//	//FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"WaterBoss", pGameObject), E_FAIL);
-	//}
-
-
-	return CScene::Update_Scene(fTimeDelta);
+		return iExit;
+		
+	}
+	return iExit;
 }
 
 void CStartStage::Render_Scene(void)
@@ -119,6 +99,8 @@ void CStartStage::Begin_Scene()
 	CGameMgr::GetInstance()->InitObjPool();
 	CScene::Begin_Scene();
 }
+
+
 
 HRESULT CStartStage::Ready_Layer_Environment(const _tchar* pLayerTag)
 {

@@ -97,7 +97,7 @@ Material Material__504 {
  0.000000;0.000000;0.000000;;
 
  TextureFilename {
-  "T_Trails_02_COLOR.tga";
+  "T_Trails_02_COLOR_d.tga";
  }
 }
 

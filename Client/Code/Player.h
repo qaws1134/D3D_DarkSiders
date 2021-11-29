@@ -74,6 +74,9 @@ public:
 	void		Set_PlayerState(War::STATE eState) { m_eMachineState = eState; }
 //	void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
 	void		Set_NaviMesh(CNaviMesh* pNavi);
+	void		Set_JumpBall(_bool bJumpBall) {m_bJumpBall= bJumpBall;}
+
+
 #pragma  endregion Set 함수
 #pragma region Get 함수
 
@@ -159,7 +162,12 @@ private:
 	_double m_dAtkActiveStart=0.0;
 	_double m_dAtkActiveEnd= 0.0;
 
-	
+
+	_bool	m_bJumpBall = false;
+	_float	m_fJumpBallTime = 1.f;
+	_float	m_fJumpBallSpeed = 1.f;
+	_bool	m_bJumpBallStart = false;
+
 
 	_vec3	m_vHitDir;
 

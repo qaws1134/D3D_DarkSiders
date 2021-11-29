@@ -2,7 +2,7 @@
 #include "Serpent.h"
 #include "Enum.h"
 #include "Player.h"
-#include "Stage.h"
+#include "StartStage.h"
 #include "Export_Function.h"
 #include "GameMgr.h"
 
@@ -145,13 +145,10 @@ void CSerpent::StateChange()
 			m_eMachineState = Serpent::STATE_OPEN;
 			if (dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->GetInteraction())
 			{
-				//æ¿¿¸»Ø
-				//æ¿ø° æ¿¿¸»Ø ∏ﬁΩ√¡ˆ §°§°
+
+				dynamic_cast<CStartStage*>(GetScene())->SetNextScene();
 				dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->ResetInteraction();
-				//m_bActive = false;
-				//CScene*		pScene = nullptr;
-				//pScene = CStage::Create(m_pGraphicDev);			
-				//Set_Scene(pScene);
+
 			}
 		}
 		else

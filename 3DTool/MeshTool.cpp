@@ -945,6 +945,7 @@ void CMeshTool::OnBnClickedObjStaticListDelete()
 		}
 		else
 		{
+
 			wstrSaveToken = wstrKey;
 			wstrTokenKey += wstrKey + wstrToken;
 		}

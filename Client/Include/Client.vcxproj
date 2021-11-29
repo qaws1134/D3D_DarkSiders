@@ -167,6 +167,7 @@
     <ClInclude Include="..\Code\Dis.h" />
     <ClInclude Include="..\Code\DynamicCamera.h" />
     <ClInclude Include="..\Code\Effect.h" />
+    <ClInclude Include="..\Code\EffectMesh.h" />
     <ClInclude Include="..\Code\EffMgr.h" />
     <ClInclude Include="..\Code\Enum.h" />
     <ClInclude Include="..\Code\GameMgr.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="..\Code\Dis.cpp" />
     <ClCompile Include="..\Code\DynamicCamera.cpp" />
     <ClCompile Include="..\Code\Effect.cpp" />
+    <ClCompile Include="..\Code\EffectMesh.cpp" />
     <ClCompile Include="..\Code\EffMgr.cpp" />
     <ClCompile Include="..\Code\GameMgr.cpp" />
     <ClCompile Include="..\Code\Goblin.cpp" />

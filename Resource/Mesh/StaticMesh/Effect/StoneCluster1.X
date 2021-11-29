@@ -97,7 +97,7 @@ Material Material__98 {
  0.000000;0.000000;0.000000;;
 
  TextureFilename {
-    "StoneTexture_d.png";
+    "StoneTexture_d.tga";
  }
 }
 

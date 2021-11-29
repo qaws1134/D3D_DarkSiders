@@ -43,6 +43,7 @@ public:
 	void		SetUI(UISET tInfo);
 	void		SetObjTag(wstring& wstrObjTag) { m_tInfo.wstrObjTag = wstrObjTag; }
 
+	UIFONT		GetFont() { return m_tFont; }
 	_vec2		GetUIPos() { return m_tInfo.vPos; }
 	_vec2		GetFontPos() { return m_tFont.vPos; }
 	wstring	&	GetObjTag() { return m_tInfo.wstrObjTag; }	//레퍼런스로 넘겨볼까

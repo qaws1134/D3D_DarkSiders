@@ -19,7 +19,9 @@ public:
 	virtual HRESULT Ready_Scene(void) override;
 	virtual _int Update_Scene(const _float& fTimeDelta) override;
 	virtual void Render_Scene(void) override;
+	void    SetLoading(CLoading::LOADINGID eLoading);
 
+	void SetBegin(_bool bBegin) { m_bBeginScene = bBegin; }
 private:
 	HRESULT				Ready_Layer_Environment(const _tchar* pLayerTag);
 	HRESULT				Ready_Layer_GameLogic(const _tchar* pLayerTag);
@@ -28,11 +30,12 @@ private:
 
 private:
 	CLoading*			m_pLoading = nullptr;
-
+	_bool				m_bBeginScene = false;
 	_bool				m_bSceneStart= false; 
+	CLoading::LOADINGID m_eLoadID = CLoading::LOADING_END;
 public:
 	static CLogo*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
-
+	static CLogo*		Create(LPDIRECT3DDEVICE9 pGraphicDev,_bool bBegin);
 private:
 	virtual void Free(void) override;
 

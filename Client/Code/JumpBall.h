@@ -38,6 +38,7 @@ private:
 
 	CStaticMesh*		m_pMeshCom = nullptr;
 	CShader*			m_pShaderCom = nullptr;
+	CColliderSphere*	m_pColliderCom = nullptr;
 
 
 	_vec3		m_vDir;

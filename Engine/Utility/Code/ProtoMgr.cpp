@@ -18,8 +18,10 @@ HRESULT Engine::CProtoMgr::Ready_Prototype(const _tchar* pProtoTag, CComponent* 
 	CComponent*		pComponent = Find_Prototype(pProtoTag);
 
 	if (nullptr != pComponent)
-		return E_FAIL;
-
+	{
+		Safe_Release(pComponent);
+		m_mapPrototype.erase(pProtoTag);
+	}
 	m_mapPrototype.emplace(pProtoTag, pInstance);
 
 	return S_OK;

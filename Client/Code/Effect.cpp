@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Effect.h"
-
+#include "GameMgr.h"
 #include "Export_Function.h"
 
 CEffect::CEffect(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -39,8 +39,6 @@ _int CEffect::Update_Object(const _float& fTimeDelta)
 		BillBord();
 
 		UpdateEffect(fTimeDelta);
-
-
 
 		Add_RenderGroup(RENDER_ALPHA, this);
 	}
@@ -85,7 +83,7 @@ void CEffect::SetOption(void * pArg)
 	m_bLoop = false;
 	switch (m_eEffect)
 	{
-	case EFFECT::EFFECT_CALLLIGHTNING_START:
+	case EFFECT::EFFECT_LIGHTNING:
 		m_vUV = new _vec2[4];
 		m_wstrTexture = L"Proto_Texture_Effect_Lightning";
 		m_eNextEffect;
@@ -95,70 +93,34 @@ void CEffect::SetOption(void * pArg)
 		m_pTransformCom->Set_Scale(1.f, 10.f, 1.f);
 		//m_fFrameSpeed = 4.f;
 		break;
-	case EFFECT::EFFECT_CALLLIGHTNING_LOOP:
-		m_wstrTexture = L"Proto_Texture_Effect_Lightning";
-		m_eNextEffect;
-		m_bLoop = true;
-		SetVertiQuarterUV();
-		SetBufferUV(m_vUV);
+	case EFFECT::EFFECT_BOLT:
 		break;
-	case EFFECT::EFFECT_CALLLIGHTNING_END:
-		m_wstrTexture;
-		m_eNextEffect;
+	case EFFECT::EFFECT_ELECTRIC1:
 		break;
-	case EFFECT::EFFECT_ORBCHAGE_START:
-		m_wstrTexture;
-		m_eNextEffect;
+	case EFFECT::EFFECT_ELECTRIC2:
 		break;
-	case EFFECT::EFFECT_ORBCHAGE_LOOP:
-		m_wstrTexture;
-		m_eNextEffect;
+	case EFFECT::EFFECT_FOG:
 		break;
-	case EFFECT::EFFECT_ORBCHAGE_END:
-		m_wstrTexture;
-		m_eNextEffect;
+	case EFFECT::EFFECT_FOGGROUP:
 		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_START:
-		m_wstrTexture;
-		m_eNextEffect;
+	case EFFECT::EFFECT_AURA:
 		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_LOOP:
-		m_wstrTexture;
-		m_eNextEffect;
+	case EFFECT::EFFECT_WATERBOOM:
+		break;
+	case EFFECT::EFFECT_CHARGE:
+		break;
 
-		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_END:
-		m_wstrTexture;
-		m_eNextEffect;
-
-		break;
-	case EFFECT::EFFECT_TAIL_START:
-		m_wstrTexture;
-		m_eNextEffect;
-
-		break;
-	case EFFECT::EFFECT_TAIL_LOOP:
-		m_wstrTexture;
-		m_eNextEffect;
-
-		break;
-	case EFFECT::EFFECT_TAIL_END:
-		m_wstrTexture;
-		m_eNextEffect;
-
-		break;
 	case EFFECT::EFFECT_END:
 		m_bActive = false;
-		m_wstrTexture =L"";
+		m_wstrTexture = L"";
 		m_eNextEffect = EFFECT::EFFECT_END;
 		m_fFrameSpeed = 0.f;
 		m_fFrame = 0.f;
 		return;
-
-		break;
 	default:
 		break;
 	}
+
 
 	////초기값 저장 
 	m_eInitNextEffect = m_eNextEffect;
@@ -256,61 +218,51 @@ void CEffect::FrameChange(_float fDeltaTime)
 
 void CEffect::BillBord()
 {
-	_matrix		matWorld, matView, matBill;
 
-	m_pTransformCom->Get_WorldMatrix(&matWorld);
-	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
+	CTransform* pCamTrans = dynamic_cast<CTransform*>(CGameMgr::GetInstance()->GetCamera()->Get_Component(L"Com_Transform", ID_DYNAMIC));
 
-	D3DXMatrixIdentity(&matBill);
-
-	matBill._11 = matView._11;
-	matBill._13 = matView._13;
-	matBill._31 = matView._31;
-	matBill._33 = matView._33;
-
-	D3DXMatrixInverse(&matBill, NULL, &matBill);
-
-	// 이 코드는 문제의 소지가 있음
-	//빌(자,역) * (스 * 자 * 이)
-	m_pTransformCom->Set_WorldMatrix(&(matBill * matWorld));
+	_matrix *pWorld = pCamTrans->Get_WorldMatrix();
 
 	_vec3 vPos;
 	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 
-	Compute_ViewZ(&vPos);
+	pWorld->_41 = vPos.x;
+	pWorld->_42 = vPos.y;
+	pWorld->_43 = vPos.z;
+
+
+	m_pTransformCom->Set_WorldMatrix(pWorld);
+
+
+
+
+	//_matrix		matWorld, matView, matBill;
+
+	//m_pTransformCom->Get_WorldMatrix(&matWorld);
+	//m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
+
+	//D3DXMatrixIdentity(&matBill);
+
+	//matBill._11 = matView._11;
+	//matBill._13 = matView._13;
+	//matBill._31 = matView._31;
+	//matBill._33 = matView._33;
+
+	//D3DXMatrixInverse(&matBill, NULL, &matBill);
+
+	//// 이 코드는 문제의 소지가 있음
+	////빌(자,역) * (스 * 자 * 이)
+	//m_pTransformCom->Set_WorldMatrix(&(matBill * matWorld));
+
+	//_vec3 vPos;
+	//m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+
+	//Compute_ViewZ(&vPos);
 }
 
 void CEffect::UpdateEffect(_float fTimeDelta)
 {
-	switch (m_eEffect)
-	{
-	case EFFECT::EFFECT_CALLLIGHTNING_START:
-		break;
-	case EFFECT::EFFECT_CALLLIGHTNING_LOOP:
-		break;
-	case EFFECT::EFFECT_CALLLIGHTNING_END:
-		break;
-	case EFFECT::EFFECT_ORBCHAGE_START:
-		break;
-	case EFFECT::EFFECT_ORBCHAGE_LOOP:
-		break;
-	case EFFECT::EFFECT_ORBCHAGE_END:
-		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_START:
-		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_LOOP:
-		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_END:
-		break;
-	case EFFECT::EFFECT_TAIL_START:
-		break;
-	case EFFECT::EFFECT_TAIL_LOOP:
-		break;
-	case EFFECT::EFFECT_TAIL_END:
-		break;
-	case EFFECT::EFFECT_END:
-		break;
-	}
+
 }
 
 void CEffect::SetVertiQuarterUV()

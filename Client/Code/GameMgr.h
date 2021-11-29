@@ -9,7 +9,15 @@
 #include "Enum.h"
 //#include "NaviMesh.h"
 
+typedef struct tagPlayerStat
+{
+	tagPlayerStat() :m_iPlayerAttack(10), m_iPlayerHealth(10), m_iPlayerSkill(10) {}
 
+	_uint m_iPlayerSkill;
+	_uint m_iPlayerHealth ;
+	_uint m_iPlayerAttack ;
+
+}PLAYERSTAT;
 
 enum class SpawnSet
 {
@@ -37,7 +45,11 @@ private:
 	virtual ~CGameMgr();
 
 public:
-	void				SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer; }
+
+
+public:
+	void				SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer;  }
+
 	void				SetPlayerNaviIdx(_uint iIdx) { m_iNaviIdx = iIdx; }
 	_uint				GetPlayerNaviIdx() { return m_iNaviIdx; }
 
@@ -59,15 +71,19 @@ public:
 	CGameObject* GetCamera() { return m_pCamera; }
 
 	//돈
-	void TakeSoul(_uint iSoul) { m_iSoul += iSoul; }
+	void TakeSoul(_int iSoul) {m_iSoul += iSoul; if (m_iSoul <= 0)m_iSoul = 0;}
 	void SetSoul(_uint iSoul) { m_iSoul = iSoul; }
 	_uint GetSoul() { return m_iSoul; }
+	CGameObject* GetFontObj() { return m_pSoulFont; }
+	void SetFontObj(CGameObject* pObj) { m_pSoulFont = pObj; }
+
 
 	_bool	EventAngel();
 
 
 	//오브젝트풀
 	HRESULT InitObjPool();
+	HRESULT InitStageObjPool();
 
 	HRESULT InitEnemyBullet();
 	void RetunEnemyBullet(CGameObject* pObj);
@@ -97,11 +113,16 @@ public:
 	void SpawnSet(_uint idx);
 
 
+	PLAYERSTAT GetPlayerStat() { return m_tPlayerStat; }
+	void SetPlayerStat(_uint iAtk, _uint iHp, _uint iSkill) {m_tPlayerStat.m_iPlayerAttack = iAtk; m_tPlayerStat.m_iPlayerHealth = iHp;m_tPlayerStat.m_iPlayerSkill= iSkill;}
+
+
 private:
 	LPDIRECT3DDEVICE9 m_pGraphicDev;
 	//플레이어 저장 
 	CGameObject* m_pPlayer = nullptr;
 	CGameObject* m_pCamera = nullptr;
+	CGameObject* m_pSoulFont = nullptr;
 	_float m_fSoul;
 
 	vector<STONE> m_vecStone;
@@ -121,10 +142,13 @@ private:
 	_uint m_iItemIdx = 0;
 
 
-	list<_uint>m_listEvent;
-	
+	PLAYERSTAT m_tPlayerStat;
 
-	_uint m_iSoul = 0;
+	list<_uint>m_listEvent;
+
+	_int m_iSoul = 0;
+
+
 	//CNaviMesh* m_pNaviMesh = nullptr;
 
 private:

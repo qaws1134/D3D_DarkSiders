@@ -100,10 +100,10 @@ HRESULT CWaterBoss_Orb::Add_Component(void)
 	pComponent = m_pMeshCom = dynamic_cast<CStaticMesh*>(Clone_Prototype(L"WaterBoss_Orb"));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
-	// Collider
-	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, m_pMeshCom->Get_VtxPos(),m_pMeshCom->Get_VtxCnt());
-	NULL_CHECK_RETURN(m_pColliderCom, E_FAIL);
-	m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
+	//// Collider
+	//pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, m_pMeshCom->Get_VtxPos(),m_pMeshCom->Get_VtxCnt());
+	//NULL_CHECK_RETURN(m_pColliderCom, E_FAIL);
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
 
 
 	return S_OK;

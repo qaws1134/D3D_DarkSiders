@@ -22,9 +22,14 @@ public:
 	void			Render_Scene(LPDIRECT3DDEVICE9& pGraphicDev);
 
 	HRESULT			Ready_Shader(LPDIRECT3DDEVICE9& pGraphicDev);
+	CScene*			GetScene() { return m_pScene; }
+
+	void ReleaseScene();
+	void SaveLayer(wstring LayerTag);
 
 private:
-	CScene*			m_pScene = nullptr;
+	CScene*			m_pScene = nullptr;	
+	map<const _tchar*, CLayer*>		m_mapSaveLayer;
 
 public:
 	virtual void Free(void);

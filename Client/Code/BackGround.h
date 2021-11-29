@@ -36,6 +36,13 @@ private:
 	CTransform*	m_pTransformCom = nullptr;
 	CShader*	m_pShaderCom = nullptr;
 
+
+private:
+	_matrix m_matProj;
+
+	_float			m_fX, m_fY;
+	_float			m_fSizeX, m_fSizeY;
+
 public:
 	static CBackGround*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	virtual void			Free(void);

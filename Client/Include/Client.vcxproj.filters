@@ -100,9 +100,6 @@
     <Filter Include="02. GameObject\08.Map">
       <UniqueIdentifier>{1fa00e24-8838-4be3-a547-33a7fe86db20}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\07. Effect\MeshEff">
-      <UniqueIdentifier>{e8ab5e78-001e-4f51-ab19-2d9bb96a08ac}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObject\09. Chest">
       <UniqueIdentifier>{8c73c223-0060-4872-83fa-d8bc26267506}</UniqueIdentifier>
     </Filter>
@@ -141,6 +138,12 @@
     </Filter>
     <Filter Include="02. GameObject\00. BackGround\Main">
       <UniqueIdentifier>{70454198-d2e7-46b6-9b7f-58192c633fc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\07. Effect\EffectMesh">
+      <UniqueIdentifier>{e8ab5e78-001e-4f51-ab19-2d9bb96a08ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\07. Effect\Effect2D">
+      <UniqueIdentifier>{5d2921b2-0f2b-4d3a-aac7-fea7b986c346}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -219,9 +222,6 @@
     <ClInclude Include="..\Code\EffMgr.h">
       <Filter>02. GameObject\07. Effect\EffMgr</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Effect.h">
-      <Filter>02. GameObject\07. Effect</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Building.h">
       <Filter>02. GameObject\08.Map</Filter>
     </ClInclude>
@@ -266,6 +266,12 @@
     </ClInclude>
     <ClInclude Include="..\Code\MainLogo.h">
       <Filter>02. GameObject\00. BackGround\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\EffectMesh.h">
+      <Filter>02. GameObject\07. Effect\EffectMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Effect.h">
+      <Filter>02. GameObject\07. Effect\Effect2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -329,9 +335,6 @@
     <ClCompile Include="..\Code\EffMgr.cpp">
       <Filter>02. GameObject\07. Effect\EffMgr</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Effect.cpp">
-      <Filter>02. GameObject\07. Effect</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Building.cpp">
       <Filter>02. GameObject\08.Map</Filter>
     </ClCompile>
@@ -376,6 +379,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\MainLogo.cpp">
       <Filter>02. GameObject\00. BackGround\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\EffectMesh.cpp">
+      <Filter>02. GameObject\07. Effect\EffectMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Effect.cpp">
+      <Filter>02. GameObject\07. Effect\Effect2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

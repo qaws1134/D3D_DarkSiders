@@ -183,7 +183,7 @@ void CItem::SetOption(void * pArg)
 		m_bCol = false;
 		m_bApexEnd = false;
 		m_fChaseSpeed = 0.f;
-		m_fLifeSpeed = 0.f;
+		m_fLifeSpeed = 10.f;
 		m_pTransformCom->Set_Pos(0.f, 0.f, 0.f);
 		m_pTransformCom->Set_Scale(1.f, 1.f, 1.f);
 
@@ -210,6 +210,17 @@ void CItem::SetOption(void * pArg)
 	{
 		m_pTextureCom = dynamic_cast<CTexture*>(iter_find->second);
 	}
+	iter_find = find_if(m_mapComponent[ID_STATIC].begin(), m_mapComponent[ID_STATIC].end(), CTag_Finder(L"Proto_Navi"));
+	if (iter_find == m_mapComponent[ID_STATIC].end())
+	{
+		pComponent = m_pNavi = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
+		NULL_CHECK_RETURN(m_pNavi, );
+		m_mapComponent[ID_STATIC].emplace(L"Com_Navi", pComponent);
+	}
+	else
+	{
+		m_pNavi = dynamic_cast<CNaviMesh*>(iter_find->second);
+	}
 
 }
 
@@ -231,43 +242,37 @@ void CItem::Free(void)
 
 void CItem::BillBord()
 {
-	_matrix		matWorld, matView, matBill;
+	//_matrix		matWorld, matView, matBill;
 
-	m_pTransformCom->Get_WorldMatrix(&matWorld);
-	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
-
-	D3DXMatrixIdentity(&matBill);
-
-	matBill._11 = matView._11;
-	//matBill._12 = matView._12;
-	matBill._13 = matView._13;
-	//matBill._21 = matView._21;
-	//matBill._22 = matView._22;
-	matBill._31 = matView._31;
-	matBill._33 = matView._33;
-
-	D3DXMatrixInverse(&matBill, NULL, &matBill);
-	m_pTransformCom->Set_WorldMatrix(&(matBill * matWorld));
+	//m_pTransformCom->Get_WorldMatrix(&matWorld);
+	//m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
 
 	//D3DXMatrixIdentity(&matBill);
 
 	//matBill._11 = matView._11;
-	//matBill._12 = matView._12;
-	//matBill._21 = matView._21;
-	//matBill._22 = matView._22;
 
-	//D3DXMatrixInverse(&matBill, NULL, &matBill);
-	//m_pTransformCom->Set_WorldMatrix(&(matBill * matWorld));
+	//matBill._13 = matView._13;
 
+	//matBill._31 = matView._31;
+	//matBill._33 = matView._33;
 
 
-	// 이 코드는 문제의 소지가 있음
-	//빌(자,역) * (스 * 자 * 이)
+
+	CTransform* pCamTrans = dynamic_cast<CTransform*>(CGameMgr::GetInstance()->GetCamera()->Get_Component(L"Com_Transform", ID_DYNAMIC));
+
+	_matrix *pWorld= pCamTrans->Get_WorldMatrix();
 
 	_vec3 vPos;
-	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+	m_pTransformCom->Get_INFO(INFO_POS,&vPos);
 
-	Compute_ViewZ(&vPos);
+	pWorld->_41 = vPos.x;
+	pWorld->_42 = vPos.y;
+	pWorld->_43 = vPos.z;
+
+
+	m_pTransformCom->Set_WorldMatrix(pWorld);
+
+
 }
 
 

@@ -2,7 +2,7 @@
 #include "BackGround.h"
 
 #include "Export_Function.h"
-
+#include "Define.h"
 CBackGround::CBackGround(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
@@ -24,8 +24,13 @@ HRESULT CBackGround::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
+	m_fX = WINCX*0.5f;
+	m_fY = WINCY*0.5f;
 
-	m_pTransformCom->Set_Scale(2.f, 2.f, 2.f);
+	m_fSizeX = WINCX;
+	m_fSizeY = WINCY;
+
+	D3DXMatrixOrthoLH(&m_matProj, WINCX, WINCY, 0.f, 1.f);
 
 	return S_OK;
 }
@@ -33,7 +38,7 @@ HRESULT CBackGround::Ready_Object(void)
 _int CBackGround::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
-
+	
 	Add_RenderGroup(RENDER_ALPHA, this);
 
 	return iExit;
@@ -41,6 +46,7 @@ _int CBackGround::Update_Object(const _float& fTimeDelta)
 
 void CBackGround::Render_Object(void)
 {
+
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
 
@@ -101,7 +107,7 @@ HRESULT CBackGround::Add_Component(void)
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
 	// Shader
-	pComponent = m_pShaderCom = dynamic_cast<CShader*>(Clone_Prototype(L"Proto_Shader_Sample"));
+	pComponent = m_pShaderCom = dynamic_cast<CShader*>(Clone_Prototype(L"Proto_Shader_UI"));
 	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
@@ -110,17 +116,26 @@ HRESULT CBackGround::Add_Component(void)
 
 HRESULT CBackGround::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 {
-	_matrix		matWorld, matView, matProj;
+	_matrix		matWorld, matView;
 
-	m_pTransformCom->Get_WorldMatrix(&matWorld);
-	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
-	m_pGraphicDev->GetTransform(D3DTS_PROJECTION, &matProj);
+
+	D3DXMatrixIdentity(&matWorld);
+
+	matWorld._11 = m_fSizeX;
+	matWorld._22 = m_fSizeY;
+	matWorld._33 = 1.f;
+	matWorld._41 = m_fX - WINCX * 0.5f;
+	matWorld._42 = -m_fY + WINCY * 0.5f;
+
+
+	matWorld = *m_pTransformCom->Get_WorldMatrix()*matWorld;
 
 	pEffect->SetMatrix("g_matWorld", &matWorld);
-	pEffect->SetMatrix("g_matView", &matView);
-	pEffect->SetMatrix("g_matProj", &matProj);
+
+	pEffect->SetMatrix("g_matProj", &m_matProj);
 
 	m_pTextureCom->Set_Texture(pEffect, "g_BaseTexture", 0);
+
 
 	return S_OK;
 }

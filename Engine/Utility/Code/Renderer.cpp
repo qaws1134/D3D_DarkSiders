@@ -92,8 +92,8 @@ void Engine::CRenderer::Render_GameObject(LPDIRECT3DDEVICE9& pGraphicDev)
 	Render_Blend(pGraphicDev);
 	Render_Alpha(pGraphicDev);
 	Render_UI(pGraphicDev);
-	//Engine::Render_DebugBuffer(L"MRT_Deferred");
-	//Engine::Render_DebugBuffer(L"MRT_LightAcc");
+	Engine::Render_DebugBuffer(L"MRT_Deferred");
+	Engine::Render_DebugBuffer(L"MRT_LightAcc");
 
 	Clear_RenderGroup();
 }
@@ -125,7 +125,7 @@ void Engine::CRenderer::Render_LightAcc(LPDIRECT3DDEVICE9& pGraphicDev)
 	pEffect->AddRef();
 
 	Get_RenderTargetTexture(pEffect, L"Target_Normal", "g_NormalTexture");
-
+	Get_RenderTargetTexture(pEffect, L"Target_Depth", "g_DepthTexture");
 	pEffect->Begin(NULL, 0);
 
 	Render_Light(pEffect);

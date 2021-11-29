@@ -37,6 +37,7 @@ namespace Engine
 		CHECK_BULLET,
 		CHECK_ITEM,
 		CHECK_INTERACTION,
+		CHECK_JUMPBAll,
 		CHECK_END
 	};
 

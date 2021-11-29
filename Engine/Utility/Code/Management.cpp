@@ -15,15 +15,18 @@ Engine::CManagement::~CManagement(void)
 
 HRESULT Engine::CManagement::Set_Scene(CScene* pScene)
 {
-	//씬에서 넘겨줄 로드 데이터를 따로 저장 ?
-	//새로운 씬에 넘겨줌 
-	//pScene->SetSaveLayer(m_pScene->GetSaveLayer());
 
-	Safe_Release(m_pScene);	// 주의합시다!!!!!!!!!!!!
+	// m_mapSaveLayer = m_pScene->GetSaveLayer();
 
-	Clear_RenderGroup();
-
+	ReleaseScene();
 	m_pScene = pScene;
+	if (!m_mapSaveLayer.empty())
+		m_pScene->Add_Layer(m_mapSaveLayer);
+	//Safe_Release(m_pScene);	// 주의합시다!!!!!!!!!!!!
+
+	//Clear_RenderGroup();
+
+	//m_pScene = pScene;
 
 	return S_OK;
 }
@@ -111,15 +114,63 @@ HRESULT Engine::CManagement::Ready_Shader(LPDIRECT3DDEVICE9 & pGraphicDev)
 	pShader = CShader::Create(pGraphicDev, L"../../Reference/Header/Shader_UI.hpp");
 	NULL_CHECK_RETURN(pShader, E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Shader_UI", pShader), E_FAIL);
+	// shader_shade
+	pShader = CShader::Create(pGraphicDev, L"../../Reference/Header/Shader_Effect.hpp");
+	NULL_CHECK_RETURN(pShader, E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Shader_Effect", pShader), E_FAIL);
 
+	pShader = CShader::Create(pGraphicDev, L"../../Reference/Header/Shader_MeshEffect.hpp");
+	NULL_CHECK_RETURN(pShader, E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Shader_MeshEffect", pShader), E_FAIL);
 
 	return S_OK;
+}
+
+void CManagement::ReleaseScene()
+{
+	
+	//SaveLayer(L"Player");
+	SaveLayer(L"UI");
+	SaveLayer(L"Effect");
+	SaveLayer(L"Bullet_Enemy");
+	SaveLayer(L"Bullet_Player");
+	SaveLayer(L"Particle");
+	//SaveLayer(L"Item");
+
+
+	Safe_Release(m_pScene);
+
+	Clear_RenderGroup();
+
+}
+
+void CManagement::SaveLayer(wstring LayerTag)
+{
+	if (!m_pScene)
+		return;
+
+	USES_CONVERSION;
+
+	const _tchar* pConvLayerTag = W2BSTR(LayerTag.c_str());
+
+	auto& iter_find = find_if(m_mapSaveLayer.begin(), m_mapSaveLayer.end(), CTag_Finder(LayerTag.c_str()));
+	if (iter_find == m_mapSaveLayer.end())
+	{
+		if (m_pScene->GetLayer(LayerTag.c_str()))
+			m_mapSaveLayer.emplace(pConvLayerTag, m_pScene->GetLayer(LayerTag.c_str()));
+	}
+	m_pScene->EraseMapObj(LayerTag.c_str());
+
+
 }
 
 void Engine::CManagement::Free(void)
 {
 	//m_pScene->Release_SaveLayer();
+
+	for_each(m_mapSaveLayer.begin(), m_mapSaveLayer.end(), CDeleteMap());
 	Safe_Release(m_pScene);
+	m_mapSaveLayer.clear();
 }
 
 Engine::CComponent* Engine::CManagement::Get_Component(const _tchar* pLayerTag, const _tchar* pObjTag, const _tchar* pComponentTag, COMPONENTID eID)

@@ -97,7 +97,7 @@ Material Material__779 {
  0.000000;0.000000;0.000000;;
 
  TextureFilename {
-  "WaterFoam1_D.tga";
+  "WaterFoam1_d.tga";
  }
 }
 

@@ -202,14 +202,20 @@ void CMy3DToolView::OnInitialUpdate()
 
 
 	Ready_Prototype(L"Orb", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"Orb.X"));
-	Ready_Prototype(L"WaterBoss_Bullet", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterBoss_Bullet.X"));
+	Ready_Prototype(L"WaterBossBullet", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X"));
 	Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterFloor.X"));
 	Ready_Prototype(L"Center", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Center/", L"Center.X"));
 	Ready_Prototype(L"CenterRoad", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Center/", L"CenterRoad.X"));
-
-
-
 	Ready_Prototype(L"GoblinSpear", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/GoblinSpear/", L"GoblinSpear.X"));
+
+	//Ready_Prototype(L"FogEnvironment_Mesh", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"FogEnvironment_Mesh.X"));
+	//Ready_Prototype(L"FogPlane_Group1", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"FogPlane_Group1.X"));
+
+	Ready_Prototype(L"AuraSphere", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"AuraSphere.X"));
+	Ready_Prototype(L"Bolt", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"Bolt.X"));
+	Ready_Prototype(L"ElectricityGroup01", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"ElectricityGroup01.X"));
+	Ready_Prototype(L"ElectricityGroup02", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"ElectricityGroup02.X"));
+
 	for (_uint i = 0; i < 24; i++) 
 	{
 		wstring wstrProto = L"Eden" + to_wstring(i);
@@ -262,34 +268,43 @@ void CMy3DToolView::OnInitialUpdate()
 		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
 	}
 
-
-
-
-	for (_uint i = 0; i < 6; i++)
+	for (_uint i = 0; i < 7; i++)
 	{
-		wstring wstrProto = L"Effect_Bolt" + to_wstring(i);
-		wstring wsrFile = L"Effect_Bolt" + to_wstring(i) + L".X";
+		wstring wstrProto = L"Stone" + to_wstring(i);
+		wstring wsrFile = L"Stone" + to_wstring(i) + L".X";
 		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
 		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
-	}
-	for (_uint i = 0; i < 3; i++)
-	{
-		wstring wstrProto = L"Ramp" + to_wstring(i);
-		wstring wsrFile = L"Ramp" + to_wstring(i) + L".X";
-		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
-		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Eden/", pConvFileTag));
 	}
 
-	for (_uint i = 0; i < 2; i++)
-	{
-		wstring wstrProto = L"Ghost" + to_wstring(i);
-		wstring wsrFile = L"Ghost" + to_wstring(i) + L".X";
-		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
-		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-		Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
-	}
+
+
+
+	//for (_uint i = 0; i < 6; i++)
+	//{
+	//	wstring wstrProto = L"Effect_Bolt" + to_wstring(i);
+	//	wstring wsrFile = L"Effect_Bolt" + to_wstring(i) + L".X";
+	//	const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+	//	const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+	//	Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	//}
+	//for (_uint i = 0; i < 3; i++)
+	//{
+	//	wstring wstrProto = L"Ramp" + to_wstring(i);
+	//	wstring wsrFile = L"Ramp" + to_wstring(i) + L".X";
+	//	const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+	//	const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+	//	Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	//}
+
+	//for (_uint i = 0; i < 2; i++)
+	//{
+	//	wstring wstrProto = L"Ghost" + to_wstring(i);
+	//	wstring wsrFile = L"Ghost" + to_wstring(i) + L".X";
+	//	const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+	//	const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+	//	Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
+	//}
 
 
 	// Terrain

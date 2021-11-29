@@ -186,9 +186,9 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 	}
 	else if (eColCheck == CHECK_WEAPON)
 	{
-		_uint idx = 0;
 		for (auto& pDst : _Dst)
 		{	
+			_uint idx = 0;
 			wstring CheckKey = pDst.first;
 			if (L"Col" == CheckKey.substr(0, 3))
 				continue;
@@ -300,6 +300,43 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 			}
 		}
 	}
+	else if (eColCheck == CHECK_JUMPBAll)
+	{
+		for (auto& pDst : _Dst)
+		{
+			//선택한 충돌체
+			auto& iter_Dst = find_if(pDst.second->GetColmap().begin(), pDst.second->GetColmap().end(), CTag_Finder(wstrDstTag.c_str()));
+			if (iter_Dst == pDst.second->GetColmap().end())
+				continue;
+
+			//충돌체 정보 
+			CColliderSphere* pDstCol = dynamic_cast<CColliderSphere*>(iter_Dst->second->Get_Component(L"Com_Collider", ID_STATIC));
+			CCalculator* pDstCalcul = dynamic_cast<CCalculator*>(iter_Dst->second->Get_Component(L"Com_Calculator", ID_STATIC));
+
+			for (auto& pSrc : _Src)
+			{
+				if (!pSrc.second->GetActive())
+					continue;
+				CColliderSphere* pSrcCol = dynamic_cast<CColliderSphere*>(pSrc.second->Get_Component(L"Com_Collider", ID_STATIC));
+				CCalculator* pSrcCal = dynamic_cast<CCalculator*>(pSrc.second->Get_Component(L"Com_Calculator", ID_STATIC));
+
+
+				_float fDstRadi = *pDstCol->Get_Radius();
+				_float fSrcRadi = *pSrcCol->Get_Radius();
+
+				//상호작용
+				//fSrcRadi += 100.f;
+				if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
+				{
+					//iter_Dst->second->SetCol(true);
+					pSrc.second->SetCol(true);
+				}
+				else {
+					pSrc.second->SetCol(false);
+				}
+			}
+		}
+	}
 }
 
 void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
@@ -333,7 +370,10 @@ void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
 		*pDstTag = L"Col_Body";
 		*pSrcTag = L"Col_Body";
 		break;
-
+	case Engine::CHECK_JUMPBAll:
+		*pDstTag = L"Col_Body";
+		*pSrcTag = L"";
+		break;
 	case Engine::CHECK_END:
 		break;
 	default:
@@ -341,6 +381,8 @@ void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
 	}
 }
 
+//내가 활성화일때
+//상대방 히트가 false면
 _bool CColMgr::ColCheckWeapon(CGameObject* pSrcObj, wstring ColTag,CGameObject * pDstColObj,MESHTYPE eMesh)
 {
 

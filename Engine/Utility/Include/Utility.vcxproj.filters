@@ -350,6 +350,12 @@
     <ClInclude Include="..\Code\ParticleSystem.h">
       <Filter>03. GameObject\Particle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Shader_Effect.hpp">
+      <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader_MeshEffect.hpp">
+      <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Header\Export_Utility.inl">

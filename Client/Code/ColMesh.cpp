@@ -38,6 +38,7 @@ _int CColMesh::Update_Object(const _float& fTimeDelta)
 
 	if (m_wstrBone != L"")
 	{
+		
 		CDynamicMesh*	pTargetMeshCom = dynamic_cast<CDynamicMesh*>(m_pTarget->Get_Component(L"Com_Mesh", ID_STATIC));
 		NULL_CHECK_RETURN(pTargetMeshCom, 0);
 

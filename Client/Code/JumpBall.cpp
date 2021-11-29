@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "JumpBall.h"
-
+#include "GameMgr.h"
+#include "Player.h"
 #include "Export_Function.h"
 
 CJumpBall::CJumpBall(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -24,12 +25,29 @@ HRESULT CJumpBall::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
+	m_bActive = true;
+	m_fHitTime = 2.f;
 	return S_OK;
 }
 
 _int CJumpBall::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
+	
+	_vec3 vInitPos;
+	m_pTransformCom->Get_INFO(INFO_POS, &vInitPos);
+	m_pColliderCom->Set_Center(vInitPos);
+	
+	if (!m_bHit)
+	{
+		if (m_bCol)
+		{
+			dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->Set_JumpBall(true);
+			m_fHitSpeed = 0.f;
+
+		}
+	}
+
 	Add_RenderGroup(RENDER_NONALPHA,this);
 	return iExit;
 }
@@ -43,8 +61,10 @@ void CJumpBall::Render_Object(void)
 
 	_uint iMaxPass = 0;
 
-	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
-											// 2인자 : 시작하는 방식을 묻는 FLAG
+	pEffect->Begin(&iMaxPass, NULL);		
+					
+	m_pColliderCom->Render_Collider(COLTYPE(m_bCol), m_pTransformCom->Get_WorldMatrix());
+
 	pEffect->BeginPass(0);
 
 	m_pMeshCom->Render_Meshes(pEffect);
@@ -102,9 +122,15 @@ HRESULT CJumpBall::Add_Component(void)
 	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
-	pComponent = m_pMeshCom = dynamic_cast<CStaticMesh*>(Clone_Prototype(m_wstrProtoMesh.c_str()));
+	pComponent = m_pMeshCom = dynamic_cast<CStaticMesh*>(Clone_Prototype(L"JumpBall"));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
+
+
+	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, &_vec3(0.f,0.f,0.f),20.f);
+	NULL_CHECK_RETURN(m_pColliderCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
+
 
 
 	return S_OK;

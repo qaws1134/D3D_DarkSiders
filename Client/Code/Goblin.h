@@ -46,7 +46,7 @@ public:
 
 
 	void DirSet(_float fDeltaTime, _float fAngleSpeed, _bool bAngleSet);
-	void SpawnBarfinBullet(_float  fAngle);
+	void SpawnGoblinBullet(_float  fAngle);
 	void	DeadCheck();
 	void EnemyTurn(_float fAngle);
 

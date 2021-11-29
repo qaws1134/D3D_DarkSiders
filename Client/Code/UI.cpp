@@ -97,7 +97,6 @@ void CUI::Render_Object(void)
 	{
 
 		Render_Font(m_tFont.wstrFont.c_str(), m_tFont.wstrText.c_str(), &_vec2(m_tFont.vPos.x+ m_tInfo.vPos.x, m_tFont.vPos.y + m_tInfo.vPos.y), D3DXCOLOR(m_tFont.vColor.x, m_tFont.vColor.y, m_tFont.vColor.z, m_tFont.vColor.w));
-
 		return;
 	}
 
@@ -217,9 +216,6 @@ HRESULT CUI::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 
 	pEffect->SetMatrix("g_matProj", &m_matProj);
 
-	//pEffect->SetFloat("g_SizeX", m_tInfo.vSize.x);
-	//pEffect->SetFloat("g_SizeY", m_tInfo.vSize.y);
-
 	m_pTextureCom->Set_Texture(pEffect, "g_BaseTexture", m_tInfo.iTextureNum);
 
 	if(m_bSubTex1)
@@ -284,10 +280,10 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				if (Key_Down(KEY_LBUTTON))
 				{
 					//UI창 닫고 속성 적용 
-					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_EARTH);
+					dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_EARTH);
 					break;
 				}
-				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_EARTH);
+				dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_EARTH);
 				
 			}
 			break;
@@ -296,10 +292,10 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				if (Key_Down(KEY_LBUTTON))
 				{
 					//UI창 닫고 속성 적용 
-					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_FLAME);
+					dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_FLAME);
 					break;
 				}
-				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_FLAME);
+				dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_FLAME);
 			}
 
 			break;
@@ -308,10 +304,10 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				if (Key_Down(KEY_LBUTTON))
 				{
 					//UI창 닫고 속성 적용 
-					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_LIGHTNING);
+					dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_LIGHTNING);
 					break;
 				}
-				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_LIGHTNING);
+				dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_LIGHTNING);
 			}
 			break;
 			case UI::ELEMENT_03:
@@ -319,10 +315,10 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				if (Key_Down(KEY_LBUTTON))
 				{
 					//UI창 닫고 속성 적용 
-					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_DEATH);
+					dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_DEATH);
 					break;
 				}
-				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_DEATH);
+				dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_DEATH);
 			}
 			break;
 			case UI::ELEMENT_04:
@@ -330,10 +326,10 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				if (Key_Down(KEY_LBUTTON))
 				{
 					//UI창 닫고 속성 적용 
-					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_WIND);
+					dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_WIND);
 					break;
 				}
-				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_WIND);
+				dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_WIND);
 			}
 			break;
 			case UI::ELEMENT_05:
@@ -341,10 +337,10 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 				if (Key_Down(KEY_LBUTTON))
 				{
 					//UI창 닫고 속성 적용 
-					dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_VAMP);
+					dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_VAMP);
 					break;
 				}
-				dynamic_cast<CPlayer*> (m_pTarget)->Set_Element(War::ELEMENT_VAMP);
+				dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_Element(War::ELEMENT_VAMP);
 			}
 			break;
 			case UI::ELEMENT_END:
@@ -360,7 +356,9 @@ void CUI::UI_CoreTreeUpdate(const _float & fTimeDelta)
 	{
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
-			dynamic_cast<CUI*>(Get_GameObject(L"UI", L"UI_CoreTree_Sel"))->SetUIPos(m_tInfo.vPos);
+			CGameObject* pObj = Get_GameObject(L"UI", L"UI_CoreTree_Sel");
+			if (pObj)
+				dynamic_cast<CUI*>(pObj)->SetUIPos(m_tInfo.vPos);
 
 			//이 UI 가 가지고 있는 돌에 접근해야됨 - > 장착된 돌UI 따로 만들어서 베이스 위에 올리자
 			//돌 UI는 따로 업데이트 ㄱㄱ 
@@ -509,6 +507,14 @@ void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 {
 
+
+	if (CUIMgr::GetInstance()->GetStoreUIActive())
+	{
+		if (m_tInfo.wstrObjTag == L"StoreBase_Font_L_Normal" + to_wstring(0))
+		{
+			m_tFont.wstrText = to_wstring(CGameMgr::GetInstance()->GetSoul());
+		}
+	}
 	
 	if (m_tInfo.wstrTexture == L"Proto_Texture_Store_Base")
 	{
@@ -538,13 +544,17 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
 	
-
 			_uint iSelIdx;
+			_int iPrice;
 			list<CGameObject*> listSelActiveList = CUIMgr::GetInstance()->GetItemActiveSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
 			list<CGameObject*> listSelStoneList = CUIMgr::GetInstance()->GetItemStoneSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
 
 			for (auto iter : listSelStoneList)
 			{
+				if (dynamic_cast<CUI*>(iter)->GetFont().wstrFont == L"Font_L_Light")
+				{
+					iPrice = stoi(dynamic_cast<CUI*>(iter)->GetFont().wstrText.c_str());
+				}
 				if (L"Proto_Texture_Store_Sel" == dynamic_cast<CUI*>(iter)->GetProtoTag())
 				{
 					dynamic_cast<CUI*>(iter)->SetTextureNum(1);
@@ -569,8 +579,13 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 			}
 		
 
+	
 			for (auto iter : listSelActiveList)
 			{
+				if (dynamic_cast<CUI*>(iter)->GetFont().wstrFont == L"Font_L_Light")
+				{
+					iPrice = stoi(dynamic_cast<CUI*>(iter)->GetFont().wstrText.c_str());
+				}
 				if (L"Proto_Texture_Store_Sel" == dynamic_cast<CUI*>(iter)->GetProtoTag())
 				{
 					dynamic_cast<CUI*>(iter)->SetTextureNum(1);
@@ -594,6 +609,14 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 				pTransIter->Set_Scale(&vScale);
 			}
 
+			if (Key_Down(KEY_SPACE))
+			{
+				if (CUIMgr::GetInstance()->GetToastUIActive())
+				{
+					CUIMgr::GetInstance()->SetActiveToastBoxUI(false);
+					CUIMgr::GetInstance()->SetActiveToastInfoUI(false, CUIMgr::GetInstance()->GetToastInfoIdx());
+				}
+			}
 
 			if (Key_Pressing(KEY_SPACE))
 			{
@@ -606,9 +629,13 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 					m_fUVSpeed += fTimeDelta;
 					if (m_fUVTimer < m_fUVSpeed)
 					{
-						CUIMgr::GetInstance()->SetStoreGetIdx(iSelIdx);
+						CUIMgr::GetInstance()->SetStoreGetIdx(iSelIdx);				
+						STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(iSelIdx));
+						CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
+						CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev, tStone);
 						CUIMgr::GetInstance()->SetActiveToastMsgItemInfo(iSelIdx);
-
+						CGameMgr::GetInstance()->TakeSoul(-iPrice);
+						dynamic_cast<CUI*>(CGameMgr::GetInstance()->GetFontObj())->GetFont().wstrText = to_wstring(CGameMgr::GetInstance()->GetSoul());
 					}
 				}
 			}

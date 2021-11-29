@@ -3,7 +3,7 @@
 
 #include "Define.h"
 #include "Scene.h"
-
+#include "Loading.h"
 #include "BackGround.h"
 
 #include "Player.h"
@@ -36,19 +36,24 @@ public:
 	virtual void Render_Scene(void) override;
 	virtual void Begin_Scene() override;
 
+	void SetNextScene() { m_bSceneStart = true; }
+
 private:
 	HRESULT				Ready_Layer_Environment(const _tchar* pLayerTag);
 	HRESULT				Ready_Layer_GameLogic(const _tchar* pLayerTag);
 	HRESULT				Ready_Layer_UI(const _tchar* pLayerTag);
 	HRESULT				Ready_LightInfo(void);
 
+	
 private:
+	CLoading*			m_pLoading = nullptr;
+
 	_ulong					m_dwRenderCnt = 0;
 
 	_long					m_dwPosX = 0;
 	_long					m_dwPosY = 0;
 
-
+	_bool	m_bSceneStart =false;
 	_tchar					m_szFPS[256] ;
 	_tchar					m_szPosX[256];
 	_tchar					m_szPosY[256];

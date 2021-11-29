@@ -21,7 +21,7 @@ CGameMgr::CGameMgr()
 {
 	m_vecStone.reserve(22);
 	CGameObject* pGameObject = nullptr;
-
+	m_iSoul = 0;
 }
 
 CGameMgr::~CGameMgr(void)
@@ -258,11 +258,17 @@ HRESULT CGameMgr::InitObjPool()
 	InitEnemyBullet();
 	InitPlayerBullet();
 	InitEffect();
-	InitItem();
+	//InitItem();
 	//InitParticle();
 	//파티클
 	//이펙트
 
+	return S_OK;
+}
+
+HRESULT CGameMgr::InitStageObjPool()
+{
+	InitItem();
 	return S_OK;
 }
 
@@ -438,7 +444,7 @@ HRESULT CGameMgr::InitItem()
 {
 	CGameObject* pObj = nullptr;
 	USES_CONVERSION;
-	for (_uint i = 0; i < 20; i++)
+	for (_uint i = 0; i < 100; i++)
 	{
 		wstring wstrIndxKey = to_wstring(m_iItemIdx);
 		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
@@ -492,9 +498,7 @@ void CGameMgr::SpawnSet(_uint idx)
 		m_vecEnemy[3]->SetOption(&Spawn2);
 		dynamic_cast<CGoblin*>(m_vecEnemy[4])->SetNaviIdx(5);
 		m_vecEnemy[4]->SetOption(&Spawn0);
-		////m_vecEnemy[5]->SetOption(&Spawn0);
-		////m_vecEnemy[6]->SetOption(&Spawn0);
-		////m_vecEnemy[7]->SetOption(&Spawn0);
+
 
 		dynamic_cast<CStaticCamera*>(m_pCamera)->SetTarget(m_vecEnemy[0]);
 		//스폰 이벤트가 끝나면 

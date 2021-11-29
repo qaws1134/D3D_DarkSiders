@@ -19,14 +19,13 @@ CLogo::~CLogo(void)
 HRESULT CLogo::Ready_Scene(void)
 {
 	FAILED_CHECK_RETURN(CScene::Ready_Scene(), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(), E_FAIL);
 
+		FAILED_CHECK_RETURN(Ready_Prototype(), E_FAIL);
+	
 	FAILED_CHECK_RETURN(Ready_Layer_Environment(L"Environment"), E_FAIL);
-
 	FAILED_CHECK_RETURN(Ready_Layer_GameLogic(L"GameLogic"), E_FAIL);
 
-	m_pLoading = CLoading::Create(m_pGraphicDev, CLoading::LOADING_START);
-	NULL_CHECK_RETURN(m_pLoading, E_FAIL);
+
 
 	return S_OK;
 }
@@ -38,29 +37,43 @@ Engine::_int CLogo::Update_Scene(const _float& fTimeDelta)
 
 	if (Key_Down(KEY_SPACE))
 	{
-		CGameObject* pObj =Get_GameObject(L"GameLogic", L"MainLogo");
-		pObj->SetActive(false);
-		m_bSceneStart = true;
+		if (m_bBeginScene)
+		{
+			CGameObject* pObj = Get_GameObject(L"GameLogic", L"MainLogo");
+			pObj->SetActive(false);
 
+		}
 	}
 
 
-	if (m_bSceneStart)
+
+	if (m_pLoading)
 	{
 		if (true == m_pLoading->Get_Finish())
 		{
 			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 			{
 				CScene*		pScene = nullptr;
-
-				pScene = CStartStage::Create(m_pGraphicDev);
+				switch (m_eLoadID)
+				{
+				case CLoading::LOADING_START:
+					pScene = CStartStage::Create(m_pGraphicDev);
+					break;
+				case CLoading::LOADING_STAGE:
+					pScene = CStage::Create(m_pGraphicDev);
+					break;
+				case CLoading::LOADING_END:
+					break;
+				default:
+					break;
+				}
 				NULL_CHECK_RETURN(pScene, E_FAIL);
-
 				FAILED_CHECK_RETURN(Set_Scene(pScene), E_FAIL);
 
 				return iExit;
 			}
 		}
+		
 	}
 	return iExit;
 }
@@ -73,10 +86,6 @@ HRESULT CLogo::Ready_Layer_Environment(const _tchar* pLayerTag)
 	NULL_CHECK_RETURN(pLayer, E_FAIL);
 
 	CGameObject*			pGameObject = nullptr;
-
-
-
-
 
 
 	/*pGameObject = CMainLogo::Create(m_pGraphicDev);
@@ -112,14 +121,7 @@ HRESULT CLogo::Ready_Layer_GameLogic(const _tchar* pLayerTag)
 
 HRESULT CLogo::Ready_Prototype(void)
 {
-	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_TriCol", CTriCol::Create(m_pGraphicDev)), E_FAIL);
-	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_RcTex", CRcTex::Create(m_pGraphicDev)), E_FAIL);
-
-	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Texture_Main", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Logo/Main.png", TEX_NORMAL, 1)), E_FAIL);
-	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Texture_Loading", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Logo/Loading.png", TEX_NORMAL, 1)), E_FAIL);
-
-	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Transform", CTransform::Create(m_pGraphicDev)), E_FAIL);
-	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_NaviMesh", CNaviMesh::Create(m_pGraphicDev)), E_FAIL);
+	//FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_NaviMesh", CNaviMesh::Create(m_pGraphicDev)), E_FAIL);
 
 	return S_OK;
 }
@@ -131,10 +133,26 @@ void CLogo::Render_Scene(void)
 	Render_Font(L"Font_L_Normal", m_pLoading->Get_String(), &_vec2(10.f, 15.f), D3DXCOLOR(1.f, 0.f, 0.f, 1.f));
 
 }
+void CLogo::SetLoading(CLoading::LOADINGID eLoading)
+{
+	m_pLoading = CLoading::Create(m_pGraphicDev, eLoading);
+	m_eLoadID = eLoading;
+}
 CLogo* CLogo::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 {
 	CLogo*	pInstance = new CLogo(pGraphicDev);
 
+	if (FAILED(pInstance->Ready_Scene()))
+		Safe_Release(pInstance);
+
+	return pInstance;
+}
+
+CLogo * CLogo::Create(LPDIRECT3DDEVICE9 pGraphicDev, _bool bBegin)
+{
+	CLogo*	pInstance = new CLogo(pGraphicDev);
+
+	pInstance->SetBegin(bBegin);
 	if (FAILED(pInstance->Ready_Scene()))
 		Safe_Release(pInstance);
 

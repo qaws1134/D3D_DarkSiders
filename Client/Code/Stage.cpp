@@ -26,7 +26,7 @@ HRESULT CStage::Ready_Scene(void)
 
 	FAILED_CHECK_RETURN(Ready_Layer_Environment(L"Environment"), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Layer_GameLogic(L"GameLogic"), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Layer_UI(L"UI"), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Layer_UI(L"UI"), E_FAIL);
 	
 	return S_OK;
 }
@@ -64,7 +64,7 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 	if (Key_Down(KEY_NUM4))
 	{
 		CGameMgr::GetInstance()->GetEnemyBullet(BULLET::BULLET_CALLLIGHTNING);
-		CEffMgr::GetInstance()->SpawnEff(EFFECT::EFFECT_CALLLIGHTNING_START);
+		CEffMgr::GetInstance()->SpawnEff(EFFECT::EFFECT_LIGHTNING);
 	}
 	CGameMgr::GetInstance()->CameraEvent();
 
@@ -113,10 +113,10 @@ void CStage::Begin_Scene()
 		return;
 	CLoadMgr::GetInstance()->SpawnData();
 	Get_GameObject(L"Environment", L"StaticCamera")->SetTarget(CGameMgr::GetInstance()->GetPlayer());
-	CUIMgr::GetInstance()->BeginUISet();
-	CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
-	CUIMgr::GetInstance()->InitToastInfo(m_pGraphicDev);
-	CGameMgr::GetInstance()->InitObjPool();
+	//CUIMgr::GetInstance()->BeginUISet();
+	//CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
+	//CUIMgr::GetInstance()->InitToastInfo(m_pGraphicDev);
+	CGameMgr::GetInstance()->InitStageObjPool();
 	CScene::Begin_Scene();
 }
 
@@ -251,7 +251,7 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 	//매니져 돌면서 레이어 추가
 
 	//리스트를 반환 
-	CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
+	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
 	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
 	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
 	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
@@ -259,17 +259,17 @@ HRESULT CStage::Ready_Layer_UI(const _tchar * pLayerTag)
 	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
 	//CGameMgr::GetInstance()->TakeStone(UI::STONE::ANT);
 
-	for (auto iter : CUIMgr::GetInstance()->InitCreateUI(m_pGraphicDev))
-	{
-		for (auto iter_second : iter.second)
-		{
-			//auto iter_find = m_mapLayer.find(L"GameLogic");
-			//iter_second->SetTarget(iter_find->second->Get_GameObject(L"Player"));
-			//NULL_CHECK_RETURN(iter_second, E_FAIL);
-			//Obj 태그 반환 
-			FAILED_CHECK_RETURN(pLayer->Add_GameObject(dynamic_cast<CUI*>(iter_second)->GetObjTag().c_str(), iter_second), E_FAIL);
-		}
-	}
+	//for (auto iter : CUIMgr::GetInstance()->InitCreateUI(m_pGraphicDev))
+	//{
+	//	for (auto iter_second : iter.second)
+	//	{
+	//		//auto iter_find = m_mapLayer.find(L"GameLogic");
+	//		//iter_second->SetTarget(iter_find->second->Get_GameObject(L"Player"));
+	//		//NULL_CHECK_RETURN(iter_second, E_FAIL);
+	//		//Obj 태그 반환 
+	//		FAILED_CHECK_RETURN(pLayer->Add_GameObject(dynamic_cast<CUI*>(iter_second)->GetObjTag().c_str(), iter_second), E_FAIL);
+	//	}
+	//}
 
 	m_mapLayer.emplace(pLayerTag, pLayer);
 	return S_OK;

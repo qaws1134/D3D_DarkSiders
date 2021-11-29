@@ -152,6 +152,10 @@ void CGrinner::Render_Object(void)
 	//m_pMeshCom->Play_Animation(0.f);
 
 	m_pMeshCom->Play_Animation(fTimeDelta);
+	for (auto iter : m_mapColider)
+	{
+		iter.second->Update_Object(fTimeDelta);
+	}
 
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();

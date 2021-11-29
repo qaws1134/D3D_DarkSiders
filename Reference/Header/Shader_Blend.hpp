@@ -48,10 +48,12 @@ technique Default_Device
 	pass Directional
 	{
 		zwriteenable = false;
-		
-		Alphablendenable = true;
-		srcblend = srcalpha;
-		destblend = invsrcalpha;
+
+
+		AlphaTestEnable = true;
+		AlphaFunc = Greater;
+		AlphaRef = 0;
+
 
 		vertexshader = NULL;
 		pixelshader = compile ps_3_0 PS_TEMP();

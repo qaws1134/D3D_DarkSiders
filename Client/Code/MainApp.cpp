@@ -22,9 +22,18 @@ HRESULT CMainApp::Ready_MainApp(void)
 	FAILED_CHECK_RETURN(SetUp_DefaultSetting(&m_pGraphicDev), E_FAIL);
 
 	FAILED_CHECK_RETURN(Ready_Renderer(m_pGraphicDev), E_FAIL);
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_TriCol", CTriCol::Create(m_pGraphicDev)), E_FAIL);
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_RcTex", CRcTex::Create(m_pGraphicDev)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Texture_Main", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Logo/Main.png", TEX_NORMAL, 1)), E_FAIL);
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Texture_Loading", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Logo/Loading.png", TEX_NORMAL, 1)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Transform", CTransform::Create(m_pGraphicDev)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Scene(m_pGraphicDev, &m_pManagementClass), E_FAIL);
 	
 	CGameMgr::GetInstance()->SetDevice(m_pGraphicDev);
+
+
 	return S_OK;
 }
 
@@ -96,9 +105,9 @@ HRESULT CMainApp::Ready_Scene(LPDIRECT3DDEVICE9& pGraphicDev, CManagement** ppMa
 	FAILED_CHECK_RETURN(Create_Management(pGraphicDev,ppManagement), E_FAIL);
 	(*ppManagement)->AddRef();
 	
-	pScene = CLogo::Create(pGraphicDev);
+	pScene = CLogo::Create(pGraphicDev,true);
 	NULL_CHECK_RETURN(pScene, E_FAIL);
-
+	dynamic_cast<CLogo*>(pScene)->SetLoading(CLoading::LOADING_START);
 	FAILED_CHECK_RETURN((*ppManagement)->Set_Scene(pScene), E_FAIL);
 	
 	return S_OK;

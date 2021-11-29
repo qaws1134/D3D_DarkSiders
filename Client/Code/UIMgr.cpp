@@ -280,6 +280,17 @@ void CUIMgr::InitToast(LPDIRECT3DDEVICE9 pGraphicDev)
 	pGameObject->SetZPos(fBgZ, ID_DYNAMIC);
 	m_listToastMsg.emplace_back(pGameObject);
 
+	//Key아이콘
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(820.f, 710.f ), _vec2(60.f, 60.f), 4, L"Proto_Texture_Store_Active_Info", L"UI_Info_Exit"), bActive);
+	pGameObject->SetZPos(fIconZ, ID_DYNAMIC);
+	m_listToastMsg.emplace_back(pGameObject);
+
+	_uint ToastIdx = 0;
+	//내용
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal_Small",L"를 누르면 닫습니다", _vec2(850.f, 700.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"UI_Info_Exit_Font"+to_wstring(ToastIdx));
+	m_listToastMsg.emplace_back(pGameObject);
+
 	m_mapHead.emplace(UI::LISTKEY_TOASTMSG, m_listToastMsg);
 }
 
@@ -345,6 +356,19 @@ void CUIMgr::InitStore(LPDIRECT3DDEVICE9 pGraphicDev)
 	//Info
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, _float(WINCY*0.5)+300.f), _vec2(_float(WINCX)*0.5f-50.f, _float(WINCY)*0.3f-100.f), 2, L"Proto_Texture_Store_Base", L"UI_Store_Info"), bActive);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+	m_listStoreBase.emplace_back(pGameObject);
+
+	//소울 아이콘
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(1000.f, 50.f), _vec2(50.f, 50.f), 0, L"Proto_Texture_Store_Soul", L"UI_Store_Soul_Base"), bActive);
+	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+	m_listStoreBase.emplace_back(pGameObject);
+
+
+	_uint iSoul = CGameMgr::GetInstance()->GetSoul();
+	//폰트 소울
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal",to_wstring(iSoul).c_str() ,_vec2(1050.f, 45.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreBase_Font_L_Normal" + to_wstring(0));
+	CGameMgr::GetInstance()->SetFontObj(pGameObject);
 	m_listStoreBase.emplace_back(pGameObject);
 
 
@@ -641,7 +665,7 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 		break;
 	case UI::ITEM_BOX1:
 	{
-		iPrice = 500;
+		iPrice = 100;
 		tNameFont.wstrText = L"하급 상자";
 		tInfoFont.wstrText = L"하급 스톤이 나옵니다 ";
 
@@ -649,35 +673,35 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 		break;
 	case UI::ITEM_BOX2: 
 	{
-		iPrice = 500;
+		iPrice = 200;
 		tNameFont.wstrText = L"중급 상자";
 		tInfoFont.wstrText = L"중급 스톤이 나옵니다 ";
 	}
 		break;
 	case UI::ITEM_BOX3: 
 	{
-		iPrice = 500;
+		iPrice = 300;
 		tNameFont.wstrText = L"고급 상자";
 		tInfoFont.wstrText = L"고급 스톤이 나옵니다 ";
 	}
 		break;
 	case UI::ITEM_GRINNER: 
 	{
-		iPrice = 500;
+		iPrice = 400;
 		tNameFont.wstrText = L"그리너 스톤";
 		tInfoFont.wstrText = L"그리너 스톤을 획득합니다";
 	}
 		break;
 	case UI::ITEM_SKULLMAGE: 
 	{
-		iPrice = 500;
+		iPrice = 450;
 		tNameFont.wstrText = L"해골 마법사 스톤";
 		tInfoFont.wstrText = L"해골 마법사 스톤을 획득합니다";
 	}
 		break;
 	case UI::ITEM_BROODI: 
 	{
-		iPrice = 500;
+		iPrice = 650;
 		tNameFont.wstrText = L"브루디 스톤";
 		tInfoFont.wstrText = L"브루디 스톤을 획득합니다 ";
 	}
@@ -731,13 +755,13 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 		listItemInsert.emplace_back(pGameObject);
 	}
 
-
 	//소울 아이콘
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(1050.f, 165.f + (m_iStoreIdx*90.f)), _vec2(fIconInfoSize, fIconInfoSize), 0, L"Proto_Texture_Store_Soul", L"UI_Store_Soul" + wstrListIdx), bActive);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
 	listItemInsert.emplace_back(pGameObject);
 
-	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal_Small",to_wstring(iPrice), _vec2(1065, 160.f + (m_iStoreIdx*90.f)), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Light",to_wstring(iPrice), _vec2(1065, 160.f + (m_iStoreIdx*90.f)), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
+	
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Light_Price" + wstrListIdx);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
 
@@ -821,7 +845,7 @@ void CUIMgr::MoveStoreStoneList(_float fTimeDelta, _float fSpeed)
 void CUIMgr::SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone) //순서대로 아래로 생성 열때마다 맨위로 조정 
 {
 	auto iter_find = m_mapStoneList.find(tStone.eCreature);
-	if (iter_find != m_mapStoneList.end())
+	if (iter_find == m_mapStoneList.end())
 	{
 		return;
 	}
@@ -967,7 +991,7 @@ void CUIMgr::SetActiveToastMsgItemInfo(_uint iSelIdx)
 	{
 	case UI::ITEM_BOX1:
 		SetActiveToastBoxUI(true);
-		SetActiveToastInfoUI(true, rand() % 3);
+		SetActiveToastInfoUI(true, RandNext(0,3));
 		break;
 	case UI::ITEM_BOX2:
 		break;
@@ -1103,10 +1127,11 @@ void CUIMgr::SetActiveToastBoxUI(_bool bActive)
 void CUIMgr::SetActiveToastInfoUI(_bool bActive, _uint iStoneIdx)
 {
 	auto iter_find = m_mapToastInfo.find(iStoneIdx);
-
+	m_iToastInfoIdx = iStoneIdx;
 	for (auto iter : iter_find->second)
+	{
 		dynamic_cast<CUI*>(iter)->SetActive(bActive);
-
+	}
 }
 
 list<CGameObject*> CUIMgr::GetStoneSelIdxList(wstring wstrObjtag, _uint* iStoneIdx)
@@ -1192,6 +1217,105 @@ _bool CUIMgr::GetStoneInfoUIActive(_uint iStoneIdx)
 _bool CUIMgr::GetToastUIActive()
 {
 	return m_listToastMsg.front()->GetActive();
+}
+_uint CUIMgr::GetStoreItemPrice(UI::ITEM eItemIdx)
+{
+
+	_uint iPrice;
+
+	switch (eItemIdx)
+	{
+	case UI::ACTIVE_AIR_SPIN:
+	{
+		iPrice = 400;
+	}
+	break;
+
+	case UI::ACTIVE_LIGHTATTACK1UP:
+	{
+		iPrice = 800;
+	}
+	break;
+	case UI::ACTIVE_LIGHTATTACK2UP:
+	{
+		iPrice = 1200;
+	}
+	break;
+	case UI::ACTIVE_HEAVYATTACK1UP:
+	{
+		iPrice = 1300;
+	}
+	break;
+	case UI::ACTIVE_HEAVYATTACK2UP: {
+		iPrice = 1600;
+	}
+	break;
+	case UI::ACTIVE_DASHATTACK: {
+
+		iPrice = 1300;
+
+	}
+								break;
+	case UI::ACTIVE_REFLECT: {
+
+		iPrice = 1300;
+	}
+							 break;
+	case UI::ACTIVE_REFLECTUP: {
+		//아이콘
+		iPrice = 1200;
+	}
+							   break;
+	case UI::ACTIVE_AIR_DASH: {
+		iPrice = 1200;
+	}
+							  break;
+	case UI::ACTIVE_COMBO_ELEMENT: {
+		iPrice = 1700;
+
+	}
+								   break;
+	case UI::ITEM_BOX1:
+	{
+		iPrice = 100;
+
+	}
+	break;
+	case UI::ITEM_BOX2:
+	{
+		iPrice = 200;
+	}
+	break;
+	case UI::ITEM_BOX3:
+	{
+		iPrice = 300;
+	}
+	break;
+	case UI::ITEM_GRINNER:
+	{
+		iPrice = 400;
+	}
+	break;
+	case UI::ITEM_SKULLMAGE:
+	{
+		iPrice = 450;
+	}
+	break;
+	case UI::ITEM_BROODI:
+	{
+		iPrice = 650;
+	}
+	break;
+	case UI::ITEM_BAT:
+	{
+		iPrice = 500;
+	}
+	break;
+	case UI::ITEM_END:
+		break;
+	}
+	return iPrice;
+
 }
 _bool CUIMgr::GetStoreUIActive()
 {

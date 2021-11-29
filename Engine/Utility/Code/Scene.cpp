@@ -57,6 +57,12 @@ Engine::_int Engine::CScene::Update_Scene(const _float& fTimeDelta)
 	{
 		CColMgr::Col_Body(CHECK_INTERACTION, *GetMapObj(L"Player"), *GetMapObj(L"Serpent"), MESH_DYNAMIC);
 	}
+	if (GetMapObj(L"Player") != nullptr &&GetMapObj(L"JumpBall") != nullptr)
+	{
+		CColMgr::Col_Body(CHECK_JUMPBAll, *GetMapObj(L"Player"), *GetMapObj(L"JumpBall"), MESH_DYNAMIC);
+	}
+
+
 	return iResult;
 }
 
@@ -71,6 +77,24 @@ void CScene::Begin_Scene(void)
 	m_bBegin = true;
 }
 
+CLayer* CScene::GetLayer(wstring LayerTag)
+{
+	if (m_mapLayer.empty())
+		return nullptr;
+	auto iter_find = find_if(m_mapLayer.begin(), m_mapLayer.end(), CTag_Finder(LayerTag.c_str()));
+	if (iter_find == m_mapLayer.end())
+		return nullptr;
+	return iter_find->second;
+}
+
+void CScene::Add_Layer(map<const _tchar*, CLayer*>& mapLayer)
+{
+	for (auto iter : mapLayer)
+	{
+		m_mapLayer.emplace(iter.first, iter.second);
+	}
+}
+
 map<const _tchar*, CGameObject*>* CScene::GetMapObj(wstring LayerTag)
 {
 	//find_if(m_mapLayer.begin(), m_mapLayer.end(), CTag_Finder(LayerTag.c_str()));
@@ -79,6 +103,17 @@ map<const _tchar*, CGameObject*>* CScene::GetMapObj(wstring LayerTag)
 	if (iter_find == m_mapLayer.end())
 		return nullptr;
 	return  &(iter_find->second->GetMapObj());
+}
+
+void CScene::EraseMapObj(wstring LayerTag)
+{
+	if (m_mapLayer.empty())
+		return;
+	auto iter_find = find_if(m_mapLayer.begin(), m_mapLayer.end(), CTag_Finder(LayerTag.c_str()));
+	if (iter_find == m_mapLayer.end())
+		return;
+
+	m_mapLayer.erase(iter_find->first);
 }
 //void CScene::Release_SaveLayer()
 //{

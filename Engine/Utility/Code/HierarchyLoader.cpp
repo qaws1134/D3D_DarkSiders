@@ -52,6 +52,8 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 	pDerivedMeshContainer->pAdjacency = new _ulong[dwNumFaces * 3];
 	memcpy(pDerivedMeshContainer->pAdjacency, pAdjacency, sizeof(_ulong) * dwNumFaces * 3);
 
+	
+
 	_ulong	dwFVF = pMesh->GetFVF();
 
 	if (!(dwFVF & D3DFVF_NORMAL))
@@ -68,14 +70,24 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 
 	pDerivedMeshContainer->pMaterials = new D3DXMATERIAL[pDerivedMeshContainer->NumMaterials];
 	ZeroMemory(pDerivedMeshContainer->pMaterials, sizeof(D3DXMATERIAL) * pDerivedMeshContainer->NumMaterials);
-
+	
 	pDerivedMeshContainer->ppTexture = new LPDIRECT3DTEXTURE9[pDerivedMeshContainer->NumMaterials];
 	ZeroMemory(pDerivedMeshContainer->ppTexture, sizeof(LPDIRECT3DTEXTURE9) * pDerivedMeshContainer->NumMaterials);
+
+	pDerivedMeshContainer->ppNormalTextures = new LPDIRECT3DTEXTURE9[pDerivedMeshContainer->NumMaterials]();
+	//pDerivedMeshContainer->ppEmissiveTextures = new LPDIRECT3DTEXTURE9[pDerivedMeshContainer->NumMaterials]();
+
+
+
+
 
 	if (0 != NumMaterials)
 	{
 		memcpy(pDerivedMeshContainer->pMaterials, pMaterials, sizeof(D3DXMATERIAL) * pDerivedMeshContainer->NumMaterials);
-
+		
+		_tchar szNormalTex[128] = L"";
+		_tchar szSpecTex[128] = L"";
+		
 		for (_ulong i = 0; i < pDerivedMeshContainer->NumMaterials; ++i)
 		{
 			_tchar	szFullPath[MAX_PATH] = L"";
@@ -90,6 +102,33 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 
 			if (FAILED(D3DXCreateTextureFromFile(m_pGraphicDev, szFullPath, &pDerivedMeshContainer->ppTexture[i])))
 				return E_FAIL;
+
+
+			wstring wstrFileName = szFileName;
+			size_t iSize= wstrFileName.find(L"_d.",0);
+			wstrFileName[iSize + 1] = L'n';
+
+			lstrcpy(szFullPath, m_pPath);
+			lstrcat(szFullPath, wstrFileName.c_str());
+
+
+
+			if (FAILED(D3DXCreateTextureFromFile(m_pGraphicDev, szFullPath, &pDerivedMeshContainer->ppNormalTextures[i])))
+			{
+				pDerivedMeshContainer->ppNormalTextures[i] = nullptr;
+			}
+
+			// wstrFileName = szFileName;
+			//iSize = wstrFileName.find(L"_d.", 0);
+			//wstrFileName[iSize + 1] = L'e';
+
+			//lstrcpy(szFullPath, m_pPath);
+			//lstrcat(szFullPath, wstrFileName.c_str());
+
+			//if (FAILED(D3DXCreateTextureFromFile(m_pGraphicDev, szFullPath, &pDerivedMeshContainer->ppEmissiveTextures[i])))
+			//{
+			//	pDerivedMeshContainer->ppEmissiveTextures[i] = nullptr;
+			//}
 		}
 
 	}
@@ -103,6 +142,8 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 		pDerivedMeshContainer->pMaterials[0].MatD3D.Power = 0.f;
 
 		pDerivedMeshContainer->ppTexture[0] = nullptr;
+		pDerivedMeshContainer->ppNormalTextures[0] = nullptr;
+		//pDerivedMeshContainer->ppEmissiveTextures[0] = nullptr;
 	}
 
 	if (nullptr == pSkinInfo)
@@ -135,6 +176,8 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 
 STDMETHODIMP Engine::CHierarchyLoader::DestroyFrame(THIS_ LPD3DXFRAME pFrameToFree)
 {
+	if (nullptr == pFrameToFree)
+		return S_OK;
 	Safe_Delete_Array(pFrameToFree->Name);
 
 	if (nullptr != pFrameToFree->pFrameSibling)
@@ -156,9 +199,19 @@ STDMETHODIMP Engine::CHierarchyLoader::DestroyMeshContainer(THIS_ LPD3DXMESHCONT
 	D3DXMESHCONTAINER_DERIVED*		pDerivedMeshContainer = (D3DXMESHCONTAINER_DERIVED*)pMeshContainerToFree;
 
 	for (_ulong i = 0; i < pDerivedMeshContainer->NumMaterials; ++i)
+	{
 		Safe_Release(pDerivedMeshContainer->ppTexture[i]);
 
+		if (nullptr != pDerivedMeshContainer->ppNormalTextures[i])
+			Engine::Safe_Release(pDerivedMeshContainer->ppNormalTextures[i]);
+
+		//if (nullptr != pDerivedMeshContainer->ppEmissiveTextures[i])
+		//	Engine::Safe_Release(pDerivedMeshContainer->ppEmissiveTextures[i]);
+
+	}
 	Safe_Delete_Array(pDerivedMeshContainer->ppTexture);
+	Engine::Safe_Delete_Array(pDerivedMeshContainer->ppNormalTextures);
+	//Engine::Safe_Delete_Array(pDerivedMeshContainer->ppEmissiveTextures);
 	Safe_Delete_Array(pDerivedMeshContainer->Name);
 	Safe_Delete_Array(pDerivedMeshContainer->pAdjacency);
 	Safe_Delete_Array(pDerivedMeshContainer->pMaterials);

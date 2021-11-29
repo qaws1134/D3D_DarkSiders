@@ -26,34 +26,13 @@ void CEffMgr::SpawnEff(EFFECT::TYPE eEffect)
 	//한번 타임에 여러개 생성 시 
 	switch (eEffect)
 	{
-	case EFFECT::EFFECT_CALLLIGHTNING_START:
+	case EFFECT::EFFECT_LIGHTNING:
 
 		pObj = CGameMgr::GetInstance()->GetEffect(eEffect);
 		m_listEffect.emplace_back(pObj);
 		pObj = CGameMgr::GetInstance()->GetParticle(PARTICLEEFF::PARTICLE_LIGHTNING);
 		break;
-	case EFFECT::EFFECT_CALLLIGHTNING_LOOP:
-		break;
-	case EFFECT::EFFECT_CALLLIGHTNING_END:
-		break;
-	case EFFECT::EFFECT_ORBCHAGE_START:
-		break;
-	case EFFECT::EFFECT_ORBCHAGE_LOOP:
-		break;
-	case EFFECT::EFFECT_ORBCHAGE_END:
-		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_START:
-		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_LOOP:
-		break;
-	case EFFECT::EFFECT_TSUNAMICHARGE_END:
-		break;
-	case EFFECT::EFFECT_TAIL_START:
-		break;
-	case EFFECT::EFFECT_TAIL_LOOP:
-		break;
-	case EFFECT::EFFECT_TAIL_END:
-		break;
+
 	case EFFECT::EFFECT_END:
 		break;
 	default:

@@ -108,7 +108,7 @@ Material Dn_EN_Inst_Stairs_A {
  0.000000;0.000000;0.000000;;
 
  TextureFilename {
-  "Eden_Staire.tga";
+  "Eden_Staire_d.tga";
  }
 }
 
@@ -141,7 +141,7 @@ Material Material__2560 {
  0.000000;0.000000;0.000000;;
 
  TextureFilename {
-  "Eden_Staire.tga";
+  "Eden_Staire_d.tga";
  }
 }
 

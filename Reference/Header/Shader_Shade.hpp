@@ -14,7 +14,6 @@ sampler DepthSampler = sampler_state
 };
 
 vector		g_vLightDir;
-
 vector		g_vLightDiffuse;
 vector		g_vLightAmbient;
 
@@ -48,11 +47,18 @@ PS_OUT		PS_DIRECTIONAL(PS_IN In)
 	float  fViewZ = vDepth.y * 1000.f;
 	
 	// 텍스쳐 uv상태의 노말 값을 월드 좌표로 변환 시켜줘야 함(0 ~ 1 => -1 ~ 1)
+	
+	
+	
 	vNormal = vector(vNormal.xyz * 2.f - 1.f, 0.f);
+
+	//Out.vShade = saturate(dot(normalize(vector(0.5f,1.f,0.f, 0.5f)) * -1.f, vNormal)) * (vector(1.f,1.f,1.f,1.f) * g_vMtrlDiffuse) + (vector(0.2f,0.2f,0.2f,1.f) * g_vMtrlAmbient);
+
+
+
+
 	Out.vShade = saturate(dot(normalize(vector(g_vLightDir.xyz, 0.f)) * -1.f, vNormal)) * (g_vLightDiffuse * g_vMtrlDiffuse) + (g_vLightAmbient * g_vMtrlAmbient);
-	vector	vReflect = normalize(reflect(normalize(vector(g_vLightDir.xyz, 0.f)), vNormal));
-	
-	
+
 	vector		vWorldPos;
 
 	// 텍스쳐 0 ~ 1 -> 투영 -1 ~ 1
@@ -69,6 +75,7 @@ PS_OUT		PS_DIRECTIONAL(PS_IN In)
 	vWorldPos = mul(vWorldPos, g_matInvProj);
 	vWorldPos = mul(vWorldPos, g_matInvView);
 	
+	vector	vReflect = normalize(reflect(normalize(vector(g_vLightDir.xyz, 0.f)), vNormal));
 	vector	vLook = normalize(vWorldPos - g_vCamPos);
 
 	Out.vSpecular = pow(saturate(dot(vReflect, vLook * -1.f)), g_fPower);
@@ -96,6 +103,10 @@ technique Default_Device
 {
 	pass Directional
 	{
+		AlphaBlendEnable = true;
+		SrcBlend = one;
+		DestBlend = one;
+
 		zwriteenable = false;
 		vertexshader = NULL;
 		pixelshader = compile ps_3_0 PS_DIRECTIONAL();

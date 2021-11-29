@@ -47,12 +47,12 @@ void CBuilding::Render_Object(void)
 	_uint iMaxPass = 0;
 
 	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
-											// 2인자 : 시작하는 방식을 묻는 FLAG
-	pEffect->BeginPass(0);
+	//										// 2인자 : 시작하는 방식을 묻는 FLAG
+	//pEffect->BeginPass(1);
 
 	m_pMeshCom->Render_Meshes(pEffect);
 
-	pEffect->EndPass();
+	//pEffect->EndPass();
 	pEffect->End();
 
 	Safe_Release(pEffect);

@@ -24,12 +24,14 @@ HRESULT CWaterFall::Ready_Object(void)
 {
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
+	m_fUVSpeed = GetRandomFloat(0.2f, 0.5f);
 	return S_OK;
 }
 
 _int CWaterFall::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
+	m_fAccTime += fTimeDelta;
 	Add_RenderGroup(RENDER_NONALPHA,this);
 	return iExit;
 }
@@ -45,7 +47,7 @@ void CWaterFall::Render_Object(void)
 
 	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
 											// 2인자 : 시작하는 방식을 묻는 FLAG
-	pEffect->BeginPass(0);
+	pEffect->BeginPass(2);
 
 	m_pMeshCom->Render_Meshes(pEffect);
 
@@ -102,6 +104,7 @@ HRESULT CWaterFall::Add_Component(void)
 	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
+	//Mesh
 	pComponent = m_pMeshCom = dynamic_cast<CStaticMesh*>(Clone_Prototype(m_wstrProtoMesh.c_str()));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
@@ -134,7 +137,11 @@ HRESULT CWaterFall::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	pEffect->SetVector("g_vMtrlSpecular", (_vec4*)&tMtrl.Specular);
 	pEffect->SetVector("g_vMtrlAmbient", (_vec4*)&tMtrl.Ambient);
 
+
 	pEffect->SetFloat("g_fPower", tMtrl.Power);
+	pEffect->SetFloat("g_fUVTime", m_fAccTime);
+	pEffect->SetFloat("g_fUVSpeed", m_fUVSpeed);
+
 
 	const D3DLIGHT9*		pLightInfo = Get_Light();
 	NULL_CHECK_RETURN(pLightInfo, E_FAIL);
@@ -149,4 +156,15 @@ HRESULT CWaterFall::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	pEffect->SetVector("g_vCamPos", (_vec4*)&matView._41);
 
 	return S_OK;
+}
+
+
+_float CWaterFall::GetRandomFloat(_float lowBound, _float highBound)
+{
+	if (lowBound >= highBound) // bad input
+		return lowBound;
+
+	float f = (rand() % 10000) * 0.0001f;
+
+	return (f * (highBound - lowBound)) + lowBound;
 }

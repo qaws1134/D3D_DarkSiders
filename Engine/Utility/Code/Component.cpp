@@ -29,6 +29,6 @@ Engine::CComponent::~CComponent(void)
 
 void Engine::CComponent::Free(void)
 {
-	Safe_Release(m_pGraphicDev);
+	Safe_Release(m_pGraphicDev); 
 }
 

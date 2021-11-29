@@ -97,7 +97,7 @@ Material Material__2315 {
  0.000000;0.000000;0.000000;;
 
  TextureFilename {
-  "Eden_Staire.tga";
+  "Eden_Staire_d.tga";
  }
 }
 

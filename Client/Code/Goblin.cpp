@@ -147,6 +147,10 @@ void CGoblin::Render_Object(void)
 
 	m_pMeshCom->Set_AnimationIndex(m_eCurAniState, m_bBlend);
 	m_pMeshCom->Play_Animation(fTimeDelta);
+	for (auto iter : m_mapColider)
+	{
+		iter.second->Update_Object(fTimeDelta);
+	}
 
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
@@ -231,13 +235,14 @@ void CGoblin::StateChange()
 				m_iPatternNum = RandNext(0, 3);
 			//m_iPrePatternNum = m_iPatternNum;
 			//m_iPatternNum = 1;
-			m_bSpear = false;
+			//m_bSpear = false;
 			SetAtkPattern();
 		}
 			break;
 		case Goblin::STATE_TURN:
 			m_fTurnAngle = m_fAngle;
 			m_bTurnEnd = false;
+			m_bSpear = false;
 			m_fPatternSpeed = 0.f;
 			m_fPatternTimer = 0.5f;
 			m_bTurnStartCross = m_bTurnCross;
@@ -267,19 +272,24 @@ void CGoblin::StateChange()
 			break;
 		case Goblin::STATE_DEAD:
 			{
-			m_eCurAniState = Goblin::Goblin_Death;
-			CGameObject* pObj;
-			_vec3 vPos;
-			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-			for (_uint i = 0; i < RandNext(5,20); i++)
-			{
-				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
-				pObj->SetPos(vPos, ID_DYNAMIC);
-				dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(29);
+				m_eCurAniState = Goblin::Goblin_Death;
+				CGameObject* pObj;
+				_vec3 vPos;
+				_uint iNavIdx = m_pNavi->Get_CellIndex();
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+				for (_uint i = 0; i < RandNext(5, 20); i++)
+				{
+					pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
+					pObj->SetPos(vPos, ID_DYNAMIC);
+					dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(iNavIdx);
 
-			}
-			if(RandNext(0,2)==0)
-				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+				}
+				if (RandNext(0, 2) == 0)
+				{
+					pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+					pObj->SetPos(vPos, ID_DYNAMIC);
+					dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(iNavIdx);
+				}
 			}
 			break;
 		case Goblin::STATE_END:
@@ -404,6 +414,7 @@ void CGoblin::StateActor(_float fDeltaTime)
 	if(!m_bSpawnEnd)
 		m_pNavi->Set_CellIndex(m_iNaviIdx);
 	vPos = m_pNavi->MoveOn_NaviMesh(&vInitPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom);
+
 	m_fNaviY = vPos.y;
 	
 	DirSet(fDeltaTime, m_fAngleSpeed, false);
@@ -530,7 +541,6 @@ void CGoblin::StateActor(_float fDeltaTime)
 		{
 			//레이어는 뒤에 메쉬 명 붙여서
 			//const _tchar* pConvLayerTag = W2BSTR(LayerTag.c_str());
-
 			wstring ColKey = iter.first;
 			if (iter.second->GetCol())
 			{
@@ -548,9 +558,10 @@ void CGoblin::StateActor(_float fDeltaTime)
 					else if (L"Col_Back" == ColKey)
 					{
 						m_eCurAniState = Goblin::Goblin_Impact_B;
-						iter.second->SetCol(false);
+					
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
+						iter.second->SetCol(false);
 						m_fHitTime = 0.1f;
 						break;
 					}
@@ -561,15 +572,22 @@ void CGoblin::StateActor(_float fDeltaTime)
 						L"Col_Back" == ColKey)
 					{
 						m_eCurAniState = Goblin::Goblin_Knock_b_Apex;
-						iter.second->SetCol(false);
+
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
 						m_fHitTime = 1.f;
 						m_bHitStart = true;
+						iter.second->SetCol(false);
 						break;
 					}
 				}
-
+			}
+		}
+		for (auto iter : m_mapColider)
+		{
+			if (iter.second->GetCol())
+			{
+				iter.second->SetCol(false);
 			}
 		}
 		break;
@@ -615,11 +633,11 @@ void CGoblin::StateActor(_float fDeltaTime)
 		}
 		break;
 	case Goblin::Goblin_Attack_Spear:
-		if (m_pMeshCom->Is_Animationset(0.4))
+		if (m_pMeshCom->Is_Animationset(0.3))
 		{
 			if (!m_bSpear)
 			{
-				SpawnBarfinBullet(m_fSpearAngle);
+				SpawnGoblinBullet(m_fSpearAngle);
 				m_bSpear = true;
 			}
 		}
@@ -1056,7 +1074,7 @@ void CGoblin::DirSet(_float fDeltaTime, _float fAngleSpeed, _bool bAngleSet)
 	}
 }
 
-void CGoblin::SpawnBarfinBullet(_float fAngle)
+void CGoblin::SpawnGoblinBullet(_float fAngle)
 {
 	//총알 생성
 	CGameObject* pBullet = nullptr;

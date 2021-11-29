@@ -25,7 +25,7 @@ public:
 	virtual HRESULT Ready_Object(void) override;
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 	virtual void Render_Object(void) override;
-
+	_float GetRandomFloat(_float lowBound, _float highBound);
 public:
 	void SetProtoMesh(wstring wstrProtoMesh) { m_wstrProtoMesh = wstrProtoMesh; }
 private:
@@ -40,6 +40,8 @@ private:
 	CShader*			m_pShaderCom = nullptr;
 
 
+	_float m_fAccTime;
+	_float m_fUVSpeed;
 	_vec3		m_vDir;
 	wstring		m_wstrProtoMesh;
 public:

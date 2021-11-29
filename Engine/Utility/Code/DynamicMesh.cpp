@@ -168,6 +168,22 @@ void CDynamicMesh::Render_Meshes(LPD3DXEFFECT & pEffect)
 		for (_ulong i = 0; i < pDerivedMeshContainer->NumMaterials; ++i)
 		{
 			pEffect->SetTexture("g_BaseTexture", pDerivedMeshContainer->ppTexture[i]);
+			
+			if (nullptr != (iter)->ppNormalTextures[i])
+				pEffect->SetTexture("g_NormalTexture", (iter)->ppNormalTextures[i]);
+
+
+			//if (nullptr != (iter)->ppEmissiveTextures[i])
+			//{
+			//	pEffect->SetTexture("g_EmissiveTexture", (iter)->ppEmissiveTextures[i]);
+			//	pEffect->SetBool("g_bEmissiveExist", true);
+			//}
+			//else
+			//{
+			//	pEffect->SetBool("g_bEmissiveExist", false);
+			//}
+			
+			
 			pEffect->CommitChanges();
 			
 			pDerivedMeshContainer->MeshData.pMesh->DrawSubset(i);

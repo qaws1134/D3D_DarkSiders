@@ -23,10 +23,11 @@ CLoadMgr::~CLoadMgr(void)
 
 HRESULT CLoadMgr::LoadData(wstring szFilePath)
 {
-	LoadMeshTool(szFilePath+L"Map35Obj.dat");
+	//LoadMeshTool(szFilePath+L"Map39Obj.dat");
 	//LoadColTool(szFilePath+L"Colider28.dat");
 	//LoadMeshTool(szFilePath+L"TestNpc.dat");
 	//LoadMeshTool(szFilePath+L"Test4.dat");
+	LoadMeshTool(szFilePath + L"TestEffect.dat");
 	//LoadMeshTool(szFilePath + L"MapStart.dat");
 
 	return S_OK;
@@ -34,9 +35,9 @@ HRESULT CLoadMgr::LoadData(wstring szFilePath)
 
 HRESULT CLoadMgr::LoadStartStageData(wstring szFilePath)
 {
-	LoadColTool(szFilePath + L"Colider28.dat");
+	LoadColTool(szFilePath + L"Colider29.dat");
 	LoadMeshTool(szFilePath + L"MapStart.dat");
-
+	//LoadMeshTool(szFilePath + L"TestEffect.dat");
 	return S_OK;
 }
 

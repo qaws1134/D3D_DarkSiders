@@ -77,6 +77,8 @@ namespace Engine
 	typedef struct D3DXMESHCONTAINER_DERIVED : public D3DXMESHCONTAINER
 	{
 		LPDIRECT3DTEXTURE9*		ppTexture;
+		LPDIRECT3DTEXTURE9*		ppNormalTextures;
+		//LPDIRECT3DTEXTURE9*		ppEmissiveTextures;
 
 		LPD3DXMESH				pOriMesh;		// 스키닝이 적용되기 전 최초 로드상태를 보관하기 위한 컴객체
 

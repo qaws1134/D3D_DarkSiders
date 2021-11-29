@@ -83,6 +83,8 @@ public:
 	_bool GetStoreUIActive();
 	_bool GetToastUIActive();
 
+	_uint GetStoreItemPrice(UI::ITEM eItemIdx);
+	
 	list<CGameObject*> GetStoneSelIdxList(wstring wstrObjtag,_uint* iStoneIdx);
 	list<CGameObject*> GetItemActiveSelIdxList(wstring wstrObjtag, _uint* iStoneIdx);
 	list<CGameObject*> GetItemStoneSelIdxList(wstring wstrObjtag, _uint* iStoneIdx);
@@ -90,7 +92,7 @@ public:
 
 	_uint GetWheelMove();
 	_uint GetPreStoneIdx() { return m_iPreStoneIdx; }
-
+	_uint GetToastInfoIdx() { return m_iToastInfoIdx; }
 
 
 #pragma endregion Get
@@ -133,7 +135,7 @@ private:
 	map<_uint, list<CGameObject*>> m_mapStoreStoneList;
 	
 
-
+	
 
 	UI::STONE	m_eStone;
 
@@ -146,6 +148,8 @@ private:
 
 	_float	m_fPreWheel = 0.f;
 	_uint	m_iPreStoneIdx = 0;
+
+	_uint m_iToastInfoIdx = 0;
 
 	//LPDIRECT3DDEVICE9 m_pGraphicDev;
 
