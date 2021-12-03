@@ -19,7 +19,7 @@ public:
 	static void SetColType(COLCHECK eColCheck,wstring* pDstTag, wstring* pSrcTag);
 	static _bool ColCheckWeapon(CGameObject* pSrcObj,wstring ColTag,CGameObject* pDstColObj, MESHTYPE eMesh);
 	static _bool ColCheckBullet(CGameObject* pSrcObj, wstring ColTag, CGameObject* pDstColObj, MESHTYPE eMesh);
-
+	static _bool ColCheckOrb(CGameObject* pSrcObj, wstring ColTag, CGameObject* pDstColObj, MESHTYPE eMesh);
 };
 END
 #endif // !ColMgr_h__

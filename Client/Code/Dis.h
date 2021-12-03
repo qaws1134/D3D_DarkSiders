@@ -69,6 +69,9 @@ private:
 	_bool	m_bBlend = true;
 	_bool	m_bSpawnEnd=false;
 	_float m_fFrame = 0.f;
+	_bool	m_bSound = false;
+
+
 
 	_bool m_bUIOn=false;
 public:

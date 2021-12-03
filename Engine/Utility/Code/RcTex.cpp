@@ -10,10 +10,10 @@ Engine::CRcTex::CRcTex(LPDIRECT3DDEVICE9 pGraphicDev)
 
 Engine::CRcTex::CRcTex(const CRcTex& rhs)
 	: CVIBuffer(rhs)
-	,m_pPos(rhs.m_pPos)
-	,m_pUV(rhs.m_pUV)
-{
+	, m_pPos(rhs.m_pPos)
+	, m_pUV(rhs.m_pUV)
 
+{
 }
 
 Engine::CRcTex::~CRcTex(void)

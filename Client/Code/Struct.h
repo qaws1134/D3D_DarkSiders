@@ -68,4 +68,16 @@ typedef struct tagCameraEvent
 }CAMEVENT;
 
 
+typedef	struct tagTrail
+{
+	_uint			iTrailCount;
+	_float			fTrailEmitRate;
+	_float			fTrailSize;
+	_vec4			vColor;
+	_uint			iTextureNum;
+
+}TRAIL;
+
+
+
 #endif 

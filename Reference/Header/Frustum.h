@@ -3,6 +3,7 @@
 
 #include "Base.h"
 #include "Engine_Define.h"
+#include "QuadTree.h"
 
 BEGIN(Engine)
 
@@ -13,11 +14,14 @@ private:
 	virtual ~CFrustum(void);
 
 public:
+	LPDIRECT3DDEVICE9		Get_GraphicDev(void) { return m_pGraphicDev; }
+
+public:
 	HRESULT					Ready_Frustum(void);
 	_bool					Isin_Frustum(const _vec3* pPos);
 	_bool					Isin_Frustum(const _vec3* pPos, const _float& fRadius);
 	_bool					Isin_Frustum_ForObject(const _vec3* pWorldPos, const _float& fRadius);
-	void					Isin_Frustum_ForTerrain(const _vec3* pVtxPos, const _ulong& dwCntX, const _ulong& dwCntZ, INDEX32* pIndex, _ulong* pTriCnt);
+	void					Isin_Frustum_ForTerrain(const _vec3* pVtxPos, const _ulong& dwCntX, const _ulong& dwCntZ, INDEX32* pIndex, _ulong* pTriCnt, CQuadTree* pQuadTree = nullptr);
 
 
 private:

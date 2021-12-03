@@ -28,6 +28,12 @@ void Engine::CRenderer::Render_Priority(LPDIRECT3DDEVICE9& pGraphicDev)
 		iter->Render_Object();
 }
 
+void CRenderer::Render_Effect(LPDIRECT3DDEVICE9 & pGraphicDev)
+{
+	for (auto& iter : m_RenderGroup[RENDER_EFFECT])
+		iter->Render_Object();
+}
+
 void Engine::CRenderer::Render_NonAlpha(LPDIRECT3DDEVICE9& pGraphicDev)
 {
 	for (auto& iter : m_RenderGroup[RENDER_NONALPHA])
@@ -84,7 +90,7 @@ void Engine::CRenderer::Free(void)
 
 void Engine::CRenderer::Render_GameObject(LPDIRECT3DDEVICE9& pGraphicDev)
 {
-	Render_Priority(pGraphicDev);
+	//Render_Priority(pGraphicDev);
 
 	// 수업이기 때문에 논알파에 해당하는 오브젝트들만 디퍼드를 적용하여 그리고 있음
 	Render_Deferred(pGraphicDev);
@@ -92,8 +98,8 @@ void Engine::CRenderer::Render_GameObject(LPDIRECT3DDEVICE9& pGraphicDev)
 	Render_Blend(pGraphicDev);
 	Render_Alpha(pGraphicDev);
 	Render_UI(pGraphicDev);
-	Engine::Render_DebugBuffer(L"MRT_Deferred");
-	Engine::Render_DebugBuffer(L"MRT_LightAcc");
+	//Engine::Render_DebugBuffer(L"MRT_Deferred");
+	//Engine::Render_DebugBuffer(L"MRT_LightAcc");
 
 	Clear_RenderGroup();
 }
@@ -110,7 +116,9 @@ void CRenderer::Render_MFCGameObject(LPDIRECT3DDEVICE9 & pGraphicDev)
 void Engine::CRenderer::Render_Deferred(LPDIRECT3DDEVICE9& pGraphicDev)
 {
 	Begin_MRT(L"MRT_Deferred");
+	Render_Priority(pGraphicDev);
 	Render_NonAlpha(pGraphicDev);
+	Render_Effect(pGraphicDev);
 	End_MRT(L"MRT_Deferred");
 }
 
@@ -126,6 +134,8 @@ void Engine::CRenderer::Render_LightAcc(LPDIRECT3DDEVICE9& pGraphicDev)
 
 	Get_RenderTargetTexture(pEffect, L"Target_Normal", "g_NormalTexture");
 	Get_RenderTargetTexture(pEffect, L"Target_Depth", "g_DepthTexture");
+
+
 	pEffect->Begin(NULL, 0);
 
 	Render_Light(pEffect);

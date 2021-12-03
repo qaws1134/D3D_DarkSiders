@@ -26,8 +26,10 @@ public:
 	virtual void Late_Ready_Object()override;
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 	virtual void Render_Object(void) override;
-	void AtkColActive(double dStart, double dEnd, _uint iWeaponIdx);
+	void AtkColActive(double dStart, double dEnd, _uint iWeaponIdx, _vec3* pPos);
 
+
+	void SpawnTentaFog(_float fAngle, _vec3 vPos);
 public:
 	void		StateChange();
 	void		StateActor(_float fDeltaTime);
@@ -39,6 +41,12 @@ public:
 	void		SetPattern();
 	void		SetSlamPattern();
 	virtual void SetOption(void * pArg);
+
+	void		SpawnOrb();
+	void		DeadCheck();
+	_float GetRandomFloat(_float lowBound, _float highBound);
+	virtual void TakeDmg(_float Atk);
+
 
 #pragma region Set 함수
 public:
@@ -61,6 +69,8 @@ private:
 	CShader*		m_pShaderCom = nullptr;
 
 private:
+	queue<EFFECT::TYPE2D> m_queReadyEff2D;
+	queue<EFFECT::TYPE3D> m_queReadyEff3D;
 
 	_vec3 m_vDir;
 
@@ -86,6 +96,17 @@ private:
 	_uint m_iPatternNum;
 	_uint m_iSlamPatternNum;
 
+	_float m_fEffSpawnTime ;
+	_float m_fEffSpawnSpeed;
+
+	_bool	m_bSpawnEff =false;
+	_bool	m_bPummel[4] = { false,false, false, false };
+
+	//이펙트 처리
+	_bool m_bOrb = false;
+	_bool m_bOrbCross= false;
+
+	_vec4 m_vColor;
 
 public:
 	static CWaterBoss*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

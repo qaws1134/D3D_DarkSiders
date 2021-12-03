@@ -37,15 +37,14 @@ Engine::_int CLogo::Update_Scene(const _float& fTimeDelta)
 
 	if (Key_Down(KEY_SPACE))
 	{
+		m_bMain = true;
 		if (m_bBeginScene)
 		{
 			CGameObject* pObj = Get_GameObject(L"GameLogic", L"MainLogo");
 			pObj->SetActive(false);
-
 		}
 	}
-
-
+		
 
 	if (m_pLoading)
 	{
@@ -111,6 +110,11 @@ HRESULT CLogo::Ready_Layer_GameLogic(const _tchar* pLayerTag)
 
 	pGameObject = CMainLogo::Create(m_pGraphicDev);
 	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	if(m_bBeginScene)
+		pGameObject->SetActive(true);
+	else
+		pGameObject->SetActive(false);
+
 	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"MainLogo", pGameObject), E_FAIL);
 
 
@@ -128,10 +132,21 @@ HRESULT CLogo::Ready_Prototype(void)
 
 void CLogo::Render_Scene(void)
 {
-	// DEBUG 용
-	Set_FontZ(L"Font_L_Normal",0.f);
-	Render_Font(L"Font_L_Normal", m_pLoading->Get_String(), &_vec2(10.f, 15.f), D3DXCOLOR(1.f, 0.f, 0.f, 1.f));
-
+	if (m_bMain)
+	{
+		Set_FontZ(L"Font_L_Normal_Big", 0.f);
+		Render_Font(L"Font_L_Normal_Big", m_pLoading->Get_String(), &_vec2(500.f, 572.f), D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.f));
+		Set_FontZ(L"Font_L_Normal_Big", 0.f);
+		Render_Font(L"Font_L_Normal_Big", m_pLoading->Get_String(), &_vec2(498.f, 570.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f));
+	}
+	else
+	{
+		if (m_bBeginScene)
+		{
+			Set_FontZ(L"Font_L_Normal_Big", 0.f);
+			Render_Font(L"Font_L_Normal_Big", L"아무 키나 누르세요...", &_vec2(670.f, 570.f), D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.f));
+		}
+	}
 }
 void CLogo::SetLoading(CLoading::LOADINGID eLoading)
 {

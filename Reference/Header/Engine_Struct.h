@@ -12,6 +12,12 @@ namespace Engine
 
 	const _ulong	FVF_COL = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX0;
 
+	typedef struct tagVertexTrail
+	{
+		D3DXVECTOR3				vPos;
+		D3DXVECTOR2				vTexUV;
+	}VTXTRAIL;
+	const DWORD D3DFVF_VTXTRAIL = D3DFVF_XYZ | D3DFVF_TEX1;
 
 	typedef struct tagVertexTex
 	{
@@ -88,7 +94,7 @@ namespace Engine
 
 		_matrix**				ppCombinedTransformMatrix;	// 뼈가 지닌 CombinedTransformMatrix들의 주소값을 보관하기 위한 이중 포인터
 		_matrix*				pRenderingMatrix;			// 최종 행렬 = pFrameOffSetMatrix * (*ppCombinedTransformMatrix);
-
+		LPDIRECT3DVERTEXDECLARATION9 pDecl;
 
 	}D3DXMESHCONTAINER_DERIVED;
 
@@ -121,6 +127,28 @@ namespace Engine
 		_float fDmg;
 	}CHARINFO;
 
+
+
+
+	const D3DVERTEXELEMENT9 vertexDecl[] =
+	{
+		{ 0,0,D3DDECLTYPE_FLOAT3,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_POSITION,0 },
+		{ 0,12,D3DDECLTYPE_FLOAT2,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_TEXCOORD,0 },
+		{ 0,20,D3DDECLTYPE_FLOAT3,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_NORMAL,0 },
+		{ 0,32,D3DDECLTYPE_FLOAT3,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_TANGENT,0 },
+		D3DDECL_END()
+	};
+
+
+
+
+
 }
+
+
+
+
+
+
 
 #endif // Engine_Struct_h__

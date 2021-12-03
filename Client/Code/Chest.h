@@ -73,6 +73,7 @@ private:
 	_bool m_bSpawnItem = false;
 
 
+	_float m_fDissolveAmount = 0.f;
 public:
 	static CChest*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	static CChest*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);

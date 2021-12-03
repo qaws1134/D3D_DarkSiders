@@ -40,8 +40,10 @@ HRESULT CParticleSystem::Ready_Object()
 {
 	CGameObject::Ready_Object();
 
-	CComponent* pCom = m_pTrasform->Create(m_pGraphicDev);
 
+
+
+	CComponent*  pCom= m_pTrasform = CTransform::Create(m_pGraphicDev);
 
 	Set_Component(L"Com_Transform", pCom, ID_STATIC);
 
@@ -52,61 +54,8 @@ HRESULT CParticleSystem::Ready_Object()
 
 	m_bStart = true;
 
-	/*m_tOption.fDuration = 2.f;
-
-	m_tOption.bLifeTime = true;
-	m_tOption.fStartLifeTime = 0.f;
-	m_tOption.fEndLifeTime = 2.f;
-
-	m_tOption.bSpeed = true;
-	m_tOption.fStartSpeed = 0.f;
-	m_tOption.fEndSpeed = 2.f;
-
-
-	m_tOption.fSize = 0.9f;
-	m_tOption.fGravity = 9.8f;
-
-	m_tOption.bColor = true;
-	m_tOption.vStartColor = D3DXCOLOR{ 0.f,0.f,0.f,1.f };
-	m_tOption.vEndColor = D3DXCOLOR{ 1.f,1.f,1.f,1.f };
-
-	m_tOption.eType = ShapeType::CONE;
-	m_tOption.fAngle = 90.f;
-	m_tOption.fArc = 360.f;
-	m_tOption.fRadius = 1.f;
-
-	m_tOption.iBatchSize = 512;
-	m_tOption.iAmount = 6;*/
-
-	//m_tOption.bLoop = true;
-
 	m_vbSize = 4000;
 	m_vbOffset = 0;
-	//switch (m_eShape)
-	//{
-	//case ShapeType::CONE:
-
-	//	break;
-	//case ShapeType::SPHERE:
-	//	_Sphere._center = m_vOriginPos;
-	//	_ShapeSphere = _Sphere;
-
-	//	break;
-	//case ShapeType::SPHERE_HALF:
-	//	break;
-	//case ShapeType::BOX:
-	//	_Box._min = D3DXVECTOR3(-1.f, -1.0f, -1.0f);
-	//	_Box._max = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
-	//	_ShapeBox = _Box;
-
-	//	break;
-	//default:
-	//	break;
-	//}
-
-
-	//for (int i = 0; i < m_tOption.iAmount; i++)
-	//	addParticle();
 
 
 	HRESULT hr = 0;
@@ -143,6 +92,20 @@ _int CParticleSystem::Update_Object(const _float& fDeltaTime)
 	}
 
 	CGameObject::Update_Object(fDeltaTime);
+	m_pTrasform->Update_Component(fDeltaTime);
+	//_matrix matWorld;
+	//m_pGraphicDev->GetTransform(D3DTS_WORLD, &matWorld);
+	//_vec3 vPos;
+	//m_pTrasform->Get_INFO(INFO_POS, &vPos);
+	//_vec3 vWorldPos;
+	//D3DXVec3TransformCoord(&vWorldPos, &vPos,&matWorld);
+
+	//matWorld._41 = vWorldPos.x;
+	//matWorld._42 = vWorldPos.y;
+	//matWorld._43 = vWorldPos.z;
+
+	//m_pGraphicDev->SetTransform(D3DTS_WORLD, &matWorld);
+
 
 	if (m_bReset)
 	{

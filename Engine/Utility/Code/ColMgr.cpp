@@ -184,6 +184,23 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 		
 		}
 	}
+	else if (eColCheck == CHECK_ORB)
+	{
+		for (auto& pDst : _Dst)
+		{
+			if (!pDst.second->GetActive())
+				continue;
+			for (auto& pSrc : _Src)
+			{ 
+				//데미지 적용
+				if (ColCheckOrb(pSrc.second,L"Col_Weapon0", pDst.second, eMesh))
+				{
+					pDst.second->TakeDmg(pSrc.second->GetAtk());
+				}
+			}
+
+		}
+	}
 	else if (eColCheck == CHECK_WEAPON)
 	{
 		for (auto& pDst : _Dst)
@@ -374,6 +391,10 @@ void CColMgr::SetColType(COLCHECK eColCheck, wstring* pDstTag, wstring* pSrcTag)
 		*pDstTag = L"Col_Body";
 		*pSrcTag = L"";
 		break;
+	case Engine::CHECK_ORB:
+		*pDstTag = L"";
+		*pSrcTag = L"Col_Weapon";
+		break;
 	case Engine::CHECK_END:
 		break;
 	default:
@@ -442,6 +463,40 @@ _bool CColMgr::ColCheckBullet(CGameObject * pSrcObj, wstring ColTag, CGameObject
 			{
 				pSrcObj->SetColTarget(pDstColObj);
 				iter_Src->second->SetCol(true);
+				return true;
+			}
+			else
+				iter_Src->second->SetCol(false);
+		}
+	}
+	return false;
+}
+
+_bool CColMgr::ColCheckOrb(CGameObject * pSrcObj, wstring ColTag, CGameObject * pDstColObj, MESHTYPE eMesh)
+{
+	CColliderSphere* pDstCol = dynamic_cast<CColliderSphere*>(pDstColObj->Get_Component(L"Com_Collider", ID_STATIC));
+	CCalculator* pDstCalcul = dynamic_cast<CCalculator*>(pDstColObj->Get_Component(L"Com_Calculator", ID_STATIC));
+
+	auto& iter_Src = find_if(pSrcObj->GetColmap().begin(), pSrcObj->GetColmap().end(), CTag_Finder(ColTag.c_str()));
+	if (iter_Src == pSrcObj->GetColmap().end())
+		return false;
+
+	CColliderSphere* pSrcCol = dynamic_cast<CColliderSphere*>(iter_Src->second->Get_Component(L"Com_Collider", ID_STATIC));
+	CCalculator* pSrcCal = dynamic_cast<CCalculator*>(iter_Src->second->Get_Component(L"Com_Calculator", ID_STATIC));
+
+	_float fDstRadi = pDstColObj->GetColShpereRadius();
+	_float fSrcRadi = *pSrcCol->Get_Radius();
+
+	_vec3 vDstPos;
+	dynamic_cast<CTransform*>(pDstColObj->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vDstPos);
+	//===========================공격 충돌 ====================================
+	if (iter_Src->second->GetActive())
+	{
+		if (!pDstColObj->GetHit())
+		{
+			if (pDstCalcul->Collision_Sphere(&vDstPos, &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
+			{
+				pDstColObj->SetCol(true);
 				return true;
 			}
 		}

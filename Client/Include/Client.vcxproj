@@ -168,6 +168,7 @@
     <ClInclude Include="..\Code\DynamicCamera.h" />
     <ClInclude Include="..\Code\Effect.h" />
     <ClInclude Include="..\Code\EffectMesh.h" />
+    <ClInclude Include="..\Code\Effect_Trail.h" />
     <ClInclude Include="..\Code\EffMgr.h" />
     <ClInclude Include="..\Code\Enum.h" />
     <ClInclude Include="..\Code\GameMgr.h" />
@@ -183,6 +184,8 @@
     <ClInclude Include="..\Code\Player.h" />
     <ClInclude Include="..\Code\Player_Barrier.h" />
     <ClInclude Include="..\Code\Serpent.h" />
+    <ClInclude Include="..\Code\SkyBox.h" />
+    <ClInclude Include="..\Code\SoundMgr.h" />
     <ClInclude Include="..\Code\SpawnMgr.h" />
     <ClInclude Include="..\Code\Stage.h" />
     <ClInclude Include="..\Code\StartStage.h" />
@@ -195,6 +198,7 @@
     <ClInclude Include="..\Code\WaterBoss.h" />
     <ClInclude Include="..\Code\WaterBoss_Orb.h" />
     <ClInclude Include="..\Code\WaterFall.h" />
+    <ClInclude Include="..\Code\WaterFloor.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -211,6 +215,7 @@
     <ClCompile Include="..\Code\DynamicCamera.cpp" />
     <ClCompile Include="..\Code\Effect.cpp" />
     <ClCompile Include="..\Code\EffectMesh.cpp" />
+    <ClCompile Include="..\Code\Effect_Trail.cpp" />
     <ClCompile Include="..\Code\EffMgr.cpp" />
     <ClCompile Include="..\Code\GameMgr.cpp" />
     <ClCompile Include="..\Code\Goblin.cpp" />
@@ -225,6 +230,8 @@
     <ClCompile Include="..\Code\Player.cpp" />
     <ClCompile Include="..\Code\Player_Barrier.cpp" />
     <ClCompile Include="..\Code\Serpent.cpp" />
+    <ClCompile Include="..\Code\SkyBox.cpp" />
+    <ClCompile Include="..\Code\SoundMgr.cpp" />
     <ClCompile Include="..\Code\SpawnMgr.cpp" />
     <ClCompile Include="..\Code\Stage.cpp" />
     <ClCompile Include="..\Code\StartStage.cpp" />
@@ -236,6 +243,7 @@
     <ClCompile Include="..\Code\WaterBoss.cpp" />
     <ClCompile Include="..\Code\WaterBoss_Orb.cpp" />
     <ClCompile Include="..\Code\WaterFall.cpp" />
+    <ClCompile Include="..\Code\WaterFloor.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

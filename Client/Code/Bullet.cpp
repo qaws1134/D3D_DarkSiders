@@ -128,23 +128,26 @@ void CBullet::SetOption(void * pArg)
 	{
 	case BULLET::BULLET_CALLLIGHTNING:
 		m_fLifeSpeed = 0.0f;
-		m_fLifeTimer=0.5f;
-		m_tColSphere.fRadius = 1.f;
+		m_fLifeTimer=0.7f;
+		m_tColSphere.fRadius = 100.f;
 		m_LifeTime = true;
 		m_bActive = true;
 		m_wstrBulletType = L"CallLightning";
 		//텍스쳐 셋팅 ? 메시 셋팅?
 		m_tCharInfo.fAtk = 3.f;
+		m_pTransformCom->Set_Scale(1.f, 1.f, 1.f);
 		m_eID = BULLET::BULLET_ENEMY;
 		break;
 	case BULLET::BULLET_ORBLIGHTNING:
 		m_fLifeSpeed = 0.0f;
-		m_fLifeTimer = 10.f;
+		m_fLifeTimer = 4.f;
 		m_tColSphere.fRadius = 1.f;
+		m_fMoveSpeed = 0.5f;
 		m_LifeTime = true;
 		m_bActive = true;
-		m_wstrBulletType = L"OrbLightning";
-		m_tCharInfo.fAtk = 2.f;
+		m_tCharInfo.fAtk = 1.f;
+		m_wstrBulletType = L"WaterBossBullet";
+		m_pTransformCom->Set_Scale(0.05f, 0.05f, 0.05f);
 		m_eID = BULLET::BULLET_ENEMY;
 		break;
 	case BULLET::BULLET_TSUNAMI:
@@ -181,10 +184,22 @@ void CBullet::SetOption(void * pArg)
 		m_pTransformCom->Set_Scale(0.01f, 0.01f, 0.01f);
 		m_eID = BULLET::BULLET_ENEMY;
 		break;
+	case BULLET::BULLET_SPAWNFADE_PLAYER:
+		m_fLifeSpeed = 0.0f;
+		m_fLifeTimer = 0.7f;
+		m_tColSphere.fRadius = 1.f;
+		m_LifeTime = true;
+		m_bActive = true;
+		m_wstrBulletType = L"SpawnFade";
+		//텍스쳐 셋팅 ? 메시 셋팅?
+		m_tCharInfo.fAtk = 2.f;
+		m_pTransformCom->Set_Scale(1.f, 1.f, 1.f);
+		m_eID = BULLET::BULLET_PLAYER;
+		break;
 	case BULLET::BULLET_END:
 		m_fLifeSpeed = 0.f;
 		m_fLifeTimer = 0.f;
-		m_tColSphere.fRadius = 0.f;
+		m_tColSphere.fRadius = 150.f;
 		m_vDir = _vec3(0.f, 0.f, 0.f);
 		m_bMove = false;
 		m_pTransformCom->Set_Rot(0.f, 0.f, 0.f);
@@ -206,6 +221,9 @@ void CBullet::SetOption(void * pArg)
 	//충돌체 찾아서 활성화 시켜 -> 컴포넌트 이름을 총알명으로
 	//이터 앤드면 만들고 아니면 찾아
 	//미리 초기화
+
+
+
 	const _tchar* pConvComponentTag = W2BSTR((L"Com_Col" + m_wstrBulletType).c_str());
 	
 	// Collider
@@ -223,7 +241,7 @@ void CBullet::SetOption(void * pArg)
 	}
 
 
-	if (m_wstrBulletType == L"GoblinSpear")
+	if (m_wstrBulletType == L"GoblinSpear"|| m_wstrBulletType == L"WaterBossBullet")
 	{
 
 		const _tchar* pConvMeshTag = W2BSTR((L"Com_Mesh" + m_wstrBulletType).c_str());

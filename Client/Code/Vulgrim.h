@@ -71,6 +71,7 @@ private:
 
 	_bool m_bUIOn = false;
 
+	_bool m_bSound = false;
 
 public:
 	static CVulgrim*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

@@ -74,8 +74,8 @@ HRESULT CNaviMesh::Ready_NaviMesh(map<_uint, map<_uint, MESH>> mapNavi)
 
 void CNaviMesh::Render_NaviMesh(void)
 {
-	for (auto& iter : m_vecCell)
-		iter->Render_Cell();
+	//for (auto& iter : m_vecCell)
+	//	iter->Render_Cell();
 }
 
 _vec3 CNaviMesh::MoveOn_NaviMesh(const _vec3 * pTargetPos, const _vec3 * pTargetDir, 

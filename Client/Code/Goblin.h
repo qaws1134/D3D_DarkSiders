@@ -12,6 +12,7 @@ class CRenderer;
 class CCalculator;
 class CShader;
 class CNaviMesh;
+class CTexture;
 //class CColliderSphere;
 END
 
@@ -72,6 +73,7 @@ private:
 	CCalculator*	m_pCalculatorCom = nullptr;
 	CShader*		m_pShaderCom = nullptr;
 	CNaviMesh*		m_pNavi = nullptr;
+	CTexture*		m_pDissolveCom = nullptr;
 private:
 	wstring m_wstrProtoTag = L"";
 	_vec3 m_vDir;
@@ -135,6 +137,12 @@ private:
 	_uint m_eSpawnType;
 	_bool	m_bSpawnDir = false;
 	_uint m_iNaviIdx = 0;
+	_float m_fDissolveAmount = 0.f;
+
+
+	_float m_fSoundSpeed = 0.f;
+	_float m_fSoundTime = 0.f;
+	_bool m_bSound= false;
 
 public:
 	static CGoblin*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

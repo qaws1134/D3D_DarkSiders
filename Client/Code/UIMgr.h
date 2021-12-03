@@ -58,13 +58,15 @@ public:
 	void SetActiveToastInfoUI(_bool bActive,_uint iStoneIdx);
 	void SetActiveToastMsgItemInfo(_uint iSelIdx);
 
-
 #pragma region Set Active
 
 #pragma region Set
 	void SetCoreSelIdx(_uint iCoreIdx) { m_iCoreIdx = iCoreIdx; }
 	void SetPreStoneIdx(_uint iPreIdx) { m_iPreStoneIdx = iPreIdx; }
 	void SetStoreGetIdx(_uint iStoreGetIdx) { m_iStoreGetIdx = iStoreGetIdx; }
+	void SetCoreBase(_uint iStoneIdx,_bool bIsStone);
+	void SetUVX(_float fUVx) { m_fUVx = fUVx; }
+
 #pragma region Set
 
 	//아이템 정보 셋팅
@@ -72,17 +74,17 @@ public:
 
 	void SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone);
 	void SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone);
-	
+	void SetIsUVX(_bool bIsUVX) { m_bUVX = bIsUVX; }
 	//void Set_SelIndex(_uint iIdx) { m_iSelIdx = iIdx; }
 public:
 #pragma region Get
 	_bool GetElemetUIActive();
 	_bool GetCoreTreeUIActive();
-	
 	_bool GetStoneInfoUIActive(_uint iStoneIdx);
 	_bool GetStoreUIActive();
 	_bool GetToastUIActive();
-
+	_bool GetIsUVX() { return m_bUVX; }
+	_float GetUVX() { return m_fUVx; }
 	_uint GetStoreItemPrice(UI::ITEM eItemIdx);
 	
 	list<CGameObject*> GetStoneSelIdxList(wstring wstrObjtag,_uint* iStoneIdx);
@@ -152,9 +154,9 @@ private:
 	_uint m_iToastInfoIdx = 0;
 
 	//LPDIRECT3DDEVICE9 m_pGraphicDev;
+	_float m_fUVx = 0.f;
 
-
-
+	_bool m_bUVX = false;
 	_uint m_iStoreIdx = 0;
 
 

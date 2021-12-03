@@ -7,8 +7,8 @@
 #include "Stage.h"
 #include "Logo.h"
 #include "Export_Function.h"
-
-
+#include "SkyBox.h"
+#include "Effect_Trail.h"
 CStartStage::CStartStage(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CScene(pGraphicDev)
 {
@@ -45,12 +45,21 @@ Engine::_int CStartStage::Update_Scene(const _float& fTimeDelta)
 		_int i = CGameMgr::GetInstance()->GetSoul();
 		//dynamic_cast<CUI*>(CGameMgr::GetInstance()->GetFontObj())->GetFont().wstrText = to_wstring(CGameMgr::GetInstance()->GetSoul());
 	}
+
+	if (Key_Down(KEY_K))
+	{
+		_uint i = rand() % 20;
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(i));
+		CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev, tStone);
+		CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
+	}
+
 	if (m_bSceneStart)
 	{
 
 		CScene*		pScene = nullptr;
 
-		pScene = CLogo::Create(m_pGraphicDev);
+		pScene = CLogo::Create(m_pGraphicDev, false);
 		NULL_CHECK_RETURN(pScene, E_FAIL);
 		dynamic_cast<CLogo*>(pScene)->SetLoading(CLoading::LOADING_STAGE);
 		FAILED_CHECK_RETURN(Set_Scene(pScene), E_FAIL);
@@ -97,6 +106,7 @@ void CStartStage::Begin_Scene()
 	CUIMgr::GetInstance()->InitStore(m_pGraphicDev);
 	CUIMgr::GetInstance()->InitToastInfo(m_pGraphicDev);
 	CGameMgr::GetInstance()->InitObjPool();
+	
 	CScene::Begin_Scene();
 }
 
@@ -125,6 +135,20 @@ HRESULT CStartStage::Ready_Layer_Environment(const _tchar* pLayerTag)
 
 	CGameMgr::GetInstance()->SetCamera(pGameObject);
 	
+
+
+	// SkyBox
+	pGameObject = CSkyBox::Create(m_pGraphicDev);
+	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"SkyBox", pGameObject), E_FAIL);
+
+
+
+	pGameObject = CEffect_Trail::Create(m_pGraphicDev);
+	NULL_CHECK_RETURN(pGameObject, E_FAIL);
+	FAILED_CHECK_RETURN(pLayer->Add_GameObject(L"Trail", pGameObject), E_FAIL);
+
+
 	m_mapLayer.emplace(pLayerTag, pLayer);
 
 	return S_OK;
@@ -177,7 +201,7 @@ HRESULT CStartStage::Ready_LightInfo(void)
 	tLightInfo.Type = D3DLIGHT_DIRECTIONAL;
 	tLightInfo.Diffuse = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
 	tLightInfo.Specular = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	tLightInfo.Ambient = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
+	tLightInfo.Ambient = D3DXCOLOR(0.3f, 0.3f, 0.3f, 1.f);
 	tLightInfo.Direction = _vec3(1.f, -1.f, 1.f);
 
 	FAILED_CHECK_RETURN(Ready_Light(m_pGraphicDev, &tLightInfo, 0), E_FAIL);

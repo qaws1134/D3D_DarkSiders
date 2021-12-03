@@ -45,7 +45,17 @@ Engine::_bool Engine::CFrustum::Isin_Frustum(const _vec3* pPos)
 
 Engine::_bool Engine::CFrustum::Isin_Frustum(const _vec3* pPos, const _float& fRadius)
 {
-	return false;
+	_float	fResult = 0.f;
+
+	for (_ulong i = 0; i < 6; ++i)
+	{
+		fResult = D3DXPlaneDotCoord(&m_Plane[i], pPos);
+
+		if (fResult > fRadius)
+			return false;
+	}
+
+	return true;
 }
 
 Engine::_bool Engine::CFrustum::Isin_Frustum_ForObject(const _vec3* pWorldPos, const _float& fRadius)
@@ -107,7 +117,8 @@ void Engine::CFrustum::Isin_Frustum_ForTerrain(const _vec3* pVtxPos,
 												const _ulong& dwCntX,
 												const _ulong& dwCntZ, 
 												INDEX32* pIndex, 
-												_ulong* pTriCnt)
+												_ulong* pTriCnt,
+												CQuadTree* pQuadTree)
 {
 	Ready_Frustum();
 
@@ -144,43 +155,52 @@ void Engine::CFrustum::Isin_Frustum_ForTerrain(const _vec3* pVtxPos,
 	// z-
 	D3DXPlaneFromPoints(&m_Plane[5], &m_vPoint[0], &m_vPoint[1], &m_vPoint[2]);
 
-	_bool		bIsIn[3] = { false };
-	_ulong		dwTriCnt = 0;
+	*pTriCnt = 0;
 
-	for (_ulong i = 0; i < dwCntZ - 1; ++i)
+	if (nullptr != pQuadTree)
 	{
-		for (_ulong j = 0; j < dwCntX - 1; ++j)
+		pQuadTree->CullingForTerrain(this, pVtxPos, pIndex, pTriCnt);
+	}
+	else
+	{
+		_bool		bIsIn[3] = { false };
+		_ulong		dwTriCnt = 0;
+
+		for (_ulong i = 0; i < dwCntZ - 1; ++i)
 		{
-			_ulong dwIndex = i * dwCntX + j;
-
-			// 오른쪽 위
-			bIsIn[0] = Isin_Frustum(&pVtxPos[dwIndex + dwCntX]);
-			bIsIn[1] = Isin_Frustum(&pVtxPos[dwIndex + dwCntX + 1]);
-			bIsIn[2] = Isin_Frustum(&pVtxPos[dwIndex + 1]);
-
-			if (true == bIsIn[0] || true == bIsIn[1] || true == bIsIn[2])
+			for (_ulong j = 0; j < dwCntX - 1; ++j)
 			{
-				pIndex[dwTriCnt]._0 = dwIndex + dwCntX;
-				pIndex[dwTriCnt]._1 = dwIndex + dwCntX + 1;
-				pIndex[dwTriCnt]._2 = dwIndex + 1;
-				dwTriCnt++;
-			}
+				_ulong dwIndex = i * dwCntX + j;
 
-			// 왼쪽 아래
-			bIsIn[0] = Isin_Frustum(&pVtxPos[dwIndex + dwCntX]);
-			bIsIn[1] = Isin_Frustum(&pVtxPos[dwIndex + 1]);
-			bIsIn[2] = Isin_Frustum(&pVtxPos[dwIndex]);
+				// 오른쪽 위
+				bIsIn[0] = Isin_Frustum(&pVtxPos[dwIndex + dwCntX]);
+				bIsIn[1] = Isin_Frustum(&pVtxPos[dwIndex + dwCntX + 1]);
+				bIsIn[2] = Isin_Frustum(&pVtxPos[dwIndex + 1]);
 
-			if (true == bIsIn[0] || true == bIsIn[1] || true == bIsIn[2])
-			{
-				pIndex[dwTriCnt]._0 = dwIndex + dwCntX;
-				pIndex[dwTriCnt]._1 = dwIndex + 1;
-				pIndex[dwTriCnt]._2 = dwIndex;
-				dwTriCnt++;
+				if (true == bIsIn[0] || true == bIsIn[1] || true == bIsIn[2])
+				{
+					pIndex[dwTriCnt]._0 = dwIndex + dwCntX;
+					pIndex[dwTriCnt]._1 = dwIndex + dwCntX + 1;
+					pIndex[dwTriCnt]._2 = dwIndex + 1;
+					dwTriCnt++;
+				}
+
+				// 왼쪽 아래
+				bIsIn[0] = Isin_Frustum(&pVtxPos[dwIndex + dwCntX]);
+				bIsIn[1] = Isin_Frustum(&pVtxPos[dwIndex + 1]);
+				bIsIn[2] = Isin_Frustum(&pVtxPos[dwIndex]);
+
+				if (true == bIsIn[0] || true == bIsIn[1] || true == bIsIn[2])
+				{
+					pIndex[dwTriCnt]._0 = dwIndex + dwCntX;
+					pIndex[dwTriCnt]._1 = dwIndex + 1;
+					pIndex[dwTriCnt]._2 = dwIndex;
+					dwTriCnt++;
+				}
 			}
 		}
-	}
 
-	*pTriCnt = dwTriCnt;
+		*pTriCnt = dwTriCnt;
+	}
 }
 

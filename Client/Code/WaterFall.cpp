@@ -32,7 +32,7 @@ _int CWaterFall::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	m_fAccTime += fTimeDelta;
-	Add_RenderGroup(RENDER_NONALPHA,this);
+	Add_RenderGroup(RENDER_EFFECT,this);
 	return iExit;
 }
 

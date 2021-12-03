@@ -115,6 +115,12 @@
     <Filter Include="03. GameObject\Particle">
       <UniqueIdentifier>{286c5de5-5c80-4948-a248-4bd3355a9a83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\08.Optimization\01.QuadTre">
+      <UniqueIdentifier>{83a89850-e632-400a-ba6f-cc4d4116a08f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\01. Texture\TrailTexture">
+      <UniqueIdentifier>{df32cd0f-1437-4da6-ba62-87cbc179d04e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Component.cpp">
@@ -192,12 +198,6 @@
     <ClCompile Include="..\Code\AniCtrl.cpp">
       <Filter>04. Component\07. DynamicMesh\01.AniCtrl</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Optimization.cpp">
-      <Filter>04. Component\08.Optimization</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Frustum.cpp">
-      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Cell.cpp">
       <Filter>04. Component\09.NaviMesh\00.Cell</Filter>
     </ClCompile>
@@ -221,6 +221,18 @@
     </ClCompile>
     <ClCompile Include="..\Code\ParticleSystem.cpp">
       <Filter>03. GameObject\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Optimization.cpp">
+      <Filter>04. Component\08.Optimization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\QuadTree.cpp">
+      <Filter>04. Component\08.Optimization\01.QuadTre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Frustum.cpp">
+      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Trail_Texture.cpp">
+      <Filter>04. Component\01. Texture\TrailTexture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,12 +314,6 @@
     <ClInclude Include="..\Code\AniCtrl.h">
       <Filter>04. Component\07. DynamicMesh\01.AniCtrl</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Optimization.h">
-      <Filter>04. Component\08.Optimization</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Frustum.h">
-      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Cell.h">
       <Filter>04. Component\09.NaviMesh\00.Cell</Filter>
     </ClInclude>
@@ -354,6 +360,21 @@
       <Filter>08.Shader\hpp</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Shader_MeshEffect.hpp">
+      <Filter>08.Shader\hpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Optimization.h">
+      <Filter>04. Component\08.Optimization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\QuadTree.h">
+      <Filter>04. Component\08.Optimization\01.QuadTre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Frustum.h">
+      <Filter>04. Component\08.Optimization\00.Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Trail_Texture.h">
+      <Filter>04. Component\01. Texture\TrailTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Shader_EffectTrail.hpp">
       <Filter>08.Shader\hpp</Filter>
     </ClInclude>
   </ItemGroup>

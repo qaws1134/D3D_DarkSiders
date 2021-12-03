@@ -10,6 +10,7 @@ class CRenderer;
 class CCalculator;
 class CColliderSphere;
 class CStaticMesh;
+//class COptimization;
 class CShader;
 END
 
@@ -40,7 +41,7 @@ private:
 	CStaticMesh*		m_pMeshCom = nullptr;
 	CShader*			m_pShaderCom = nullptr;
 
-
+	//COptimization*	m_pOptimizationCom = nullptr;
 	_vec3		m_vDir;
 	wstring		m_wstrProtoMesh;
 public:

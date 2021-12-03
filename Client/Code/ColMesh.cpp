@@ -33,6 +33,9 @@ void CColMesh::Late_Ready_Object()
 
 _int CColMesh::Update_Object(const _float& fTimeDelta)
 {
+	if (m_bDead)
+		return 0;
+
 	USES_CONVERSION;
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 

@@ -4,6 +4,8 @@
 #include "Export_Function.h"
 #include "GameMgr.h"
 #include "Bullet.h"
+#include "SoundMgr.h"
+#include "Item.h"
 
 CGrinner::CGrinner(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
@@ -41,8 +43,8 @@ HRESULT CGrinner::Ready_Object(void)
 	m_fHitSpeed = 1.0f;
 	m_fHitTime = 0.1f;
 	m_fAttackMoveSpeed = 5.f;
-	SetCharInfo(50.f, 1.f);
-
+	SetCharInfo(15.f, 1.f);
+	m_bActive = false;
 	return S_OK;
 }
 
@@ -53,6 +55,8 @@ void CGrinner::Late_Ready_Object()
 
 _int CGrinner::Update_Object(const _float& fTimeDelta)
 {
+	if (m_bDead)
+		return 0;
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	if (!m_pNavi)
 	{
@@ -141,6 +145,11 @@ HRESULT CGrinner::Add_Component()
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
 
+	pComponent = m_pDissolveCom = dynamic_cast<CTexture*>(Clone_Prototype(L"Proto_Texture_Dissolve"));
+	NULL_CHECK_RETURN(m_pDissolveCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Dissolve", pComponent);
+
+
 	return S_OK;
 }
 
@@ -150,7 +159,6 @@ void CGrinner::Render_Object(void)
 	//StateLinker(fTimeDelta);
 	m_pMeshCom->Set_AnimationIndex(m_eCurAniState, m_bBlend);
 	//m_pMeshCom->Play_Animation(0.f);
-
 	m_pMeshCom->Play_Animation(fTimeDelta);
 	for (auto iter : m_mapColider)
 	{
@@ -165,8 +173,17 @@ void CGrinner::Render_Object(void)
 	_uint iMaxPass = 0;
 
 	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
-											// 2인자 : 시작하는 방식을 묻는 FLAG
-	pEffect->BeginPass(0);
+									
+	if(m_eCurAniState != Grinner::Grinner_DeadPose)
+		pEffect->BeginPass(0);
+	else
+	{
+		m_fDissolveAmount += fTimeDelta*0.4f;
+		pEffect->SetFloat("g_DissolveAmount", m_fDissolveAmount);
+		m_pDissolveCom->Set_Texture(pEffect,"g_DissolveTexture",1);
+
+		pEffect->BeginPass(4);
+	}
 
 	m_pMeshCom->Render_Meshes(pEffect);
 
@@ -281,11 +298,15 @@ void CGrinner::StateChange()
 			{
 				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
 				pObj->SetPos(vPos, ID_DYNAMIC);
-				dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(29);
+				dynamic_cast<CItem*>(pObj)->SetNavi(m_pNavi);
 
 			}
 			if (RandNext(0, 2) == 0)
+			{
 				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+				pObj->SetPos(vPos, ID_DYNAMIC);
+				dynamic_cast<CItem*>(pObj)->SetNavi(m_pNavi);
+			}
 		}
 			break;
 		case Grinner::STATE_END:
@@ -300,10 +321,11 @@ void CGrinner::StateChange()
 
 	if (m_ePreAniState != m_eCurAniState)
 	{
-	
 		switch (m_eCurAniState)
 		{
 		case Grinner::Grinner_Atk_Flip:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_atk_flip_03.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_1);
 			m_fInitAttackMoveSpeed = 10.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bAttackMoveEnd = false;
@@ -312,6 +334,7 @@ void CGrinner::StateChange()
 			break;
 		case Grinner::Grinner_Atk_BarfinRainbows:
 		{
+
 			_vec3 vRot = m_pTransformCom->Get_Rot();
 			m_fBarfinAngle = vRot.y;
 			m_fBarfinAngle = D3DXToDegree(m_fBarfinAngle);
@@ -323,6 +346,8 @@ void CGrinner::StateChange()
 		}
 			break;
 		case Grinner::Grinner_Atk_Lunge:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_atk_lunge_02.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_1);
 			m_fInitAttackMoveSpeed = 20.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bAttackMoveEnd = false;
@@ -330,6 +355,11 @@ void CGrinner::StateChange()
 			m_bBlend = true;
 			break;
 		case Grinner::Grinner_Atk_Swipe_Combo:
+
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_atk_swipecombo_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_1);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_atk_swipecombo_vo_01.ogg", CSoundMgr::CHANNEL_GRINNER_Vo);
 			m_fInitAttackMoveSpeed = 10.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bAttackMoveEnd = false;
@@ -338,8 +368,13 @@ void CGrinner::StateChange()
 			m_tCharInfo.fAtk = 3.f;
 			break;
 		case Grinner::Grinner_DeadPose:
+
 			break;
 		case Grinner::Grinner_Death:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_death_01.ogg", CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_death_vo_01.ogg", CSoundMgr::CHANNEL_GRINNER_Vo);
 			break;
 		case Grinner::Grinner_Death_War:
 			break;
@@ -358,8 +393,23 @@ void CGrinner::StateChange()
 		case Grinner::Grinner_Impact_F:
 		case Grinner::Grinner_Impact_L:
 		case Grinner::Grinner_Impact_R:
+		{
+
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"en_grinner_impact_front_vo_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GRINNER);
+
+
 			m_fInitAttackMoveSpeed = 8.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+		}
 			break;
 		case Grinner::Grinner_Jump_Apex:
 			m_fSpawnSpeed = 50.f;
@@ -368,9 +418,15 @@ void CGrinner::StateChange()
 		case Grinner::Grinner_Jump_Fall:
 			break;
 		case Grinner::Grinner_Jump_Land:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_jump_land_01.ogg", CSoundMgr::CHANNEL_GRINNER);
 			m_bBlend = false;
 			break;
 		case Grinner::Grinner_Jump_Launch:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_jump_launch_01.ogg", CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_jump_launch_vo_01.ogg", CSoundMgr::CHANNEL_GRINNER_Vo);
 			break;
 		case Grinner::Grinner_Knock_B_Start:
 			m_fInitAttackMoveSpeed = 5.f;
@@ -378,10 +434,24 @@ void CGrinner::StateChange()
 			m_bBlend = true;
 			m_bAttackMoveEnd = false;
 			break;
+		case Grinner::Grinner_Knock_B_Land:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_knockback_land_02.ogg", CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_knockback_land_vo_01.ogg", CSoundMgr::CHANNEL_GRINNER_Vo);
+			m_bAttackMoveEnd = false;
+			m_bBlend = true;
+			break;
+		case Grinner::Grinner_Knock_B_Recover:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_knockback_recover_02.ogg", CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_knockback_recover_vo_02.ogg", CSoundMgr::CHANNEL_GRINNER_Vo);
+			m_bAttackMoveEnd = false;
+			m_bBlend = true;
+			break;
 		case Grinner::Grinner_Knock_B_Apex:
 		case Grinner::Grinner_Knock_B_Fall:
-		case Grinner::Grinner_Knock_B_Land:
-		case Grinner::Grinner_Knock_B_Recover:
 		case Grinner::Grinner_Knock_B_Idle:
 			m_bAttackMoveEnd = false;
 			m_bBlend = true;
@@ -390,6 +460,7 @@ void CGrinner::StateChange()
 			m_bBlend = true;
 			break;
 		case Grinner::Grinner_Run_F:
+			m_fSoundTime = 0.3f;
 			break;
 		case Grinner::Grinner_Run_FL:
 			break;
@@ -399,6 +470,8 @@ void CGrinner::StateChange()
 		case Grinner::Grinner_Turn_90_R:
 		case Grinner::Grinner_Turn_180_L:
 		case Grinner::Grinner_Turn_180_R:
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_turn180_Left_02.ogg", CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_grinner_turn180_left_vo_02.ogg", CSoundMgr::CHANNEL_GRINNER_Vo);
 			m_bBlend = true;
 			break;
 		case Grinner::Grinner_Walk_B:
@@ -408,6 +481,7 @@ void CGrinner::StateChange()
 		case Grinner::Grinner_Walk_BR:
 			break;
 		case Grinner::Grinner_Walk_F:
+			m_fSoundTime = 0.4f;
 			break;
 		case Grinner::Grinner_Walk_L:
 			break;
@@ -668,6 +742,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 		}
 		break;
 	case Grinner::STATE_DEAD:
+		
 		break;
 	case Grinner::STATE_END:
 		break;
@@ -679,8 +754,12 @@ void CGrinner::StateActor(_float fDeltaTime)
 	{
 	case Grinner::Grinner_Atk_Flip:
 	{
-		m_tCharInfo.fAtk = 3.f;
-		AtkColActive(0.2, 0.4, 0);
+		m_tCharInfo.fAtk = 2.f;
+		AtkColActive(0.2, 0.5, 0);
+		m_tCharInfo.fAtk = 1.f;
+		AtkColActive(0.4, 0.7, 1);
+		AtkColActive(0.4, 0.7, 2);
+
 		if (!m_pNavi)
 			break;
 
@@ -705,6 +784,9 @@ void CGrinner::StateActor(_float fDeltaTime)
 		{
 			if (!m_bBarfin[2])
 			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+				CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_armored_swipe_03.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_1);
+
 				SpawnBarfinBullet(m_fBarfinAngle+ 70.f);
 				m_bBarfin[2] = true;
 			}
@@ -713,6 +795,9 @@ void CGrinner::StateActor(_float fDeltaTime)
 		{
 			if (!m_bBarfin[1])
 			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+				CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_armored_swipe_03.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_1);
+
 				SpawnBarfinBullet(m_fBarfinAngle+ 90.f);
 				m_bBarfin[1] = true;
 			}
@@ -721,6 +806,9 @@ void CGrinner::StateActor(_float fDeltaTime)
 		{
 			if (!m_bBarfin[0])
 			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+				CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_armored_swipe_03.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_1);
+
 				SpawnBarfinBullet(m_fBarfinAngle+110.f);
 				m_bBarfin[0] = true;
 			}
@@ -787,6 +875,17 @@ void CGrinner::StateActor(_float fDeltaTime)
 	}
 		break;
 	case Grinner::Grinner_DeadPose:
+	{
+		if (m_fDissolveAmount > 1.f)
+		{
+			m_bActive = false;
+			for (auto& iter : m_mapColider)
+			{
+				iter.second->SetDead(true);
+			}
+			m_bDead = true;
+		}
+	}
 		break;
 	case Grinner::Grinner_Death:
 		break;
@@ -896,6 +995,24 @@ void CGrinner::StateActor(_float fDeltaTime)
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_pTransformCom->Set_Pos(&m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom));	
 		m_pTransformCom->Set_PosY(m_fNaviY);
+
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"en_grinner_footstep_run_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GRINNER);
+			m_fSoundSpeed = 0.f;
+		}
+
+
 		//m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed);
 		break;
 	}
@@ -927,6 +1044,22 @@ void CGrinner::StateActor(_float fDeltaTime)
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_pTransformCom->Set_Pos(&m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom));
 		m_pTransformCom->Set_PosY(m_fNaviY);
+
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"en_grinner_footstep_front_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GRINNER);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GRINNER);
+			m_fSoundSpeed = 0.f;
+		}
 	}
 		break;
 	case Grinner::Grinner_Walk_L:
@@ -1050,7 +1183,7 @@ void CGrinner::StateLinker(_float fDeltaTime)
 	case Grinner::Grinner_Turn_180_R:
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
-			m_eCurAniState = Grinner::Grinner_Idle;
+			//m_eCurAniState = Grinner::Grinner_Idle;
 			m_bTurnEnd = true;
 		}
 		break;

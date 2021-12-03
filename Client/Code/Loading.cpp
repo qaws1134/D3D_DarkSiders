@@ -58,24 +58,50 @@ HRESULT CLoading::Ready_Loading(LOADINGID eLoading)
 
 Engine::_uint CLoading::Loading_ForStage(void)
 {
-
-	lstrcpy(m_szLoading, L"Loading Mesh...............");
+	USES_CONVERSION;
+	lstrcpy(m_szLoading, L"다이나믹 메시 로딩중");
 #pragma region DYNAMICMESH
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
-
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"GoblinSpear", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/GoblinSpear/", L"GoblinSpear.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBossBullet", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X")), E_FAIL);
+
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
 
 
 #pragma endregion DYNAMICMESH
+	lstrcpy(m_szLoading, L"스테틱 메시 로딩중");
 
-#pragma region STATICMESH	
-	FAILED_CHECK_RETURN(Ready_Prototype(L"GoblinSpear", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/GoblinSpear/", L"GoblinSpear.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBossBullet", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"JumpBall", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X")), E_FAIL);
-	//FAILED_CHECK_RETURN(Ready_Prototype(L"Orb", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"Orb.X")), E_FAIL);
+	for (_uint i = 0; i < 5; i++)
+	{
+		wstring wstrProto = L"Eden_Prop" + to_wstring(i);
+		wstring wsrFile = L"Eden_Prop" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden_Prop/", pConvFileTag)), E_FAIL);
+	}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Eden_decal" + to_wstring(i);
+		wstring wsrFile = L"Eden_decal" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", pConvFileTag)), E_FAIL);
+	}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"Eden_WaterFall" + to_wstring(i);
+		wstring wsrFile = L"Eden_WaterFall" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterFall/", pConvFileTag)), E_FAIL);
+	}
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"JumpBall", CStaticMesh::Create(m_pGraphicDev,			 L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Eden_Edge", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", L"Eden_Edge.X")), E_FAIL);
 
 	//맵
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Eden_Edge", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", L"Eden_Edge.X")), E_FAIL);
 
 	for (_uint i = 0; i < 24; i++)
 	{
@@ -86,69 +112,53 @@ Engine::_uint CLoading::Loading_ForStage(void)
 		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", pConvFileTag)), E_FAIL);
 	}
 
-
-
-	//for (_uint i = 0; i < 2; i++)
-	//{
-	//	wstring wstrProto = L"Ghost" + to_wstring(i);
-	//	wstring wsrFile = L"Ghost" + to_wstring(i) + L".X";
-	//	const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
-	//	const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-	//	Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag));
-	//}
-
 	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterFloor.X")), E_FAIL);
 
 
-#pragma region STATICMESH
+	lstrcpy(m_szLoading, L"데이터 로딩중");
 
-	//오브젝트 풀 생성 
-	//CGameMgr::GetInstance()->InitObjPool();
+
+
+
 	CLoadMgr::GetInstance()->LoadData(L"../../Data/");
-	lstrcpy(m_szLoading, L"Loading Complete!!!!");
-
 	m_bFinish = true;
+	lstrcpy(m_szLoading, L"로딩 완료");
 
 	return 0;
 }
 
 _uint CLoading::Loading_ForStartStage(void)
 {
+	USES_CONVERSION;
 
-
-	lstrcpy(m_szLoading, L"Loading Buffer...............");
+	lstrcpy(m_szLoading, L"버퍼 로딩 로딩중");
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Buffer_TerrainTex", CTerrainTex::Create(m_pGraphicDev, VTXCNTX, VTXCNTZ)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Buffer_CubeTex", CCubeTex::Create(m_pGraphicDev)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Buffer_Trail", CTrail_Texture::Create(m_pGraphicDev)), E_FAIL);
 
-	lstrcpy(m_szLoading, L"Loading Component...............");
+	lstrcpy(m_szLoading, L"컴포넌트 로딩 로딩중");
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Calculator", CCalculator::Create(m_pGraphicDev)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Optimization", COptimization::Create(m_pGraphicDev, true, VTXCNTX, VTXCNTZ)), E_FAIL);
 
 
 
-	lstrcpy(m_szLoading, L"Loading DynamicMesh...............");
+	lstrcpy(m_szLoading, L"다이나믹 메시 로딩중");
 	FAILED_CHECK_RETURN(Ready_Prototype(L"War", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/War/", L"War.X")), E_FAIL);
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Chest", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Chest/", L"Chest.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"PlayerBarrier", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/PlayerBarrier/", L"PlayerBarrier.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Serpent", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Serpent/", L"Serpent.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Vulgrim", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Vulgrim/", L"Vulgrim.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Dis", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Dis/", L"Dis.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Angel", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Angel/", L"Angel.X")), E_FAIL);
 
+	
 	//이펙트 
-	lstrcpy(m_szLoading, L"Loading StaticMesh...............");
-	for (_uint i = 0; i < 5; i++)
-	{
-		wstring wstrProto = L"Eden_Prop" + to_wstring(i);
-		wstring wsrFile = L"Eden_Prop" + to_wstring(i) + L".X";
-		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
-		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden_Prop/", pConvFileTag)), E_FAIL);
-	}
+	lstrcpy(m_szLoading, L"스테틱 메시 로딩중");
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"SkyBox", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/SkyBox/", L"SkyBox.X")), E_FAIL);
 
 	//for (_uint i = 0; i < 6; i++)
 	//{
@@ -168,30 +178,23 @@ _uint CLoading::Loading_ForStartStage(void)
 	//}
 
 
-	for (_uint i = 0; i < 2; i++)
+
+	for (_uint i = 0; i < 3; i++)
 	{
-		wstring wstrProto = L"Eden_decal" + to_wstring(i);
-		wstring wsrFile = L"Eden_decal" + to_wstring(i) + L".X";
+		wstring wstrProto = L"StoneCluster" + to_wstring(i);
+		wstring wsrFile = L"StoneCluster" + to_wstring(i) + L".X";
 		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
 		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Eden/", pConvFileTag)), E_FAIL);
+		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag)), E_FAIL);
 	}
-	//for (_uint i = 0; i < 3; i++)
-	//{
-	//	wstring wstrProto = L"StoneCluster" + to_wstring(i);
-	//	wstring wsrFile = L"StoneCluster" + to_wstring(i) + L".X";
-	//	const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
-	//	const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-	//	FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag)), E_FAIL);
-	//}
-	//for (_uint i = 0; i < 2; i++)
-	//{
-	//	wstring wstrProto = L"StoneSingle" + to_wstring(i);
-	//	wstring wsrFile = L"StoneSingle" + to_wstring(i) + L".X";
-	//	const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
-	//	const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-	//	FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag)), E_FAIL);
-	//}
+	for (_uint i = 0; i < 2; i++)
+	{
+		wstring wstrProto = L"StoneSingle" + to_wstring(i);
+		wstring wsrFile = L"StoneSingle" + to_wstring(i) + L".X";
+		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
+		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
+		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", pConvFileTag)), E_FAIL);
+	}
 	for (_uint i = 0; i < 7; i++)
 	{
 		wstring wstrProto = L"Stone" + to_wstring(i);
@@ -202,18 +205,9 @@ _uint CLoading::Loading_ForStartStage(void)
 	}
 
 
-	for (_uint i = 0; i < 2; i++)
-	{
-		wstring wstrProto = L"Eden_WaterFall" + to_wstring(i);
-		wstring wsrFile = L"Eden_WaterFall" + to_wstring(i) + L".X";
-		const _tchar* pConvProtoTag = W2BSTR(wstrProto.c_str());
-		const _tchar* pConvFileTag = W2BSTR(wsrFile.c_str());
-		FAILED_CHECK_RETURN(Ready_Prototype(pConvProtoTag, CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/WaterFall/", pConvFileTag)), E_FAIL);
-	}
-
-
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Center", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Center/", L"Center.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"CenterRoad", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Center/", L"CenterRoad.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Orb", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"Orb.X")), E_FAIL);
 
 
 
@@ -229,8 +223,9 @@ _uint CLoading::Loading_ForStartStage(void)
 
 
 
+
 #pragma region UI Texture
-	lstrcpy(m_szLoading, L"Loading Texture...............");
+	lstrcpy(m_szLoading, L"텍스쳐 로딩 로딩중");
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_List", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/List.png", TEX_NORMAL, 1)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_UnderBar", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/UnderBar.png", TEX_NORMAL, 1)), E_FAIL);
@@ -273,27 +268,40 @@ _uint CLoading::Loading_ForStartStage(void)
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Sel",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Select.png", TEX_NORMAL, 1)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Info",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/CoreTree/Info.png", TEX_NORMAL, 1)), E_FAIL);
-
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Eff",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/CoreEff_0%d.png", TEX_NORMAL, 2)), E_FAIL);
 
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Base", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/ListBase_0%d.png", TEX_NORMAL, 5)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Sel", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Sel_0%d.png", TEX_NORMAL, 2)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Seg", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Seg_0%d.png", TEX_NORMAL, 3)), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneList_Icon", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Icon_0%d.png", TEX_NORMAL, 2)), E_FAIL);
-
 
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneBase",	CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Base_0%d.png", TEX_NORMAL, 4)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneElement", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneElement_0%d.png", TEX_NORMAL, 8)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_Creature",		CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/Creature_0%d.png", TEX_NORMAL, 22)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_CoreTree_StoneEffect",	CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/UI/Stone/StoneEffect.png", TEX_NORMAL, 1)), E_FAIL);
 
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect_Lightning", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/VFX_gen_bolts.tga", TEX_NORMAL, 1)), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect_Lightning", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/VFX_gen_bolts.tga", TEX_NORMAL, 1)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect2x2", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Effect2x2/Effect2x2_0%d.tga", TEX_NORMAL, 12)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect1x4", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Effect1x4/Effect1x4_0%d.tga", TEX_NORMAL, 8)), E_FAIL);
+	//FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect2x4", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Effect2x4/Effect2x4_0%d.tga", TEX_NORMAL, 3)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect4x4", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Effect4x4/Effect4x4_0%d.tga", TEX_NORMAL, 3)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Effect6x6", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Effect6x6/Effect6x6_0%d.tga", TEX_NORMAL, 3)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_EffectSingle", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/EffectSingle/EffectSingle_0%d.tga", TEX_NORMAL, 1)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_EffectExplosion", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Frame/Effect_0%d.png", TEX_NORMAL, 4)), E_FAIL);
+
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Dissolve", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Dissolve/Dissolve_0%d.tga", TEX_NORMAL, 5)), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Texture_Trail", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Effect/Trail/Trail_0%d.tga", TEX_NORMAL, 5)), E_FAIL);
+
+
 
 #pragma endregion UI Texture
-	lstrcpy(m_szLoading, L"Loading LoadData...............");
+	lstrcpy(m_szLoading, L"데이터 로딩중");
 
 	CLoadMgr::GetInstance()->LoadStartStageData(L"../../Data/");
-	lstrcpy(m_szLoading, L"Loading Complete!!!!");
+	lstrcpy(m_szLoading, L"로딩 완료");
 
 	m_bFinish = true;
 	return 0;

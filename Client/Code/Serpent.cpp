@@ -5,7 +5,7 @@
 #include "StartStage.h"
 #include "Export_Function.h"
 #include "GameMgr.h"
-
+#include "SoundMgr.h"
 
 
 CSerpent::CSerpent(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -186,13 +186,21 @@ void CSerpent::StateChange()
 		{
 		case Serpent::Serpent_Open:
 			m_bBlend = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_SERPENT);
+			CSoundMgr::Get_Instance()->PlaySound(L"prop_serpenthole_open.ogg", CSoundMgr::CHANNEL_SERPENT);
 			break;
 		case Serpent::Serpent_Open_Idle:
+			m_fSounSpeed = 0.f;
+
 			break;
 		case Serpent::Serpent_Close:
 			m_bBlend = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_SERPENT);
+			CSoundMgr::Get_Instance()->PlaySound(L"prop_serpenthole_close.ogg", CSoundMgr::CHANNEL_SERPENT);
 			break;
 		case Serpent::Serpent_Close_Idle:
+			m_fSounSpeed = 0.f;
+
 			break;
 		case Serpent::End:
 			break;
@@ -216,6 +224,8 @@ void CSerpent::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case Serpent::Serpent_Open_Idle:
+		m_fSounSpeed += fDeltaTime;
+
 		break;
 	case Serpent::Serpent_Close:
 		if (m_pMeshCom->Is_AnimationsetFinish())
@@ -224,6 +234,8 @@ void CSerpent::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case Serpent::Serpent_Close_Idle:
+		m_fSounSpeed += fDeltaTime;
+
 		break;
 	case Serpent::End:
 		break;

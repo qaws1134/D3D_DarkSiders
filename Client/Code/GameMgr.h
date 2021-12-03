@@ -11,7 +11,7 @@
 
 typedef struct tagPlayerStat
 {
-	tagPlayerStat() :m_iPlayerAttack(10), m_iPlayerHealth(10), m_iPlayerSkill(10) {}
+	tagPlayerStat() :m_iPlayerAttack(100), m_iPlayerHealth(100), m_iPlayerSkill(100) {}
 
 	_uint m_iPlayerSkill;
 	_uint m_iPlayerHealth ;
@@ -49,7 +49,7 @@ public:
 
 public:
 	void				SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer;  }
-
+	void				SetStatFont( CGameObject* pObj);
 	void				SetPlayerNaviIdx(_uint iIdx) { m_iNaviIdx = iIdx; }
 	_uint				GetPlayerNaviIdx() { return m_iNaviIdx; }
 
@@ -58,6 +58,7 @@ public:
 	CGameObject*		GetPlayer() { return m_pPlayer; }
 	vector<STONE>		GetStoneVec() { return m_vecStone; }
 	STONE				GetStone(UI::STONE eStone);
+
 	void TakeStone(UI::STONE eStone);
 	
 	LPDIRECT3DDEVICE9	GetDevice() { return m_pGraphicDev; }
@@ -109,13 +110,22 @@ public:
 	void RetunItem(CGameObject* pObj);
 	CGameObject* GetItem(_uint eType);
 
+	HRESULT InitWaterBossOrb();
+	void RetunWaterBossOrb(CGameObject* pObj);
+	CGameObject* GetWaterBossOrb();
+
+
+	HRESULT InitEffect3D();
+	void RetunEffect3D(CGameObject* pObj);
+	CGameObject* GetEffect3D(_uint eType);
 
 	void SpawnSet(_uint idx);
 
 
 	PLAYERSTAT GetPlayerStat() { return m_tPlayerStat; }
-	void SetPlayerStat(_uint iAtk, _uint iHp, _uint iSkill) {m_tPlayerStat.m_iPlayerAttack = iAtk; m_tPlayerStat.m_iPlayerHealth = iHp;m_tPlayerStat.m_iPlayerSkill= iSkill;}
-
+	void AddPlayerStat(UI::STONE eStone);
+	void SetTrail(CGameObject* pTrail) { m_pTrail = pTrail; }
+	CGameObject* GetTrail() { return m_pTrail; }
 
 private:
 	LPDIRECT3DDEVICE9 m_pGraphicDev;
@@ -135,18 +145,25 @@ private:
 	queue<CGameObject*> m_queParticle;
 	queue<CGameObject*> m_queItem;
 
+	queue<CGameObject*> m_queWaterOrb;
+	queue<CGameObject*> m_queEffect3D;
+
 	_uint m_iBulletIdx = 0;
 	_uint m_iEffectIdx = 0;
 	_uint m_iParticleIdx = 0;
 	_uint m_iNaviIdx = 0;
 	_uint m_iItemIdx = 0;
-
+	_uint m_iWaterBossOrb = 0;
+	_uint m_iEffectIdx3D = 0;
 
 	PLAYERSTAT m_tPlayerStat;
-
+	vector<CGameObject*> m_vecStatFont;
 	list<_uint>m_listEvent;
 
 	_int m_iSoul = 0;
+
+	CGameObject* m_pTrail=  nullptr;
+
 
 
 	//CNaviMesh* m_pNaviMesh = nullptr;

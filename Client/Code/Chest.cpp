@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Export_Function.h"
 #include "GameMgr.h"
+#include "SoundMgr.h"
 
 
 
@@ -46,7 +47,11 @@ void CChest::Late_Ready_Object()
 
 _int CChest::Update_Object(const _float& fTimeDelta)
 {
+	if (m_bDead)
+		return 0;
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
+
+
 
 	if (CGameMgr::GetInstance()->EventAngel())
 	{
@@ -118,6 +123,8 @@ HRESULT CChest::Add_Component()
 
 void CChest::Render_Object(void)
 {
+
+	_float fTimeDelta = Get_TimeDelta(L"Timer_Immediate");
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
 
@@ -126,9 +133,16 @@ void CChest::Render_Object(void)
 	_uint iMaxPass = 0;
 
 	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
-											// 2인자 : 시작하는 방식을 묻는 FLAG
-	pEffect->BeginPass(0);
+							
+	if(m_eCurAniState != Chest::Chest_Opened)
+		pEffect->BeginPass(0);
+	else
+	{
+		m_fDissolveAmount += fTimeDelta*0.4f;
+		pEffect->SetFloat("g_DissolveAmount", m_fDissolveAmount);
 
+		pEffect->BeginPass(6);
+	}
 	m_pMeshCom->Render_Meshes(pEffect);
 
 	pEffect->EndPass();
@@ -169,6 +183,7 @@ void CChest::StateChange()
 			break;
 		case Chest::STATE_OPEND:
 			m_eCurAniState = Chest::Chest_Opened;
+			
 			break;
 		case Chest::STATE_HIT:
 			m_eCurAniState = Chest::Chest_Impact;
@@ -194,16 +209,29 @@ void CChest::StateChange()
 		case Chest::Chest_Idle:
 			break;
 		case Chest::Chest_Start:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_CHEST);
+			CSoundMgr::Get_Instance()->PlaySound(L"prop_chest_limbo_idle_start", CSoundMgr::CHANNEL_CHEST);
 			break;
 		case Chest::Chest_Opened:
 			break;
 		case Chest::Chest_Open:
-
-
-
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_CHEST);
+			CSoundMgr::Get_Instance()->PlaySound(L"prop_chest_limbo_open.ogg", CSoundMgr::CHANNEL_CHEST);
 			m_bBlend = false;
 			break;
 		case Chest::Chest_Impact:
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"prop_chest_limbo_impact_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_CHEST);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_CHEST);
+		}
 			break;
 		case Chest::Chest_Closed:
 			break;
@@ -261,6 +289,13 @@ void CChest::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case Chest::Chest_Opened:
+		if (m_fDissolveAmount > 1.f)
+			m_bActive = false;
+		for (auto& iter : m_mapColider)
+		{
+			iter.second->SetDead(true);
+		}
+		m_bDead = true;
 		break;
 	case Chest::Chest_Open:
 		if(m_pMeshCom->Is_Animationset(0.6))

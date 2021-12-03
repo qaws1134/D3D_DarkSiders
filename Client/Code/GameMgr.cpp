@@ -12,21 +12,29 @@
 #include "Angel.h"
 #include "StaticCamera.h"
 #include "WaterBoss.h"
+#include "WaterBoss_Orb.h"
 #include "Export_Function.h"
-
-
+#include "Effect_Trail.h"
+#include "EffectMesh.h"
 IMPLEMENT_SINGLETON(CGameMgr)
 
 CGameMgr::CGameMgr()
 {
 	m_vecStone.reserve(22);
 	CGameObject* pGameObject = nullptr;
+
 	m_iSoul = 0;
+	m_vecStatFont.reserve(3);
 }
 
 CGameMgr::~CGameMgr(void)
 {
 	Free();
+}
+
+void CGameMgr::SetStatFont(CGameObject * pObj)
+{
+	m_vecStatFont.emplace_back(pObj);
 }
 
 
@@ -49,7 +57,7 @@ POPTION CGameMgr::GetParticleInfo(PARTICLEEFF::TYPE eParticle)
 		tOption.bLifeTime = true;
 		tOption.bSpeed = true;
 		tOption.fStartLifeTime = 0.f;
-		tOption.fEndLifeTime = 5.f;
+		tOption.fEndLifeTime = 1.f;
 		tOption.bLoop = true;
 		tOption.eType = ShapeType::CONE;
 		tOption.fAngle = 90.f;
@@ -58,15 +66,15 @@ POPTION CGameMgr::GetParticleInfo(PARTICLEEFF::TYPE eParticle)
 		tOption.fStartSpeed = 390.f;
 		tOption.fEndSpeed = 400.f;
 		tOption.fGravity = 1.f;
-		tOption.fRadius = 0.3f;
-		tOption.fSize = 0.5f;
+		tOption.fRadius = 0.5f;
+		tOption.fSize = 1.f;
 		tOption.iAmount = 100;
 		tOption.iBatchSize = 512;
-		tOption.vStartColor = D3DXCOLOR{ 0.2f, 0.2f, 1.f, 1.f };
+		tOption.vStartColor = D3DXCOLOR{ 0.4f, 0.9f, 1.f, 1.f };
 		tOption.fStartTime = 100.f;
 		tOption.fSizeSpeed = 1.f;
 		tOption.bStartDraw = true;
-		tOption.fEndTimer = 3.f;
+		tOption.fEndTimer = 0.8f;
 		break;
 	case PARTICLEEFF::PARTICLE_END:
 		break;
@@ -85,76 +93,77 @@ STONE CGameMgr::GetStone(UI::STONE eStone)
 	switch (eStone)
 	{
 	case UI::GOBLERIN:
-		tStone = { eStone, L"고블린",L"스킬 딜 +1 ",UI::STONE_SKILL,false };
+		tStone = { eStone, L"고블린",L"스킬 딜 +1",UI::STONE_SKILL,false };
 		break;
 	case UI::STATUE:
-		tStone = { eStone,L"석상",L"스킬 딜 +1",UI::STONE_SKILL,true };
+		tStone = { eStone,L"석상",L"스킬 딜 + 5",UI::STONE_SKILL,true };
 		break;
 	case UI::KNIGHT:
-		tStone = { eStone, L"기사",L"스킬 딜 +1",UI::STONE_SKILL,false };
+		tStone = { eStone, L"기사",L"스킬 딜 + 1",UI::STONE_SKILL,false };
 		break;
 	case UI::ICEMAGE:
-		tStone = { eStone,L"얼음고양이",L"스킬 딜 +1",UI::STONE_SKILL,false };
+		tStone = { eStone,L"얼음고양이",L"스킬 딜 + 1",UI::STONE_SKILL,false };
 		break;
 	case UI::SKULL:
-		tStone = { eStone, L"구울",L"스킬 딜 +1",UI::STONE_SKILL,false };
+		tStone = { eStone, L"구울",L"스킬 딜 + 1",UI::STONE_SKILL,false };
 		break;
 	case UI::CRIBO:
-		tStone = { eStone,L"크리보",L"스킬 딜 +1",UI::STONE_SKILL,true };
+		tStone = { eStone,L"크리보",L"스킬 딜 + 3",UI::STONE_SKILL,true };
 		break;
 	case UI::LARVA:
-		tStone = { eStone, L"애벌래",L"스킬 딜 +1",UI::STONE_SKILL,false };
+		tStone = { eStone, L"애벌래",L"스킬 딜 + 1",UI::STONE_SKILL,false };
 		break;
 	case UI::ANT:
-		tStone = { eStone,L"불개미",L"공격 딜 +1",UI::STONE_ATK,false };
+		tStone = { eStone,L"불개미",L"공격 딜 + 1",UI::STONE_ATK,false };
 		break;
 	case UI::BLUEANGEL:
-		tStone = { eStone,L"천사",L"공격 딜 +1",UI::STONE_ATK,true };
+		tStone = { eStone,L"천사",L"공격 딜 + 5",UI::STONE_ATK,true };
 		break;
 	case UI::GREMLIN1:
-		tStone = { eStone,L"그램린",L"공격 딜 +1",UI::STONE_ATK,false };
+		tStone = { eStone,L"그램린",L"공격 딜 + 1",UI::STONE_ATK,false };
 		break;
 	case UI::GREMLIN2:
-		tStone = { eStone,L"강화 그램린",L"공격 딜 + 5",UI::STONE_ATK,false };
+		tStone = { eStone,L"강화 그램린",L"공격 딜 + 1",UI::STONE_ATK,false };
 		break;
 	case UI::GREENGOBLE:
-		tStone = { eStone,L"초록 고블린",L"공격 딜 + 5",UI::STONE_ATK,false };
+		tStone = { eStone,L"초록 고블린",L"공격 딜 + 1",UI::STONE_ATK,false };
 		break;
 	case UI::SKULLMAGE:
-		tStone = { eStone, L"해골 마법사",L"공격 딜 + 5",UI::STONE_ATK,false };
+		tStone = { eStone, L"해골 마법사",L"공격 딜 + 1",UI::STONE_ATK,false };
 		break;
 	case UI::GRINNER:
-		tStone = { eStone, L"그리너",L"공격 딜 + 5",UI::STONE_ATK,true };
+		tStone = { eStone, L"그리너",L"공격 딜 + 3",UI::STONE_ATK,true };
 		break;
 	case UI::BROODI:
-		tStone = { eStone,L"브루디",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone,L"브루디",L"체력 + 1",UI::STONE_HEALTH,false };
 		break;
 	case UI::BAT:
-		tStone = { eStone,L"박쥐",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone,L"박쥐",L"체력 + 1",UI::STONE_HEALTH,false };
 		break;
 	case UI::LEVIATHAN:
-		tStone = { eStone,L"레비아탄",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone,L"레비아탄",L"체력 + 1",UI::STONE_HEALTH,false };
 		break;
 	case UI::NINJA:
-		tStone = { eStone,L"닌자",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone,L"닌자",L"체력 + 5",UI::STONE_HEALTH,true };
 		break;
 	case UI::WATERBOSS:
-		tStone = { eStone, L"바돈",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone, L"바돈",L"체력 + 3",UI::STONE_HEALTH,true };
 		break;
 	case UI::GRINNER2:
-		tStone = { eStone,L"빨강 개",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone,L"빨강 개",L"체력 + 1",UI::STONE_HEALTH,false };
 		break;
 	case UI::CRIBO2:
-		tStone = { eStone, L"얼음 크리보",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone, L"얼음 크리보",L"체력 + 1",UI::STONE_HEALTH,false };
 		break;
 	case UI::MAE:
-		tStone = { eStone,L"마스 터이",L"체력 +1",UI::STONE_HEALTH,false };
+		tStone = { eStone,L"마스 터이",L"체력 + 1",UI::STONE_HEALTH,false };
 		break;
 	default:
 		break;
 	}
 	return tStone;
 }
+
 
 void CGameMgr::CameraEvent()
 {
@@ -258,6 +267,7 @@ HRESULT CGameMgr::InitObjPool()
 	InitEnemyBullet();
 	InitPlayerBullet();
 	InitEffect();
+	//InitWaterBossOrb();
 	//InitItem();
 	//InitParticle();
 	//파티클
@@ -269,6 +279,7 @@ HRESULT CGameMgr::InitObjPool()
 HRESULT CGameMgr::InitStageObjPool()
 {
 	InitItem();
+	//InitWaterBossOrb();
 	return S_OK;
 }
 
@@ -373,7 +384,7 @@ HRESULT CGameMgr::InitEffect()
 void CGameMgr::RetunEffect(CGameObject * pObj)
 {
 	_uint eType = EFFECT::EFFECT_END;
-	//dynamic_cast<CEffect*>(pObj)->SetOption(&eType);
+	dynamic_cast<CEffect*>(pObj)->SetOption(&eType);
 
 	m_queEffect.emplace(pObj);
 }
@@ -432,7 +443,7 @@ CGameObject * CGameMgr::GetParticle(_uint eType)
 	{
 	case PARTICLEEFF::PARTICLE_LIGHTNING:
 		tOption = GetParticleInfo((PARTICLEEFF::TYPE)eType);
-		dynamic_cast<CParticleSystem*>(pObj)->SetParticle(L"../../Resource/Texture/Effect/Particle.png", tOption);
+		dynamic_cast<CParticleSystem*>(pObj)->SetParticle(L"../../Resource/Texture/Effect/Particle/Particle.png", tOption);
 		pObj->SetActive(true);
 		//dynamic_cast<CParticleSystem*>(pObj)->SetOption(&eType);
 		m_queParticle.pop();
@@ -444,7 +455,7 @@ HRESULT CGameMgr::InitItem()
 {
 	CGameObject* pObj = nullptr;
 	USES_CONVERSION;
-	for (_uint i = 0; i < 100; i++)
+	for (_uint i = 0; i < 50; i++)
 	{
 		wstring wstrIndxKey = to_wstring(m_iItemIdx);
 		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
@@ -475,6 +486,84 @@ CGameObject * CGameMgr::GetItem(_uint eType)
 	dynamic_cast<CItem*>(pObj)->SetOption(&eType);
 	m_queItem.pop();
 	
+	return pObj;
+}
+
+HRESULT CGameMgr::InitWaterBossOrb()
+{
+	CGameObject* pObj = nullptr;
+	USES_CONVERSION;
+	for (_uint i = 0; i < 20; i++)
+	{
+		wstring wstrIndxKey = to_wstring(m_iWaterBossOrb);
+		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
+		pObj = CWaterBoss_Orb::Create(m_pGraphicDev);
+		pObj->SetActive(false);
+		Add_GameObject(L"Orb", pConvObjTag, pObj);
+		m_queWaterOrb.emplace(pObj);
+		m_iWaterBossOrb++;
+	}
+	return S_OK;
+}
+
+void CGameMgr::RetunWaterBossOrb(CGameObject * pObj)
+{
+	pObj->SetActive(false);
+
+	m_queWaterOrb.emplace(pObj);
+}
+
+CGameObject * CGameMgr::GetWaterBossOrb()
+{
+	if (m_queWaterOrb.empty())
+	{
+		InitWaterBossOrb();
+	}
+	CGameObject* pObj = m_queWaterOrb.front();
+	pObj->SetActive(true);
+	m_queWaterOrb.pop();
+
+	return pObj;
+}
+
+
+
+HRESULT CGameMgr::InitEffect3D()
+{
+	CGameObject* pObj = nullptr;
+	USES_CONVERSION;
+	for (_uint i = 0; i < 20; i++)
+	{
+		wstring wstrIndxKey = to_wstring(m_iEffectIdx3D);
+		const _tchar* pConvObjTag = W2BSTR(wstrIndxKey.c_str());
+		pObj = CEffectMesh::Create(m_pGraphicDev);
+		pObj->SetActive(false);
+		Add_GameObject(L"Effect3D", pConvObjTag, pObj);
+		m_queEffect3D.emplace(pObj);
+		m_iEffectIdx3D++;
+	}
+	return S_OK;
+}
+
+
+void CGameMgr::RetunEffect3D(CGameObject * pObj)
+{
+	_uint eType = EFFECT::EFFECT3D_END;
+	dynamic_cast<CEffectMesh*>(pObj)->SetOption(&eType);
+
+	m_queEffect3D.emplace(pObj);
+}
+
+CGameObject * CGameMgr::GetEffect3D(_uint eType)
+{
+	if (m_queEffect3D.empty())
+	{
+		InitEffect3D();
+	}
+	CGameObject* pObj = m_queEffect3D.front();
+	dynamic_cast<CEffectMesh*>(pObj)->SetOption(&eType);
+	m_queEffect3D.pop();
+
 	return pObj;
 }
 
@@ -529,6 +618,32 @@ void CGameMgr::SpawnSet(_uint idx)
 	default:
 		break;
 	}
+}
+
+void CGameMgr::AddPlayerStat(UI::STONE eStone)
+{
+	STONE tStone = GetStone(eStone);
+	_uint iStat= _wtoi(&tStone.wstrInfo.back());
+
+	switch (tStone.iElementType)
+	{
+	case UI::STONE_SKILL:
+		m_tPlayerStat.m_iPlayerSkill += iStat;
+		dynamic_cast<CUI*>(m_vecStatFont[1])->GetFont().wstrText = to_wstring(m_tPlayerStat.m_iPlayerSkill);
+		break;
+	case UI::STONE_ATK:
+		m_tPlayerStat.m_iPlayerAttack+= iStat;
+		dynamic_cast<CUI*>(m_vecStatFont[0])->GetFont().wstrText = to_wstring(m_tPlayerStat.m_iPlayerAttack);
+		break;
+	case UI::STONE_HEALTH:
+		m_tPlayerStat.m_iPlayerHealth+= iStat;
+		dynamic_cast<CUI*>(m_vecStatFont[2])->GetFont().wstrText = to_wstring(m_tPlayerStat.m_iPlayerHealth);
+		break;
+
+	default:
+		break;
+	}
+
 }
 
 

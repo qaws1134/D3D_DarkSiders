@@ -28,6 +28,7 @@ public:
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 	virtual void Render_Object(void) override;
 	virtual void SetOption(void* pArg);
+	void SetNavi(CNaviMesh* pNavi) { m_pNavi = pNavi; }
 
 	HRESULT SetUp_ConstantTable(LPD3DXEFFECT& pItem);
 

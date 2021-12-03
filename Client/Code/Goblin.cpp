@@ -4,7 +4,8 @@
 #include "Export_Function.h"
 #include "GameMgr.h"
 #include "Bullet.h"
-
+#include "SoundMgr.h"
+#include "Item.h"
 CGoblin::CGoblin(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
@@ -41,7 +42,7 @@ HRESULT CGoblin::Ready_Object(void)
 	m_fHitSpeed = .0f;
 	m_fHitTime = 0.05f;
 	m_fAttackMoveSpeed = 5.f;
-	SetCharInfo(50.f, 1.f);
+	SetCharInfo(15.f, 1.f);
 
 	return S_OK;
 }
@@ -53,6 +54,10 @@ void CGoblin::Late_Ready_Object()
 
 _int CGoblin::Update_Object(const _float& fTimeDelta)
 {
+
+	if (m_bDead)
+		return 0;
+
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	if (!m_pNavi)
 	{
@@ -138,6 +143,11 @@ HRESULT CGoblin::Add_Component()
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
 
+	pComponent = m_pDissolveCom = dynamic_cast<CTexture*>(Clone_Prototype(L"Proto_Texture_Dissolve"));
+	NULL_CHECK_RETURN(m_pDissolveCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Dissolve", pComponent);
+
+
 	return S_OK;
 }
 
@@ -161,7 +171,17 @@ void CGoblin::Render_Object(void)
 
 	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
 											// 2인자 : 시작하는 방식을 묻는 FLAG
-	pEffect->BeginPass(0);
+	if (m_eCurAniState != Goblin::Goblin_DeathPose)
+		pEffect->BeginPass(0);
+	else
+	{
+		m_fDissolveAmount += fTimeDelta*0.4f;
+		pEffect->SetFloat("g_DissolveAmount", m_fDissolveAmount);
+		m_pDissolveCom->Set_Texture(pEffect, "g_DissolveTexture", 1);
+
+		pEffect->BeginPass(4);
+	}
+
 
 	m_pMeshCom->Render_Meshes(pEffect);
 
@@ -281,14 +301,14 @@ void CGoblin::StateChange()
 				{
 					pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
 					pObj->SetPos(vPos, ID_DYNAMIC);
-					dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(iNavIdx);
+					dynamic_cast<CItem*>(pObj)->SetNavi(m_pNavi);
 
-				}
+				} 
 				if (RandNext(0, 2) == 0)
 				{
 					pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
 					pObj->SetPos(vPos, ID_DYNAMIC);
-					dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(iNavIdx);
+					dynamic_cast<CItem*>(pObj)->SetNavi(m_pNavi);
 				}
 			}
 			break;
@@ -307,18 +327,24 @@ void CGoblin::StateChange()
 		switch (m_eCurAniState)
 		{
 		case Goblin::Goblin_Attack_01:
+
 			m_fInitAttackMoveSpeed = 25.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bAttackMoveEnd = false;
 			m_bNexAni = false;
 			m_bBlend = true;
+			m_bSound = false;
 			break;
 		case Goblin::Goblin_Attack_02:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_3);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_armored_swipe_2_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_3);
+
 			m_fInitAttackMoveSpeed = 100.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bAttackMoveEnd = false;
 			m_bNexAni = false;
 			m_bBlend = true;
+			m_bSound = false;
 			break;
 		case Goblin::Goblin_Attack_Spear:
 		{
@@ -329,9 +355,12 @@ void CGoblin::StateChange()
 				m_fSpearAngle += 360.f;
 			}
 			m_bBlend = true;
+			m_bSound = false;
 		}
 			break;
 		case Goblin::Goblin_Attack_Dash_Back:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_jump_02.ogg", CSoundMgr::CHANNEL_GOBLIN);
 			m_fInitAttackMoveSpeed = 20.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bAttackMoveEnd = false;
@@ -342,11 +371,25 @@ void CGoblin::StateChange()
 			break;
 		case Goblin::Goblin_Impact_B:
 		case Goblin::Goblin_Impact_F:
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"imp_general_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GOBLIN);
+
 			m_fInitAttackMoveSpeed = 5.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bBlend = false;
+		}
 			break;
 		case Goblin::Goblin_Jump_Apex:
+
 			m_bBlend = true;
 			break;
 		case Goblin::Goblin_Jump_Fall:
@@ -360,6 +403,8 @@ void CGoblin::StateChange()
 		case Goblin::Goblin_Sit_End:
 			m_fSpawnSpeed = GetRandomFloat(30.f, 30.f);
 			m_bBlend = true;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_jump_02.ogg", CSoundMgr::CHANNEL_GOBLIN);
 			break;
 		case Goblin::Goblin_Sit_Idle:
 			break;
@@ -369,6 +414,8 @@ void CGoblin::StateChange()
 			break;
 		case Goblin::Goblin_Spawn_Climb_Hovel:
 			m_fSpawnSpeed = GetRandomFloat(60.f,60.f);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_spawn_vo_01.ogg", CSoundMgr::CHANNEL_GOBLIN);
 			m_bBlend = true;
 			break;
 		case Goblin::Goblin_Turn_L:
@@ -376,6 +423,7 @@ void CGoblin::StateChange()
 			m_bBlend = true;
 			break;
 		case Goblin::Goblin_Run_F:
+			m_fSoundTime = 0.3f;
 			break;
 		case Goblin::Goblin_Death:
 			break;
@@ -608,7 +656,15 @@ void CGoblin::StateActor(_float fDeltaTime)
 		AtkColActive(0.5, 0.7, 0);
 		if (!m_pNavi)
 			break;
-
+		if (m_pMeshCom->Is_Animationset(0.5))
+		{
+			if (!m_bSound)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_3);
+				CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_armored_swipe_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_3);
+				m_bSound = true;
+			}
+		}
 		if (m_pMeshCom->Is_Animationset(0.3))
 		{
 			_vec3	vPos;
@@ -626,6 +682,13 @@ void CGoblin::StateActor(_float fDeltaTime)
 
 		if (m_pMeshCom->Is_Animationset(0.4))
 		{
+			if (!m_bSound)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_3);
+				CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_armored_swipe_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_3);
+				m_bSound = true;
+			}
+
 			_vec3	vPos;
 			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 400.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
@@ -637,6 +700,8 @@ void CGoblin::StateActor(_float fDeltaTime)
 		{
 			if (!m_bSpear)
 			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_3);
+				CSoundMgr::Get_Instance()->PlaySound(L"en_fleamag_armored_swipe_03.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_3);
 				SpawnGoblinBullet(m_fSpearAngle);
 				m_bSpear = true;
 			}
@@ -757,12 +822,37 @@ void CGoblin::StateActor(_float fDeltaTime)
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_pTransformCom->Set_Pos(&m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom));
 		m_pTransformCom->Set_PosY(m_fNaviY);
+
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"en_fleamag_foot_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GOBLIN);
+			m_fSoundSpeed = 0.f;
+		}
 		//m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed);
 		break;
 	}
 	case Goblin::Goblin_Death:
 		break;
 	case Goblin::Goblin_DeathPose:
+		if (m_fDissolveAmount > 1.f)
+		{
+			m_bActive = false;
+			for (auto& iter : m_mapColider)
+			{
+				iter.second->SetDead(true);
+			}
+			m_bDead = true;
+		}
 		break;
 	case Goblin::Goblin_Knock_b_Apex:
 		if (!m_bHitEnd)
@@ -872,7 +962,7 @@ void CGoblin::StateLinker(_float fDeltaTime)
 	case Goblin::Goblin_Turn_R:
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
-			m_eCurAniState = Goblin::Goblin_Idle;
+			//m_eCurAniState = Goblin::Goblin_Idle;
 			m_bTurnEnd = true;
 		}
 		break;

@@ -28,10 +28,19 @@ public:
 	void ReleaseView();	//이전으로 돌림
 	void SetEventView();
 
+	void CameraShake(_float fPower,_float fShakeTime);
+	_float GetRandomFloat(_float lowBound, _float highBound);
+	_vec3 GetRandomSphere();
+
+
+
+
 	_float GetRotY() { return D3DXToDegree(m_fCamRotateY); }
 	void Move(_float fDeltaTime);
 	virtual void SetOption(void* pArg);
-	//void GetCameraINFO(INFO eType, _vec3* pInfo);
+
+
+	//void GetCameraINFO(INFO eType, _vec3* pInfo)
 
 	_bool EventTimer(_float fDeltaTime);
 private:
@@ -47,7 +56,7 @@ private:
 	_float m_fCamRotateX = D3DXToRadian(45.f);
 
 
-	_float m_fPreDistanceFromTarget = 15.f;
+	_float m_fPreDistanceFromTarget = 13.f;
 	_float m_fPreCamAngle = D3DXToRadian(45.f);
 	_float m_fPreCamRotateY = 0.f;
 	_float m_fPreCamRotateX = D3DXToRadian(45.f);
@@ -71,6 +80,12 @@ private:
 	_float m_fEventTime = 0.f;
 	_float m_fEventSpeed = 8.f;
 	_bool m_bEventTimerEnd = false;
+
+
+	_float m_fShakeTime =0.f;
+	_float m_fShakePower = 0.f;
+	_bool m_bShake = false;
+	_vec3  m_vInitPos;
 
 public:
 	static CStaticCamera*	Create(LPDIRECT3DDEVICE9 pGraphicDev,

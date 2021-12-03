@@ -56,15 +56,37 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 
 	_ulong	dwFVF = pMesh->GetFVF();
 
-	if (!(dwFVF & D3DFVF_NORMAL))
-	{
-		pMesh->CloneMeshFVF(pMesh->GetOptions(), dwFVF | D3DFVF_NORMAL, m_pGraphicDev, &pDerivedMeshContainer->MeshData.pMesh);
-		D3DXComputeNormals(pDerivedMeshContainer->MeshData.pMesh, pDerivedMeshContainer->pAdjacency);
-	}
-	else
-	{
-		pMesh->CloneMeshFVF(pMesh->GetOptions(), dwFVF, m_pGraphicDev, &pDerivedMeshContainer->MeshData.pMesh);
-	}
+	//if (!(dwFVF & D3DFVF_NORMAL))
+	//{
+
+
+
+	pMesh->CloneMesh(pMesh->GetOptions(), vertexDecl, m_pGraphicDev, &pDerivedMeshContainer->MeshData.pMesh);
+	// 현재 메쉬가 지닌 정점의 fvf정보를 2번째 인자값의 형태로 복제하는 함수
+	//m_pOriMesh->CloneMeshFVF(m_pOriMesh->GetOptions(), dwFVF | D3DFVF_NORMAL, m_pGraphicDev, &m_pMesh);
+	// 인접한 정점 또는 폴리곤 정보를 근거로 법선을 만들어주는 함수
+	D3DXComputeNormals(pDerivedMeshContainer->MeshData.pMesh, pDerivedMeshContainer->pAdjacency);
+	D3DXComputeTangent(pDerivedMeshContainer->MeshData.pMesh, 0, 0, 0, 0, pDerivedMeshContainer->pAdjacency);
+
+	/*	pMesh->CloneMeshFVF(pMesh->GetOptions(), dwFVF | D3DFVF_NORMAL, m_pGraphicDev, &pDerivedMeshContainer->MeshData.pMesh);
+		D3DXComputeNormals(pDerivedMeshContainer->MeshData.pMesh, pDerivedMeshContainer->pAdjacency);*/
+	//}
+	//else
+	//{
+
+	//	const D3DVERTEXELEMENT9 vertexDecl[] = 
+	//	{
+	//		{}
+	//	}
+
+
+	//	pMesh->CloneMesh(pMesh->GetOptions(), )
+
+
+
+
+	//	pMesh->CloneMeshFVF(pMesh->GetOptions(), dwFVF, m_pGraphicDev, &pDerivedMeshContainer->MeshData.pMesh);
+	//}
 
 	pDerivedMeshContainer->NumMaterials = (NumMaterials == 0 ? 1 : NumMaterials);
 
@@ -152,8 +174,8 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 	pDerivedMeshContainer->pSkinInfo = pSkinInfo;
 	pDerivedMeshContainer->pSkinInfo->AddRef();
 
-	pDerivedMeshContainer->MeshData.pMesh->CloneMeshFVF(pDerivedMeshContainer->MeshData.pMesh->GetOptions(), pDerivedMeshContainer->MeshData.pMesh->GetFVF(), m_pGraphicDev, &pDerivedMeshContainer->pOriMesh);
-	
+	//pDerivedMeshContainer->MeshData.pMesh->CloneMeshFVF(pDerivedMeshContainer->MeshData.pMesh->GetOptions(), pDerivedMeshContainer->MeshData.pMesh->GetFVF(), m_pGraphicDev, &pDerivedMeshContainer->pOriMesh);
+	pDerivedMeshContainer->MeshData.pMesh->CloneMesh(pDerivedMeshContainer->MeshData.pMesh->GetOptions(), vertexDecl, m_pGraphicDev, &pDerivedMeshContainer->pOriMesh);
 	// 뼈의 개수를 반환
 	pDerivedMeshContainer->dwNumBones = pDerivedMeshContainer->pSkinInfo->GetNumBones();
 
@@ -171,6 +193,8 @@ STDMETHODIMP Engine::CHierarchyLoader::CreateMeshContainer(THIS_ LPCSTR Name,
 	
 	*ppNewMeshContainer = pDerivedMeshContainer;
 
+	m_pGraphicDev->CreateVertexDeclaration(vertexDecl, &pDerivedMeshContainer->pDecl);
+	Safe_Release(pMesh);
 	return S_OK;
 }
 
@@ -219,6 +243,8 @@ STDMETHODIMP Engine::CHierarchyLoader::DestroyMeshContainer(THIS_ LPD3DXMESHCONT
 	Safe_Delete_Array(pDerivedMeshContainer->pFrameOffSetMatrix);
 	Safe_Delete_Array(pDerivedMeshContainer->ppCombinedTransformMatrix);
 	Safe_Delete_Array(pDerivedMeshContainer->pRenderingMatrix);
+
+	Safe_Release(pDerivedMeshContainer->pDecl);
 
 	Safe_Release(pDerivedMeshContainer->pOriMesh);
 	Safe_Release(pDerivedMeshContainer->MeshData.pMesh);

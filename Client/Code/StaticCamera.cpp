@@ -2,6 +2,7 @@
 #include "StaticCamera.h"
 #include "GameMgr.h"
 #include "Export_Function.h"
+#include "Player.h"
 
 CStaticCamera::CStaticCamera(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CCamera(pGraphicDev)
@@ -55,6 +56,23 @@ Engine::_int CStaticCamera::Update_Object(const _float& fTimeDelta)
 		m_pTargetTransform = dynamic_cast<CTransform*>(m_pTarget->Get_Component(L"Com_Transform", ID_DYNAMIC));
 		m_pPreTarget = m_pTarget;
 	}
+
+
+	if (m_bShake)
+	{
+		if (m_fShakeTime > 0.f)
+		{
+			m_tCameraDesc.vEye = GetRandomSphere()*m_fShakePower + m_vInitPos;
+			m_fShakeTime -= fTimeDelta;
+		}
+		else
+		{
+			m_fShakeTime = 0.0f;
+			m_tCameraDesc.vEye = m_vInitPos;
+			m_bShake = false;
+		}
+	}
+
 	//m_pGraphicDev->GetTransform(D3DTS_WORLD, &m_matWorld);
 	_int	iExit = CCamera::Update_Object(fTimeDelta);
 	Move(fTimeDelta);
@@ -225,6 +243,13 @@ void CStaticCamera::SetEventView()
 	m_bEventView = true;
 
 
+}
+
+_vec3 CStaticCamera::GetRandomSphere()
+{
+	_float fAngle = GetRandomFloat(0.f, 360.f);
+
+	return _vec3{ cosf(D3DXToRadian(fAngle)),0.f,-sinf(D3DXToRadian(fAngle)) };
 }
 
 void CStaticCamera::Move(_float fDeltaTime)
@@ -533,3 +558,20 @@ void CStaticCamera::Free(void)
 	CCamera::Free();
 }
 
+void CStaticCamera::CameraShake(_float fPower, _float fShakeTime)
+{
+	m_fShakePower = fPower;
+	m_fShakeTime = fShakeTime;
+	m_vInitPos = m_tCameraDesc.vEye;
+	m_bShake = true;
+}
+
+_float CStaticCamera::GetRandomFloat(_float lowBound, _float highBound)
+{
+	if (lowBound >= highBound) // bad input
+		return lowBound;
+
+	float f = (rand() % 10000) * 0.0001f;
+
+	return (f * (highBound - lowBound)) + lowBound;
+}

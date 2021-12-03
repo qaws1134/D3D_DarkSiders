@@ -201,6 +201,7 @@ void CMy3DToolView::OnInitialUpdate()
 	Ready_Prototype(L"Serpent", CDynamicMesh::Create(m_pDevice, L"../Resource/Mesh/DynamicMesh/Serpent/", L"Serpent.X"));
 
 
+	Ready_Prototype(L"SkyBox", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/SkyBox/", L"SkyBox.X"));
 	Ready_Prototype(L"Orb", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"Orb.X"));
 	Ready_Prototype(L"WaterBossBullet", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X"));
 	Ready_Prototype(L"WaterFloor", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"WaterFloor.X"));
@@ -210,11 +211,6 @@ void CMy3DToolView::OnInitialUpdate()
 
 	//Ready_Prototype(L"FogEnvironment_Mesh", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"FogEnvironment_Mesh.X"));
 	//Ready_Prototype(L"FogPlane_Group1", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"FogPlane_Group1.X"));
-
-	Ready_Prototype(L"AuraSphere", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"AuraSphere.X"));
-	Ready_Prototype(L"Bolt", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"Bolt.X"));
-	Ready_Prototype(L"ElectricityGroup01", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"ElectricityGroup01.X"));
-	Ready_Prototype(L"ElectricityGroup02", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"ElectricityGroup02.X"));
 
 	for (_uint i = 0; i < 24; i++) 
 	{
@@ -278,6 +274,11 @@ void CMy3DToolView::OnInitialUpdate()
 	}
 
 
+
+	Ready_Prototype(L"AuraSphere", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"AuraSphere.X"));
+	Ready_Prototype(L"Bolt", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"Bolt.X"));
+	Ready_Prototype(L"ElectricityGroup01", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"ElectricityGroup01.X"));
+	Ready_Prototype(L"ElectricityGroup02", CStaticMesh::Create(m_pDevice, L"../Resource/Mesh/StaticMesh/Effect/", L"ElectricityGroup02.X"));
 
 
 	//for (_uint i = 0; i < 6; i++)

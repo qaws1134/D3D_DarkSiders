@@ -3,6 +3,7 @@
 #include "Export_Function.h"
 #include "GameMgr.h"
 #include "UIMgr.h"
+#include "SoundMgr.h"
 CItem::CItem(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
@@ -35,7 +36,7 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	if (m_bActive)
 	{
-		LifeTime(fTimeDelta);
+		//LifeTime(fTimeDelta);
 	
 		BillBord();
 		_vec3	vPos;
@@ -49,7 +50,7 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 			{
 				D3DXVec3Normalize(&m_vDir, &m_vDir);
 				vPos = m_pNavi->MoveOn_NaviMesh(&vInitPos, &m_vDir, m_fSpeed, fTimeDelta, m_pCalculatorCom);
-				m_fNaviY = vPos.y;
+				m_fNaviY = vPos.y+2.f;
 
 				if (!m_bApexEnd)
 				{
@@ -85,29 +86,35 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 				m_fChaseSpeed += fTimeDelta;
 				m_pTransformCom->Move_Pos(&m_vDir, m_fChaseSpeed);
 			}
-		}
+	
 
 
-		if (m_bCol)
-		{
-			//아이템 판단
-			switch (m_tItem.eType)
+			if (m_bCol)
 			{
-			case DROPITEM::ITEM_STONE:
-				CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
-				CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
-				break;
-			case DROPITEM::ITEM_SOUL:
-				CGameMgr::GetInstance()->TakeSoul(RandNext(5,20));
-				break;
-			default:
-				break;
+				//아이템 판단
+				switch (m_tItem.eType)
+				{
+				case DROPITEM::ITEM_STONE:
+					CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
+					CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
+					m_bActive = true;
+					break;
+				case DROPITEM::ITEM_SOUL:
+					CGameMgr::GetInstance()->TakeSoul(RandNext(5,20));
+					m_bActive = true;
+					break;
+				default:
+					break;
 
-			}
-			CGameMgr::GetInstance()->RetunItem(this);
+				}
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ITEM);
+				CSoundMgr::Get_Instance()->PlaySound(L"prop_pickup_orb_health_01.ogg", CSoundMgr::CHANNEL_ITEM);
+
+
+				CGameMgr::GetInstance()->RetunItem(this);
 			
+			}
 		}
-
 		Add_RenderGroup(RENDER_ALPHA, this);
 	}
 	return iExit;
@@ -195,9 +202,12 @@ void CItem::SetOption(void * pArg)
 	_float fRadius = 0.3f;
 	m_vDir.x = fRadius*cosf(m_fAngle) - fRadius*sinf(m_fAngle);
 	m_vDir.z = fRadius*sinf(m_fAngle) + fRadius*cosf(m_fAngle);
+	if (m_wstrTexture == L"")
+		return;
 
-
-	const _tchar* pConvComponentTag = W2BSTR((L"Com" + m_wstrTexture).c_str());
+	USES_CONVERSION;
+	const _tchar* pConvComponentTag = W2BSTR((m_wstrTexture).c_str());
+	
 	auto& iter_find = find_if(m_mapComponent[ID_STATIC].begin(), m_mapComponent[ID_STATIC].end(), CTag_Finder(pConvComponentTag));
 
 	if (iter_find == m_mapComponent[ID_STATIC].end())
@@ -210,17 +220,18 @@ void CItem::SetOption(void * pArg)
 	{
 		m_pTextureCom = dynamic_cast<CTexture*>(iter_find->second);
 	}
-	iter_find = find_if(m_mapComponent[ID_STATIC].begin(), m_mapComponent[ID_STATIC].end(), CTag_Finder(L"Proto_Navi"));
-	if (iter_find == m_mapComponent[ID_STATIC].end())
-	{
-		pComponent = m_pNavi = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
-		NULL_CHECK_RETURN(m_pNavi, );
-		m_mapComponent[ID_STATIC].emplace(L"Com_Navi", pComponent);
-	}
-	else
-	{
-		m_pNavi = dynamic_cast<CNaviMesh*>(iter_find->second);
-	}
+
+	//iter_find = find_if(m_mapComponent[ID_STATIC].begin(), m_mapComponent[ID_STATIC].end(), CTag_Finder(L"Proto_Navi"));
+	//if (iter_find == m_mapComponent[ID_STATIC].end())
+	//{
+	//	pComponent = m_pNavi = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
+	//	NULL_CHECK_RETURN(m_pNavi, );
+	//	m_mapComponent[ID_STATIC].emplace(L"Com_Navi", pComponent);
+	//}
+	//else
+	//{
+	//	m_pNavi = dynamic_cast<CNaviMesh*>(iter_find->second);
+	//}
 
 }
 
@@ -236,26 +247,15 @@ CItem* CItem::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 
 void CItem::Free(void)
 {
+	if(m_bActive)
+		CGameMgr::GetInstance()->RetunItem(this);
+
 	CGameObject::Free();
 }
 
 
 void CItem::BillBord()
 {
-	//_matrix		matWorld, matView, matBill;
-
-	//m_pTransformCom->Get_WorldMatrix(&matWorld);
-	//m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
-
-	//D3DXMatrixIdentity(&matBill);
-
-	//matBill._11 = matView._11;
-
-	//matBill._13 = matView._13;
-
-	//matBill._31 = matView._31;
-	//matBill._33 = matView._33;
-
 
 
 	CTransform* pCamTrans = dynamic_cast<CTransform*>(CGameMgr::GetInstance()->GetCamera()->Get_Component(L"Com_Transform", ID_DYNAMIC));

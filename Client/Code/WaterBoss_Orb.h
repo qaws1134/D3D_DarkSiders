@@ -11,6 +11,7 @@ class CCalculator;
 class CColliderSphere;
 class CStaticMesh;
 class CShader;
+class CTexture;
 END
 
 
@@ -26,6 +27,8 @@ public:
 	virtual _int Update_Object(const _float& fTimeDelta) override;
 	virtual void Render_Object(void) override;
 
+	virtual void TakeDmg(_float Atk);
+	void DeadCheck();
 private:
 	HRESULT			Add_Component(void);
 	HRESULT			SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
@@ -36,10 +39,18 @@ private:
 	CColliderSphere*	m_pColliderCom = nullptr;
 	CStaticMesh*		m_pMeshCom = nullptr;
 	CShader*			m_pShaderCom = nullptr;
+	CTexture*		m_pDissolveCom = nullptr;
 
+
+	_float m_fBulletTime=10.f;
+	_float m_fBulletSpeed= 2.f;
+	_bool m_bBullet = false;
+	_uint m_iPass;
+
+	_float m_fDissolveAmount = 0.f;
 
 	_vec3		m_vDir;
-
+	_vec4		m_vColor;
 public:
 	static CWaterBoss_Orb*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	virtual void			Free(void);

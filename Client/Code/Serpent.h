@@ -71,6 +71,10 @@ private:
 	_bool m_bSpawn = false;
 	_double m_dAniPosition;
 
+	_float m_fSounTime = 10.f;
+	_float m_fSounSpeed =0.f;
+
+
 public:
 	static CSerpent*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	static CSerpent*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);

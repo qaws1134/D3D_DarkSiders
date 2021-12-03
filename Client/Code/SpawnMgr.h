@@ -22,7 +22,6 @@ public:
 	vector<CGameObject*>GetGoblinVec() { return m_vecGoblin; }
 	vector<CGameObject*>GetGrinnerVec() { return m_vecGrinner; }
 
-
 private:
 	virtual void Free(void) override;
 

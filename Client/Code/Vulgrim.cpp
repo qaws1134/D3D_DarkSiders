@@ -5,7 +5,7 @@
 #include "Export_Function.h"
 #include "GameMgr.h"
 #include "UIMgr.h"
-
+#include "SoundMgr.h"
 
 
 CVulgrim::CVulgrim(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -142,18 +142,52 @@ void CVulgrim::StateChange()
 	{
 		if (iter_find->second->GetCol())
 		{
+
+			m_bSound = false;
+
 			if (dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->GetInteraction())
 			{
+				if (!m_bSound)
+				{
+					USES_CONVERSION;
+
+					_uint iIdx = RandNext(0, 4);
+					wstring wstrSound = L"Vulgrim_Greeting_0";
+					wstring wstrTag = L".ogg";
+					wstrSound += to_wstring(iIdx);
+					wstrSound += wstrTag;
+					TCHAR* pTag = W2BSTR(wstrSound.c_str());
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+					CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_NPC);
+					m_bSound = true;
+				}
 
 				if (!m_bUIOn)
 				{
 					CUIMgr::GetInstance()->SetActiveStoreStoneUI(true);
 					CGameMgr::GetInstance()->CameraEvent(this);
 					dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->SetOnUI(true);
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI2);
+					CSoundMgr::Get_Instance()->PlaySound(L"ui_shop_open.ogg", CSoundMgr::CHANNEL_UI2);
+
 					m_bUIOn = true;
 				}
 				else
 				{
+					if (!m_bSound)
+					{
+						USES_CONVERSION;
+
+						_uint iIdx = RandNext(0, 9);
+						wstring wstrSound = L"Vulgrim_Greeting_0";
+						wstring wstrTag = L".ogg";
+						wstrSound += to_wstring(iIdx);
+						wstrSound += wstrTag;
+						TCHAR* pTag = W2BSTR(wstrSound.c_str());
+						CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+						CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_NPC);
+						m_bSound = true;
+					}
 					if (CUIMgr::GetInstance()->GetStoreUIActive())
 					{
 						CUIMgr::GetInstance()->SetActiveStoreStoneUI(false);
@@ -161,6 +195,7 @@ void CVulgrim::StateChange()
 						dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->SetOnUI(false);
 						m_bUIOn = false;
 					}
+
 				}
 
 				m_eMachineState = Vulgrim::STATE_BUY;

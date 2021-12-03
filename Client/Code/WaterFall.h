@@ -28,6 +28,7 @@ public:
 	_float GetRandomFloat(_float lowBound, _float highBound);
 public:
 	void SetProtoMesh(wstring wstrProtoMesh) { m_wstrProtoMesh = wstrProtoMesh; }
+
 private:
 	HRESULT			Add_Component(void);
 	HRESULT			SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
@@ -44,6 +45,8 @@ private:
 	_float m_fUVSpeed;
 	_vec3		m_vDir;
 	wstring		m_wstrProtoMesh;
+
+	_vec4 m_vColor;
 public:
 	static CWaterFall*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 

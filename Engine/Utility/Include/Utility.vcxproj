@@ -190,6 +190,7 @@ call CopyUtility.bat</Command>
     <ClCompile Include="..\Code\Optimization.cpp" />
     <ClCompile Include="..\Code\ParticleSystem.cpp" />
     <ClCompile Include="..\Code\ProtoMgr.cpp" />
+    <ClCompile Include="..\Code\QuadTree.cpp" />
     <ClCompile Include="..\Code\RayPickManager.cpp" />
     <ClCompile Include="..\Code\RcTex.cpp" />
     <ClCompile Include="..\Code\Renderer.cpp" />
@@ -200,6 +201,7 @@ call CopyUtility.bat</Command>
     <ClCompile Include="..\Code\StaticMesh.cpp" />
     <ClCompile Include="..\Code\TerrainTex.cpp" />
     <ClCompile Include="..\Code\Texture.cpp" />
+    <ClCompile Include="..\Code\Trail_Texture.cpp" />
     <ClCompile Include="..\Code\Transform.cpp" />
     <ClCompile Include="..\Code\TriCol.cpp" />
     <ClCompile Include="..\Code\VIBuffer.cpp" />
@@ -228,6 +230,7 @@ call CopyUtility.bat</Command>
     <ClInclude Include="..\Code\Optimization.h" />
     <ClInclude Include="..\Code\ParticleSystem.h" />
     <ClInclude Include="..\Code\ProtoMgr.h" />
+    <ClInclude Include="..\Code\QuadTree.h" />
     <ClInclude Include="..\Code\RayPickManager.h" />
     <ClInclude Include="..\Code\RcTex.h" />
     <ClInclude Include="..\Code\Renderer.h" />
@@ -237,6 +240,7 @@ call CopyUtility.bat</Command>
     <ClInclude Include="..\Code\Shader.h" />
     <ClInclude Include="..\Code\Shader_Blend.hpp" />
     <ClInclude Include="..\Code\Shader_Effect.hpp" />
+    <ClInclude Include="..\Code\Shader_EffectTrail.hpp" />
     <ClInclude Include="..\Code\Shader_Mesh.hpp" />
     <ClInclude Include="..\Code\Shader_MeshEffect.hpp" />
     <ClInclude Include="..\Code\Shader_Sample.hpp" />
@@ -246,6 +250,7 @@ call CopyUtility.bat</Command>
     <ClInclude Include="..\Code\StaticMesh.h" />
     <ClInclude Include="..\Code\TerrainTex.h" />
     <ClInclude Include="..\Code\Texture.h" />
+    <ClInclude Include="..\Code\Trail_Texture.h" />
     <ClInclude Include="..\Code\Transform.h" />
     <ClInclude Include="..\Code\TriCol.h" />
     <ClInclude Include="..\Code\VIBuffer.h" />

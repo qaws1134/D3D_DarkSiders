@@ -121,7 +121,13 @@ HRESULT Engine::CManagement::Ready_Shader(LPDIRECT3DDEVICE9 & pGraphicDev)
 
 	pShader = CShader::Create(pGraphicDev, L"../../Reference/Header/Shader_MeshEffect.hpp");
 	NULL_CHECK_RETURN(pShader, E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Shader_MeshEffect", pShader), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Shader_EffectMesh", pShader), E_FAIL);
+
+
+	pShader = CShader::Create(pGraphicDev, L"../../Reference/Header/Shader_EffectTrail.hpp");
+	NULL_CHECK_RETURN(pShader, E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Proto_Shader_EffectTrail", pShader), E_FAIL);
+
 
 	return S_OK;
 }

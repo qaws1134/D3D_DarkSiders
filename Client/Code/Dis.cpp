@@ -5,7 +5,7 @@
 #include "Export_Function.h"
 #include "GameMgr.h"
 #include "UIMgr.h"
-
+#include "SoundMgr.h"
 
 CDis::CDis(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
@@ -143,7 +143,6 @@ void CDis::StateChange()
 	auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(L"Col_Body"));
 	if (iter_find != m_mapColider.end())
 	{
-
 		if (iter_find->second->GetCol())
 		{
 		
@@ -159,15 +158,35 @@ void CDis::StateChange()
 						m_eMachineState = Dis::STATE_ACTIVE;
 				}
 			}
+			m_bSound = true;
 
 			if (dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->GetInteraction())
 			{
+				if (!m_bSound)
+				{
+					USES_CONVERSION;
+
+					_uint iIdx = RandNext(0, 5);
+					wstring wstrSound = L"Dis_Greeting_0";
+					wstring wstrTag = L".ogg";
+					wstrSound += to_wstring(iIdx);
+					wstrSound += wstrTag;
+					TCHAR* pTag = W2BSTR(wstrSound.c_str());
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+					CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_NPC);
+					m_bSound = true;
+				}
+
 				m_eMachineState = Dis::STATE_BUY;
 				if (!m_bUIOn)
 				{
 					CUIMgr::GetInstance()->SetActiveStoreActiveUI(true);
 					CGameMgr::GetInstance()->CameraEvent(this);
 					dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->SetOnUI(true);
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+					CSoundMgr::Get_Instance()->PlaySound(L"Dis_Intro.ogg", CSoundMgr::CHANNEL_NPC);
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI2);
+					CSoundMgr::Get_Instance()->PlaySound(L"ui_shop_open.ogg", CSoundMgr::CHANNEL_UI2);
 					//Stop_TimeDelta(L"Timer_Immediate", false);
 					m_bUIOn = true;
 				}
@@ -185,13 +204,7 @@ void CDis::StateChange()
 				dynamic_cast<CPlayer*>(CGameMgr::GetInstance()->GetPlayer())->ResetInteraction();
 			}
 		}
-		//else
-		//{
-		//	if (m_bActive)
-		//	{
-		//		m_eMachineState = Dis::STATE_IDLE;
-		//	}
-		//}
+
 	}
 
 	
@@ -203,6 +216,7 @@ void CDis::StateChange()
 		case Dis::STATE_IDLE:
 			m_eCurAniState = Dis::Dis_Idle;
 			break;
+
 		case Dis::STATE_ACTIVE:
 			if (m_ePreMachineState == Dis::STATE_BUY)
 			{
@@ -210,11 +224,12 @@ void CDis::StateChange()
 			}
 			else
 				m_eCurAniState = Dis::Dis_Idle_to_Active;
-
 			break;
+
 		case Dis::STATE_SPAWN:
 			m_eCurAniState = Dis::Dis_Spawn;
-		
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+			CSoundMgr::Get_Instance()->PlaySound(L"Dis_Intro.ogg", CSoundMgr::CHANNEL_NPC);
 			break;
 		case Dis::STATE_SPAWN_IDLE:
 			m_eCurAniState = Dis::Dis_Spawn;
@@ -250,6 +265,8 @@ void CDis::StateChange()
 		case Dis::Dis_Spawn:
 			break;
 		case Dis::Dis_Active_Emote_Purchase:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+			CSoundMgr::Get_Instance()->PlaySound(L"Dis_Selling_5.ogg", CSoundMgr::CHANNEL_NPC);
 			break;
 		case Dis::End:
 			break;

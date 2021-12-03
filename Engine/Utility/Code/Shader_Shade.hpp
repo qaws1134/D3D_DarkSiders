@@ -21,7 +21,7 @@ vector		g_vMtrlDiffuse = (vector)1.f;
 vector		g_vMtrlAmbient = (vector)1.f;
 
 vector		g_vCamPos;
-float		g_fPower = 10.f;
+float		g_fPower = 15.f;
 
 matrix		g_matInvProj;
 matrix		g_matInvView;
@@ -52,34 +52,37 @@ PS_OUT		PS_DIRECTIONAL(PS_IN In)
 	
 	vNormal = vector(vNormal.xyz * 2.f - 1.f, 0.f);
 
-	//Out.vShade = saturate(dot(normalize(vector(0.5f,1.f,0.f, 0.5f)) * -1.f, vNormal)) * (vector(1.f,1.f,1.f,1.f) * g_vMtrlDiffuse) + (vector(0.2f,0.2f,0.2f,1.f) * g_vMtrlAmbient);
+	Out.vShade = saturate(dot(normalize(vector(0.5f,1.f,0.f, 0.5f)) * -1.f, vNormal)) * (vector(1.f,1.f,1.f,1.f) * g_vMtrlDiffuse) + (vector(0.9f, 0.9f, 0.9f,1.f) * g_vMtrlAmbient);
 
 
 
 
-	Out.vShade = saturate(dot(normalize(vector(g_vLightDir.xyz, 0.f)) * -1.f, vNormal)) * (g_vLightDiffuse * g_vMtrlDiffuse) + (g_vLightAmbient * g_vMtrlAmbient);
+	//Out.vShade = saturate(dot(normalize(vector(g_vLightDir.xyz, 0.f)) * -1.f, vNormal)) * (g_vLightDiffuse * g_vMtrlDiffuse) + (g_vLightAmbient * g_vMtrlAmbient);
 
-	vector		vWorldPos;
+	//vector		vWorldPos;
 
-	// 텍스쳐 0 ~ 1 -> 투영 -1 ~ 1
-	vWorldPos.x = (In.vTexUV.x * 2.f - 1.f) * fViewZ;
-	
-	// 텍스쳐 0 ~ 1 -> 투영 1 ~ -1
-	vWorldPos.y = (In.vTexUV.y * -2.f + 1.f) * fViewZ;
+	//// 텍스쳐 0 ~ 1 -> 투영 -1 ~ 1
+	//vWorldPos.x = (In.vTexUV.x * 2.f - 1.f) * fViewZ;
+	//
+	//// 텍스쳐 0 ~ 1 -> 투영 1 ~ -1
+	//vWorldPos.y = (In.vTexUV.y * -2.f + 1.f) * fViewZ;
 
-	// 투영 0 ~ 1
-	vWorldPos.z = vDepth.x * fViewZ;
+	//// 투영 0 ~ 1
+	//vWorldPos.z = vDepth.x * fViewZ;
 
-	vWorldPos.w = fViewZ;
+	//vWorldPos.w = fViewZ;
 
-	vWorldPos = mul(vWorldPos, g_matInvProj);
-	vWorldPos = mul(vWorldPos, g_matInvView);
-	
-	vector	vReflect = normalize(reflect(normalize(vector(g_vLightDir.xyz, 0.f)), vNormal));
-	vector	vLook = normalize(vWorldPos - g_vCamPos);
+	//vWorldPos = mul(vWorldPos, g_matInvProj);
+	//vWorldPos = mul(vWorldPos, g_matInvView);
+	//
+	//vector	vReflect = normalize(reflect(normalize(vector(g_vLightDir.xyz, 0.f)), vNormal));
+	//vector	vLook = normalize(vWorldPos - g_vCamPos);
 
-	Out.vSpecular = pow(saturate(dot(vReflect, vLook * -1.f)), g_fPower);
-	
+	//Out.vSpecular = pow(saturate(dot(vReflect, vLook * 1.f)), g_fPower);
+
+
+	Out.vSpecular.rgb = float3(0.f, 0.f, 0.f);
+
 	return Out;
 }
 

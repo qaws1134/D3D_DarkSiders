@@ -79,6 +79,8 @@ private:
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
 	
+	_bool m_bClose = false;
+
 
 public:
 	static CPlayer_Barrier*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

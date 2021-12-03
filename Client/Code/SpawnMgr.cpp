@@ -19,6 +19,7 @@
 #include "JumpBall.h"
 #include "EffectMesh.h"
 #include "Serpent.h"
+#include "WaterFloor.h"
 IMPLEMENT_SINGLETON(CSpawnMgr)
 CSpawnMgr::CSpawnMgr()
 
@@ -179,8 +180,22 @@ CGameObject* CSpawnMgr::Spawn(wstring Objkey, MESH tMesh, wstring* pLayerTag)
 		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
 		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iBuidingIdx)).c_str());
 		pGameObject = CWaterFall::Create(CGameMgr::GetInstance()->GetDevice(), Objkey.c_str());
-		NULL_CHECK_RETURN(pGameObject, nullptr);
+		NULL_CHECK_RETURN(pGameObject, nullptr)
+
 		Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
+		m_iBuidingIdx++;
+	}
+	else if (Objkey == L"WaterFloor")
+	{
+		//스테틱 매시 
+		//스크립트 조작만 필요
+		*pLayerTag = L"Building";
+		const _tchar* pConvLayerTag = W2BSTR((*pLayerTag).c_str());
+		const _tchar* pConvObjTag = W2BSTR((*pLayerTag + to_wstring(m_iBuidingIdx)).c_str());
+		pGameObject = CWaterFloor::Create(CGameMgr::GetInstance()->GetDevice(), Objkey.c_str());
+		NULL_CHECK_RETURN(pGameObject, nullptr)
+
+			Add_GameObject(pConvLayerTag, pConvObjTag, pGameObject);
 		m_iBuidingIdx++;
 	}
 	else if (Objkey == L"FogEnvironment_Mesh")

@@ -3,7 +3,8 @@
 #include "Enum.h"
 #include "Export_Function.h"
 #include "GameMgr.h"
-
+#include "SoundMgr.h"
+#include "Item.h"
 
 CAngel::CAngel(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
@@ -42,7 +43,7 @@ HRESULT CAngel::Ready_Object(void)
 	m_fHitSpeed = 1.0f;
 	m_fHitTime = 0.1f;
 	m_fAttackMoveSpeed = 5.f;
-	SetCharInfo(50.f, 1.f);
+	SetCharInfo(20.f, 1.f);
 
 	return S_OK;
 }
@@ -54,7 +55,12 @@ void CAngel::Late_Ready_Object()
 
 _int CAngel::Update_Object(const _float& fTimeDelta)
 {
+	if (!m_bActive)
+		return 0;
+	if (m_bDead)
+		return 0;
 	m_fFrameSpeed = fTimeDelta;
+
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	if (!m_pNavi)
 	{
@@ -134,6 +140,9 @@ HRESULT CAngel::Add_Component()
 	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
+	pComponent = m_pDissolveCom = dynamic_cast<CTexture*>(Clone_Prototype(L"Proto_Texture_Dissolve"));
+	NULL_CHECK_RETURN(m_pDissolveCom, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Dissolve", pComponent);
 
 	return S_OK;
 }
@@ -153,7 +162,18 @@ void CAngel::Render_Object(void)
 
 	pEffect->Begin(&iMaxPass, NULL);		// 1인자 : 현재 쉐이더 파일이 반환하는 pass의 최대 개수
 											// 2인자 : 시작하는 방식을 묻는 FLAG
-	pEffect->BeginPass(0);
+	
+	if (m_eCurAniState != Angel::Angel_DeathPose_War)
+		pEffect->BeginPass(0);
+	else
+	{
+		m_fDissolveAmount += fTimeDelta*0.4f;
+		pEffect->SetFloat("g_DissolveAmount", m_fDissolveAmount);
+		m_pDissolveCom->Set_Texture(pEffect, "g_DissolveTexture", 1);
+
+		pEffect->BeginPass(4);
+	}
+
 
 	m_pMeshCom->Render_Meshes(pEffect);
 
@@ -193,6 +213,7 @@ void CAngel::StateChange()
 			m_bTurnStartCross = m_bTurnCross;
 			m_eCurAniState = Angel::Angel_Atk_Dragon_End;
 			m_bActive = true;
+		
 			break;
 		case Angel::STATE_IDLE:
 		{
@@ -259,11 +280,16 @@ void CAngel::StateChange()
 			{
 				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_SOUL);
 				pObj->SetPos(vPos, ID_DYNAMIC);
-				dynamic_cast<CNaviMesh*>(pObj->Get_Component(L"Com_Navi", ID_STATIC))->Set_CellIndex(29);
+				dynamic_cast<CItem*>(pObj)->SetNavi(m_pNavi);
 
 			}
 			if (RandNext(0, 2) == 0)
+			{
 				pObj = CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
+				pObj->SetPos(vPos, ID_DYNAMIC);
+				dynamic_cast<CItem*>(pObj)->SetNavi(m_pNavi);
+			}
+
 		}
 			break;
 		case Angel::STATE_END:
@@ -286,6 +312,11 @@ void CAngel::StateChange()
 			m_bAttackMoveEnd = false;
 			m_bNexAni = false;
 			m_bBlend = true;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_combo_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_combo_vo_01.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+
 			break;
 		case Angel::Angel_Atk_Dash:
 			m_fInitAttackMoveSpeed = 30.f;
@@ -293,23 +324,56 @@ void CAngel::StateChange()
 			m_bAttackMoveEnd = false;
 			m_bNexAni = false;
 			m_bBlend = true;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_dash_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_vo_02.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+
 			break;
 		case Angel::Angel_Atk_Dragon_Start:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_dragoon_start_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_dragoon_start_vo_01.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
 			m_fDragonSpeed = 0.f;
 			break;
 		case Angel::Angel_Atk_Dragon_Hold:
 			m_bActive = false;
 			break;
 		case Angel::Angel_Atk_Dragon_End:
+			if (m_bActive)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_2);
+				CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_dragoon_end_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_2);
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+				CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_dragoon_end_vo_01.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+			}
 			m_bActive = true;
 			break;
 		case Angel::Angel_Atk_Swipe_L:
+			m_fInitAttackMoveSpeed = 15.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bAttackMoveEnd = false;
+			m_bNexAni = false;
+			m_bBlend = true;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_swipe_L_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_vo_01.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+
+			break;
+
 		case Angel::Angel_Atk_Swipe_R:
 			m_fInitAttackMoveSpeed = 15.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bAttackMoveEnd = false;
 			m_bNexAni = false;
 			m_bBlend = true;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_swipe_R_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_atk_vo_02.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+
 			break;
 		case Angel::Angel_Fly_F_Start:
 			break;
@@ -320,41 +384,89 @@ void CAngel::StateChange()
 		case Angel::Angel_Death_War:
 			break;
 		case Angel::Angel_DeathPose_War:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_angel_melee_interactive.ogg", CSoundMgr::CHANNEL_ANGEL);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_death_vo_01.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_EVNET);
+			CSoundMgr::Get_Instance()->PlaySound(L"prop_chest_enable.ogg", CSoundMgr::CHANNEL_EVNET);
 			break;
 		case Angel::Angel_Idle:
 			break;
 		case Angel::Angel_Impact_F:
 		case Angel::Angel_Impact_L:
 		case Angel::Angel_Impact_R:
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"sfx_en_angel_melee_impact_heavy_vo_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_ANGEL_Vo);
+
 			m_fInitAttackMoveSpeed = 8.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+		}
 			break;
 		case Angel::Angel_Impact_Flinch_F:
 		case Angel::Angel_Impact_Flinch_L:
 		case Angel::Angel_Impact_Flinch_R:
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"sfx_en_angel_melee_impact_vo_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_ANGEL_Vo);
+
 			m_fInitAttackMoveSpeed = 5.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bBlend = false;
+		}
 			break;
 		case Angel::Angel_Knock_B_Start:
+
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_knock_start_01.ogg", CSoundMgr::CHANNEL_ANGEL);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_impact_heavy_vo_02.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+
 			m_fInitAttackMoveSpeed = 5.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bBlend = true;
 			m_bAttackMoveEnd = false;
 			break;
+		case Angel::Angel_Knock_B_Land:
+			m_bAttackMoveEnd = false;
+			m_bBlend = true;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_knock_land_01.ogg", CSoundMgr::CHANNEL_ANGEL);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL_Vo);
+			CSoundMgr::Get_Instance()->PlaySound(L"sfx_en_angel_melee_knock_land_vo_01.ogg", CSoundMgr::CHANNEL_ANGEL_Vo);
+
+			break;
 		case Angel::Angel_Knock_B_Apex:
 		case Angel::Angel_Knock_B_Fall:
-		case Angel::Angel_Knock_B_Land:
 		case Angel::Angel_Knock_B_Idle:
 			m_bAttackMoveEnd = false;
 			m_bBlend = true;
 			break;
 		case Angel::Angel_Run_F:
+			m_fSoundTime = 0.4f;
 			break;
 		case Angel::Angel_Turn_90_L:
 		case Angel::Angel_Turn_90_R:
 		case Angel::Angel_Turn_180_L:
 		case Angel::Angel_Turn_180_R:
+			CSoundMgr::Get_Instance()->PlaySound(L"en_angel_flap_01.ogg", CSoundMgr::CHANNEL_ANGEL);
 			m_bBlend = true;
 			break;
 		case Angel::Angel_Walk_B:
@@ -725,6 +837,15 @@ void CAngel::StateActor(_float fDeltaTime)
 	case Angel::Angel_Death_War:
 		break;
 	case Angel::Angel_DeathPose_War:
+		if (m_fDissolveAmount > 1.f)
+		{
+			m_bActive = false;
+			for (auto& iter : m_mapColider)
+			{
+				iter.second->SetDead(true);
+			}
+			m_bDead = true;
+		}
 		break;
 	case Angel::Angel_Impact_F:
 		break;
@@ -785,6 +906,22 @@ void CAngel::StateActor(_float fDeltaTime)
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_pTransformCom->Set_Pos(&m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom));
 		m_pTransformCom->Set_PosY(m_fNaviY);
+
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 3);
+			wstring wstrSound = L"en_fleamag_foot_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ANGEL);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_ANGEL);
+			m_fSoundSpeed = 0.f;
+		}
 		//m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed);
 	}
 		break;
@@ -875,6 +1012,7 @@ void CAngel::StateLinker(_float fDeltaTime)
 	case Angel::Angel_Death_War:
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
+
 			m_eCurAniState = Angel::Angel_DeathPose_War;
 		}
 		break;
@@ -916,7 +1054,7 @@ void CAngel::StateLinker(_float fDeltaTime)
 	case Angel::Angel_Turn_180_R:
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
-			m_eCurAniState = Angel::Angel_Idle;
+			//m_eCurAniState = Angel::Angel_Idle;
 			m_bTurnEnd = true;
 		}
 		break;

@@ -27,7 +27,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	
-	RandomInit(0);
+	srand((unsigned int)time(NULL));
+	_uint iSeed = rand() % 10;
+	Engine::RandomInit(iSeed);
 
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);

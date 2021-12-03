@@ -42,8 +42,11 @@ public:
 	void		SetUIPos(_vec2 vPos) { m_tInfo.vPos = vPos; }
 	void		SetUI(UISET tInfo);
 	void		SetObjTag(wstring& wstrObjTag) { m_tInfo.wstrObjTag = wstrObjTag; }
+	void		SetStoneElement(_uint iIdx, _bool IsElement) { m_bIsElement = IsElement; m_iStoneElement = iIdx; }
 
-	UIFONT		GetFont() { return m_tFont; }
+
+
+	UIFONT&		GetFont() { return m_tFont; }
 	_vec2		GetUIPos() { return m_tInfo.vPos; }
 	_vec2		GetFontPos() { return m_tFont.vPos; }
 	wstring	&	GetObjTag() { return m_tInfo.wstrObjTag; }	//레퍼런스로 넘겨볼까
@@ -51,10 +54,10 @@ public:
 	_uint &		GetTextureNum() { return m_tInfo.iTextureNum; }
 	_vec2		GetInitPos() { return m_vInitPos; }
 	_uint		GetType() { return m_eType; }
-	
 
 	void SetSubTex1(wstring wstrProtoTag,_uint iTextureNum);
 	void SetSubTex2(wstring wstrProtoTag,_uint iTextureNum);
+	void SetSubTex3(wstring wstrProtoTag, _uint iTextureNum);
 
 	void SetType(UI::TYPE eType) { m_eType = eType; }
 	void SetShade(UI::SHADE eShade) { m_eShade = eShade; }
@@ -66,11 +69,10 @@ private:
 	_matrix			m_matOldProj, m_matOldView;
 	UISET			m_tInfo;
 	RECT			m_tRcUI;
-	_bool			m_bSubTex1 = false;	//서브텍스쳐 활성화 유무
-	_uint			m_iSubTexNum1;
-	_bool			m_bSubTex2 =false;
-	_uint			m_iSubTexNum2;
+
 	
+	_bool			m_bRare = false;
+	_float			m_AccTime= 0.f;
 	_uint			m_iPassIdx;
 	
 	_float			fOffset = 0.f;
@@ -81,6 +83,14 @@ private:
 	_float		m_fScaleSize;
 	_bool		m_bScale;
 
+	_uint		m_iStoneElement = 0;
+	_bool		m_bIsElement = 0;
+
+
+	_uint m_iSubTexture1Num = 0;
+	_uint m_iSubTexture2Num = 0;
+	_uint m_iSubTexture3Num = 0;
+
 	_uint		m_iPreStoneIdx = 0;
 	UI::TYPE m_eType;
 	UI::SHADE m_eShade;
@@ -90,17 +100,19 @@ private:
 	UIFONT		m_tFont;
 
 	_bool m_bIsPicking = false;
-
+	D3DXCOLOR vColor = {1.f,1.f,1.f,1.f};
 
 	_float m_fUVTimer;
 	_float m_fUVSpeed;
 	
+
 
 private:
 	CRcTex*		m_pBufferCom = nullptr;
 	CTexture*	m_pTextureCom = nullptr;
 	CTexture*	m_pSubTextureCom1 = nullptr;
 	CTexture*	m_pSubTextureCom2 = nullptr;
+	CTexture*	m_pSubTextureCom3 = nullptr;
 
 	CRenderer*	m_pRendererCom = nullptr;
 	CTransform*	m_pTransformCom = nullptr;

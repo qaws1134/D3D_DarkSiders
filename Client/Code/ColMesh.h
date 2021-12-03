@@ -35,6 +35,8 @@ public:
 	wstring GetBone() { return m_wstrBone; }
 	_float GetRadius() { return m_fRadius; }
 
+	const _matrix* GetParantBoneMatrix() { return m_pParentBoneMatrix; }
+	const _matrix* GetParantWorldMatrix(){ return m_pParentWorldMatrix; }
 
 	void SetParantBoneMatrix(_matrix* pParantBone) { m_pParentBoneMatrix = pParantBone; }
 	void SetParantWorldMatrix(_matrix* pParantWorld) { m_pParentWorldMatrix = pParantWorld; }

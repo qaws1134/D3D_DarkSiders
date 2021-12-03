@@ -7,6 +7,7 @@
 #include "LoadMgr.h"
 #include "SpawnMgr.h"
 #include "EffMgr.h"
+#include "SoundMgr.h"
 CMainApp::CMainApp(void)
 {
 
@@ -23,16 +24,21 @@ HRESULT CMainApp::Ready_MainApp(void)
 
 	FAILED_CHECK_RETURN(Ready_Renderer(m_pGraphicDev), E_FAIL);
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_TriCol", CTriCol::Create(m_pGraphicDev)), E_FAIL);
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Buffer_RcTex1x4", CRcTex::Create(m_pGraphicDev)), E_FAIL);
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Buffer_RcTex2x2", CRcTex::Create(m_pGraphicDev)), E_FAIL);
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Buffer_RcTex4x4", CRcTex::Create(m_pGraphicDev)), E_FAIL);
+	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Buffer_RcTex6x6", CRcTex::Create(m_pGraphicDev)), E_FAIL);
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Buffer_RcTex", CRcTex::Create(m_pGraphicDev)), E_FAIL);
+
+
 
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Texture_Main", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Logo/Main.png", TEX_NORMAL, 1)), E_FAIL);
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Texture_Loading", CTexture::Create(m_pGraphicDev, L"../../Resource/Texture/Logo/Loading.png", TEX_NORMAL, 1)), E_FAIL);
 
 	FAILED_CHECK_RETURN(Engine::Ready_Prototype(L"Proto_Transform", CTransform::Create(m_pGraphicDev)), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Scene(m_pGraphicDev, &m_pManagementClass), E_FAIL);
-	
+	CSoundMgr::Get_Instance()->Initialize();
 	CGameMgr::GetInstance()->SetDevice(m_pGraphicDev);
-
 
 	return S_OK;
 }
@@ -131,6 +137,7 @@ void CMainApp::Free(void)
 	CSpawnMgr::GetInstance()->DestroyInstance();
 	CGameMgr::GetInstance()->DestroyInstance();
 	CEffMgr::GetInstance()->DestroyInstance();
+	CSoundMgr::Get_Instance()->Destroy_Instance();
 	Safe_Release(m_pManagementClass);
 	Safe_Release(m_pGraphicDev);
 	Safe_Release(m_pDeviceClass);

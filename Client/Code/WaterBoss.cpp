@@ -2,7 +2,9 @@
 #include "WaterBoss.h"
 #include "Enum.h"
 #include "Export_Function.h"
-
+#include "GameMgr.h"
+#include "Effect.h"
+#include "SoundMgr.h"
 
 
 CWaterBoss::CWaterBoss(LPDIRECT3DDEVICE9 pGraphicDev)
@@ -35,7 +37,8 @@ HRESULT CWaterBoss::Ready_Object(void)
 	m_eCurAniState = WaterBoss::Idle;
 	m_iSlamPatternNum = 0;
 	m_iPatternNum = 0;
-
+	m_eMachineState = WaterBoss::STATE_SPAWN;
+	m_bActive = false;
 
 	SetCharInfo(50.f, 4.f);
 
@@ -49,13 +52,16 @@ void CWaterBoss::Late_Ready_Object()
 
 _int CWaterBoss::Update_Object(const _float& fTimeDelta)
 {
+	if (!m_bActive)
+		return 0;
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
-
 	StateChange();
 	StateActor(fTimeDelta);
 	StateLinker(fTimeDelta);
 	m_pMeshCom->Play_Animation(fTimeDelta);
-	Add_RenderGroup(RENDER_NONALPHA, this);
+
+	if(m_bActive)
+		Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;
 }
@@ -139,6 +145,16 @@ void CWaterBoss::Render_Object(void)
 	Safe_Release(pEffect);
 }
 
+void CWaterBoss::SpawnTentaFog(_float fAngle, _vec3 vPos)
+{
+
+	CGameObject* pEff = CGameMgr::GetInstance()->GetEffect(EFFECT::EFFECT_FOG1_2x2);
+	_float fRadius = 2.f;
+	_vec3 vDir = { cosf(D3DXToRadian(fAngle))*fRadius,vPos.y,-sinf(D3DXToRadian(fAngle))*fRadius };	
+	pEff->SetPos(vPos, ID_DYNAMIC);
+	dynamic_cast<CEffect*>(pEff)->SetDir(-vDir);
+}
+
 void CWaterBoss::StateChange()
 {
 	//기본 상태 시 무기상태 false 
@@ -160,14 +176,23 @@ void CWaterBoss::StateChange()
 		case WaterBoss::STATE_IDLE:
 			m_fPatternSpeed = 0.f;
 			m_eCurAniState = WaterBoss::Idle;
+			m_bSpawnEff = false;
 			m_bBlend = true;
+			for(_uint i = 0 ; i <4; i++)
+				m_bPummel[i] = false;
+
 
 			break;
 		case WaterBoss::STATE_CALL_LIGHTNING:
 			m_eCurAniState = WaterBoss::Atk_CallLightning_Start;
+
+
 			break;
 		case WaterBoss::STATE_ORB:
+		{
 			m_eCurAniState = WaterBoss::Atk_SummonOrb;
+
+		}
 			break;
 		case WaterBoss::STATE_SLAM:
 			SetSlamPattern();
@@ -199,15 +224,29 @@ void CWaterBoss::StateChange()
 		switch (m_eCurAniState)
 		{
 		case WaterBoss::Atk_CallLightning_Start:
+			for(_uint i = 0 ; i <5; i++)
+				m_queReadyEff2D.emplace(EFFECT::EFFECT_MAGIC_CIRCLE_SINGLE);
+			m_fEffSpawnSpeed = 0.f;
+			m_fEffSpawnTime = GetRandomFloat(0.3f, 1.f);
+
 			m_bBlend = true;
 			break;
 		case WaterBoss::Atk_CallLightning:
 			m_bBlend = true;
 			break;
 		case WaterBoss::Atk_SummonOrb:
+		{
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_waterboss_summon_orb_start_01.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_2);
+			m_bOrb = false;
 			m_bBlend = true;
+		}
 			break;
 		case WaterBoss::Atk_Tentade_Pummel:	
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_waterboss_tentacle_pummel.ogg", CSoundMgr::CHANNEL_MONSTER_ATK_1);
+			m_bBlend = false;
+			break;
 		case WaterBoss::Atk_TentadeSlam_FL:	
 		case WaterBoss::Atk_TentadeSlam_FL_02:	
 		case WaterBoss::Atk_TentadeSlam_FR:			
@@ -215,12 +254,27 @@ void CWaterBoss::StateChange()
 		case WaterBoss::Atk_TentadeSlam_L_02:
 		case WaterBoss::Atk_TentadeSlam_R:
 		case WaterBoss::Atk_TentadeSlam_R_02:
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 4);
+			wstring wstrSound = L"en_waterboss_tentacle_0";
+			wstring wstrTag = L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_MONSTER_ATK_1);
+			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_MONSTER_ATK_1);
+
 			m_bBlend = false;
 			break;
+		}
 		case WaterBoss::Atk_WhirlPool:
 			m_bBlend = true;
 			break;
 		case WaterBoss::Impact_Stun:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_WATERBOSS);
+			CSoundMgr::Get_Instance()->PlaySound(L"en_waterboss_stun.ogg", CSoundMgr::CHANNEL_WATERBOSS);
 			m_bBlend = true;
 			break;
 		case WaterBoss::Impact_Stun_Loop:
@@ -250,6 +304,82 @@ void CWaterBoss::StateChange()
 }
 void CWaterBoss::StateActor(_float fDeltaTime)
 {
+
+	if (!m_queReadyEff2D.empty())
+	{
+		m_fEffSpawnSpeed += fDeltaTime;
+		if (m_fEffSpawnSpeed > m_fEffSpawnTime)
+		{
+			EFFECT::TYPE2D eEffect2D = m_queReadyEff2D.front();
+			CGameObject *pObj = CGameMgr::GetInstance()->GetEffect(eEffect2D);
+			
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			_vec3 vRight;
+			m_pTransformCom->Get_INFO(INFO_RIGHT, &vRight);
+			D3DXVec3Normalize(&vRight, &vRight);
+			switch (eEffect2D)
+			{
+		
+			case EFFECT::EFFECT_MAGIC_CIRCLE_SINGLE:
+			{
+				dynamic_cast<CEffect*>(pObj)->SetNextEffect(EFFECT::EFFECT_LIGHTNING_CLUSTER);
+				dynamic_cast<CEffect*>(pObj)->SetNextEffect2(EFFECT::EFFECT_WATER_CLUSTER);
+				//전방 
+				_float fDistance = 15.f;
+				vPos = vPos + (-vRight* fDistance);
+
+				_float fRadius = GetRandomFloat(0.f,10.f);
+				_float fAngle = GetRandomFloat(0.f, 360.f);
+
+				//주변 원 
+				_vec2 vDir = { cosf(D3DXToRadian(fAngle))*fRadius,-sinf(D3DXToRadian(fAngle))*fRadius };
+				vPos.x += vDir.x;
+				vPos.z += vDir.y;
+
+				pObj->SetPos(vPos, ID_DYNAMIC);
+			}
+				break;
+			case EFFECT::EFFECT_END:
+				break;
+			default:
+				break;
+			}
+
+			m_queReadyEff2D.pop();
+
+			m_fEffSpawnSpeed = 0.f;
+		}
+	}
+
+
+
+
+	switch (m_eMachineState)
+	{
+	case WaterBoss::STATE_SPAWN:
+		
+		break;
+	case WaterBoss::STATE_IDLE:
+		break;
+	case WaterBoss::STATE_CALL_LIGHTNING:
+		
+		break;
+	case WaterBoss::STATE_ORB:
+		break;
+	case WaterBoss::STATE_SLAM:
+		break;
+	case WaterBoss::STATE_IMPACT:
+		break;
+	case WaterBoss::STATE_WAVE:
+		break;
+	case WaterBoss::STATE_END:
+		break;
+	default:
+		break;
+	}
+
+	_vec3 vPos;
 	switch (m_eCurAniState)
 	{
 	case WaterBoss::Atk_CallLightning_Start:
@@ -261,39 +391,87 @@ void CWaterBoss::StateActor(_float fDeltaTime)
 	case WaterBoss::Atk_SummonOrb_L:
 		break;
 	case WaterBoss::Atk_Tentade_Pummel:
-		AtkColActive(0.1,0.2,2);
-		AtkColActive(0.2, 0.3, 0);
-		AtkColActive(0.3, 0.4, 4);
-		AtkColActive(0.4, 0.5, 1);
+	{
+		m_bSpawnEff = true;
+		AtkColActive(0.2, 0.3, 0,&vPos);	
+		if (m_pMeshCom->Is_Animationset(0.3 - 0.03))
+		{
+			if (!m_bPummel[0])
+			{
+				for (_uint i = 0; i < 9; i++)
+				{
+					_float fAngle = -80.f + (i * 20);
+					SpawnTentaFog(fAngle, vPos);
+				}
+				m_bPummel[0] = true;
+			}
+		}
+		AtkColActive(0.3, 0.4, 2,&vPos);
+		if (m_pMeshCom->Is_Animationset(0.4 - 0.03))
+		{
+			if (!m_bPummel[1])
+			{
+				for (_uint i = 0; i < 9; i++)
+				{
+					_float fAngle = -80.f + (i * 20);
+					SpawnTentaFog(fAngle, vPos);
+				}
+				m_bPummel[1] = true;
+			}
+		}
+		AtkColActive(0.4, 0.5, 3,&vPos);
+		if (m_pMeshCom->Is_Animationset(0.5 - 0.03))
+		{
+			if (!m_bPummel[2])
+			{
+				for (_uint i = 0; i < 9; i++)
+				{
+					_float fAngle = -80.f + (i * 20);
+					SpawnTentaFog(fAngle, vPos);
+				}
+				m_bPummel[2] = true;
+			}
+		}
+		AtkColActive(0.5, 0.6, 1,&vPos);
+		if (m_pMeshCom->Is_Animationset(0.6 - 0.08))
+		{
+			if (!m_bPummel[3])
+			{
+				for (_uint i = 0; i < 9; i++)
+				{
+					_float fAngle = -80.f + (i * 20);
+					SpawnTentaFog(fAngle, vPos);
+				}
+				m_bPummel[3] = true;
+			}
+		}
 
+	}
 		break;
 	case WaterBoss::Atk_TentadeSlam_FL:
 	{
-		AtkColActive(0.2, 0.3, 2);
-
-		if (m_eMachineState == WaterBoss::STATE_SPAWN)
-		{
-			//총알 생성 x 
-		}
+		AtkColActive(0.3, 0.4, 0, &vPos);
 	}
 		break;
 	case WaterBoss::Atk_TentadeSlam_FL_02:
-		AtkColActive(0.2, 0.3, 2);
+	{
+		AtkColActive(0.3, 0.4 , 0, &vPos);
+	}
 		break;
 	case WaterBoss::Atk_TentadeSlam_FR:
-		AtkColActive(0.2, 0.3, 1);
+		AtkColActive(0.3, 0.4, 3, &vPos);
 		break;
 	case WaterBoss::Atk_TentadeSlam_L:
-		AtkColActive(0.2, 0.3, 3);
+		AtkColActive(0.3, 0.4, 1, &vPos);
 		break;
 	case WaterBoss::Atk_TentadeSlam_L_02:
-		AtkColActive(0.2, 0.3, 3);
+		AtkColActive(0.3, 0.4, 1, &vPos);
 		break;
 	case WaterBoss::Atk_TentadeSlam_R:
-		AtkColActive(0.2, 0.3, 0);
+		AtkColActive(0.3, 0.4, 2, &vPos);
 		break;
 	case WaterBoss::Atk_TentadeSlam_R_02:
-		AtkColActive(0.2, 0.3, 0);
+		AtkColActive(0.3, 0.4, 2, &vPos);
 		break;
 	case WaterBoss::Atk_WhirlPool:
 		break;
@@ -336,14 +514,36 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case WaterBoss::Atk_SummonOrb:
+		if (m_pMeshCom->Is_Animationset(0.5))
+		{
+			if(!m_bOrb)
+				SpawnOrb();
+			m_bOrb = true;
+		}
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = WaterBoss::STATE_IDLE;
 			m_fPatternTimer = 2.f;
-
+			
 		}
 		break;
 	case WaterBoss::Atk_Tentade_Pummel:
+	{
+		if (m_pMeshCom->Is_Animationset(0.9))
+		{
+			if (m_eMachineState == WaterBoss::STATE_SPAWN)
+			{
+				CSoundMgr::Get_Instance()->PlayBGM(L"mus_level13_combat.ogg");
+			}
+			if (m_pMeshCom->Is_Animationset(0.9))
+			{
+				m_eMachineState = WaterBoss::STATE_IDLE;
+				m_fPatternTimer = 1.f;
+			}
+		}
+	}
+	break;
+
 	case WaterBoss::Atk_TentadeSlam_FL:
 	case WaterBoss::Atk_TentadeSlam_FL_02:
 	case WaterBoss::Atk_TentadeSlam_FR:
@@ -449,7 +649,13 @@ HRESULT CWaterBoss::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 
 	D3DXMatrixInverse(&matView, NULL, &matView);
 	pEffect->SetVector("g_vCamPos", (_vec4*)&matView._41);
-
+	if (m_bCol)
+	{
+		m_vColor = { 1.f, 1.f, 1.f, 1.f };
+		pEffect->SetVector("g_vColor", (_vec4*)&m_vColor);
+		m_bCol = false;
+	}
+	
 	return S_OK;
 }
 
@@ -466,6 +672,41 @@ _bool CWaterBoss::Pattern_Timer(_float fDeltaTime)
 
 void CWaterBoss::SetPattern()
 {
+
+	//switch (m_iPatternNum)
+	//{
+	//case 0:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 1:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 2:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 3:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 4:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 5:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 6:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 7:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	break;
+	//case 8:
+	//	m_eMachineState = WaterBoss::STATE_ORB;
+	//	m_iPatternNum = 0;
+	//	break;
+	//}
+
+
+
 	switch (m_iPatternNum)
 	{
 	case 0:
@@ -478,13 +719,13 @@ void CWaterBoss::SetPattern()
 		m_eMachineState = WaterBoss::STATE_SLAM;
 		break;
 	case 3:
-		m_eMachineState = WaterBoss::STATE_WAVE;
+		m_eMachineState = WaterBoss::STATE_ORB;
 		break;
 	case 4:
-		m_eMachineState = WaterBoss::STATE_ORB;	
+		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
 		break;
 	case 5:
-		m_eMachineState = WaterBoss::STATE_ORB;
+		m_eMachineState = WaterBoss::STATE_SLAM;
 		break;
 	case 6:
 		m_eMachineState = WaterBoss::STATE_CALL_LIGHTNING;
@@ -493,7 +734,7 @@ void CWaterBoss::SetPattern()
 		m_eMachineState = WaterBoss::STATE_SLAM;
 		break;
 	case 8:
-		m_eMachineState = WaterBoss::STATE_WAVE;
+		m_eMachineState = WaterBoss::STATE_ORB;
 		m_iPatternNum = 0;
 		break;
 	}	
@@ -540,22 +781,114 @@ void CWaterBoss::SetSlamPattern()
 void CWaterBoss::SetOption(void * pArg)
 {
 	m_eMachineState = WaterBoss::STATE_SPAWN;
+	m_bActive = true;
+	CSoundMgr::Get_Instance()->PlayBGM(L"mus_level13_combat_intro.ogg");
 }
 
-void CWaterBoss::AtkColActive(double dStart, double dEnd,_uint iWeaponIdx)
+void CWaterBoss::SpawnOrb()
+{
+	CGameObject* pObj = CGameMgr::GetInstance()->GetWaterBossOrb();
+
+	_vec3 vPos;
+	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+	_vec3 vLook;
+	m_pTransformCom->Get_INFO(INFO_LOOK, &vLook);
+	D3DXVec3Normalize(&vLook, &vLook);
+
+	if (m_bOrbCross)
+	{
+		vLook *= -1.f;
+	}
+	m_bOrbCross = !m_bOrbCross;
+
+	_float fDistance = 9.f;
+	vPos = vPos + (vLook* fDistance);
+
+	_float fRadius = GetRandomFloat(0.f, 4.f);
+	_float fAngle = GetRandomFloat(0.f, 360.f);
+	//주변 원 
+	_vec2 vDir = { cosf(D3DXToRadian(fAngle))*fRadius,-sinf(D3DXToRadian(fAngle))*fRadius };
+	vPos.x += vDir.x;
+	vPos.z += vDir.y;
+	if(pObj)
+		pObj->SetPos(vPos, ID_DYNAMIC);
+}
+
+void CWaterBoss::DeadCheck()
+{
+	if (m_tCharInfo.fHp <= 0.f)
+	{
+		m_eMachineState = WaterBoss::STATE_DEAD;
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_EVNET);
+		CSoundMgr::Get_Instance()->PlaySound(L"general_death_boss.ogg", CSoundMgr::CHANNEL_EVNET);
+	}
+}
+
+void CWaterBoss::AtkColActive(double dStart, double dEnd,_uint iWeaponIdx,_vec3* pPos )
 {
 	auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder((L"Col_Weapon"+to_wstring(iWeaponIdx)).c_str()));
 	if (iter_find == m_mapColider.end())
 		return;
 
+	_vec3 vPos;
+	dynamic_cast<CTransform*>(iter_find->second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS,&vPos);
+
+	*pPos = vPos;
+	if (m_pMeshCom->Is_Animationset(dEnd - 0.08))
+	{
+		if (!m_bSpawnEff)
+		{
+			for (_uint i = 0; i < 9; i++)
+			{
+				_float fAngle = -80.f + (i * 20);
+				SpawnTentaFog(fAngle, vPos);
+			}
+			m_bSpawnEff = true;
+		}
+	}
+
 	if (m_pMeshCom->Is_Animationset(dEnd))
 	{
+
 		iter_find->second->SetActive(false);
 	}
 	else if (m_pMeshCom->Is_Animationset(dStart))
 	{
+		
 		iter_find->second->SetActive(true);
 	}
+
+
 }
 
 
+_float CWaterBoss::GetRandomFloat(_float lowBound, _float highBound)
+{
+	if (lowBound >= highBound) // bad input
+		return lowBound;
+
+	float f = (rand() % 10000) * 0.0001f;
+
+	return (f * (highBound - lowBound)) + lowBound;
+}
+
+void CWaterBoss::TakeDmg(_float fDmg)
+{
+	m_tCharInfo.fDmg = fDmg;
+	m_tCharInfo.fHp -= fDmg;
+
+	USES_CONVERSION;
+
+	_uint iIdx = RandNext(0, 4);
+	wstring wstrSound = L"en_dagon_vo_effort_impact_0";
+	wstring wstrTag = L".ogg";
+	wstrSound += to_wstring(iIdx);
+	wstrSound += wstrTag;
+	TCHAR* pTag = W2BSTR(wstrSound.c_str());
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_WATERBOSS);
+	CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_WATERBOSS);
+
+
+
+	//m_bHit = true;
+}

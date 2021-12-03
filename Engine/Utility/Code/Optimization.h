@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "Frustum.h"
+#include "QuadTree.h"
 
 BEGIN(Engine)
 
@@ -20,6 +21,7 @@ public:
 
 private:
 	CFrustum*				m_pFrustum;	
+	CQuadTree*				m_pQuadTree;
 
 public:
 	static COptimization*		Create(LPDIRECT3DDEVICE9 pGraphicDev, _bool bChoice, const _ulong& dwCntX, const _ulong& dwCntZ);

@@ -95,16 +95,42 @@ void Engine::CLight::Free(void)
 	Safe_Release(m_pGraphicDev);
 }
 
+
 void Engine::CLight::Render_Light(LPD3DXEFFECT& pEffect)
 {
-	pEffect->SetVector("g_vLightDir", &_vec4(m_tLightInfo.Direction, 0.f));
+	_uint        iPass = 0;
 
-	pEffect->SetVector("g_vLightDiffuse", (_vec4*)&m_tLightInfo.Diffuse);
-	pEffect->SetVector("g_vLightAmbient", (_vec4*)&m_tLightInfo.Ambient);
+	if (m_tLightInfo.Type == D3DLIGHT_DIRECTIONAL)
+	{
+		iPass = 0;
+		pEffect->SetVector("g_vLightDir", &_vec4(m_tLightInfo.Direction, 0.f));
+	}
+	else if (m_tLightInfo.Type == D3DLIGHT_POINT)
+	{
+		iPass = 1;
+		pEffect->SetVector("g_vLightPos", &_vec4(m_tLightInfo.Position, 1.f));
+		pEffect->SetFloat("g_fRange", m_tLightInfo.Range);
+	}
+
+	pEffect->SetVector("g_vLightDiffuse", (_vec4*)&(m_tLightInfo.Diffuse));
+	pEffect->SetVector("g_vLightAmbient", (_vec4*)&(m_tLightInfo.Ambient));
+
+	_matrix        matProj;
+	m_pGraphicDev->GetTransform(D3DTS_PROJECTION, &matProj);
+	D3DXMatrixInverse(&matProj, NULL, &matProj);
+
+	_matrix        matView;
+	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matView);
+	D3DXMatrixInverse(&matView, NULL, &matView);
+
+	pEffect->SetMatrix("g_matInvProj", &matProj);
+	pEffect->SetMatrix("g_matInvView", &matView);
+
+	pEffect->SetVector("g_vCamPos", (_vec4*)&matView._41);
 
 	pEffect->CommitChanges();
 
-	pEffect->BeginPass(0);
+	pEffect->BeginPass(iPass);
 
 	m_pGraphicDev->SetStreamSource(0, m_pVB, 0, sizeof(VTXSCREEN));
 	m_pGraphicDev->SetFVF(FVF_SCREEN);

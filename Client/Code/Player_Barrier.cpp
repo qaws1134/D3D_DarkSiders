@@ -3,8 +3,8 @@
 #include "Enum.h"
 #include "Export_Function.h"
 #include "GameMgr.h"
-
-
+#include "SoundMgr.h"
+#include "SpawnMgr.h"
 CPlayer_Barrier::CPlayer_Barrier(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
 {
@@ -149,19 +149,25 @@ void CPlayer_Barrier::StateChange()
 		{
 		case Player_Barrier::STATE_IDLE_OPEN:
 			m_eCurAniState = Player_Barrier::PlayerBarrer_Close;
+
 			m_bActive = false;
 			break;
 		case Player_Barrier::STATE_IDLE_CLOSE:
 			m_eCurAniState = Player_Barrier::PlayerBarrer_Open;
+
 			m_fSpawnSpeed = 0.f;
 			m_bActive = true;
 			break;
 		case Player_Barrier::STATE_OPEN:
 			m_eCurAniState = Player_Barrier::PlayerBarrer_Open;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_DOOR);
+			CSoundMgr::Get_Instance()->PlaySound(L"prop_gondola_start.ogg", CSoundMgr::CHANNEL_DOOR);
 			m_bActive = true;
 			break;
 		case Player_Barrier::STATE_CLEOSE:
 			m_eCurAniState = Player_Barrier::PlayerBarrer_Close;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_DOOR);
+			CSoundMgr::Get_Instance()->PlaySound(L"prop_gondola_stop.ogg", CSoundMgr::CHANNEL_DOOR);	
 			m_bActive = true;
 			break;
 		case Player_Barrier::STATE_END:
@@ -179,8 +185,10 @@ void CPlayer_Barrier::StateChange()
 		switch (m_eCurAniState)
 		{
 		case Player_Barrier::PlayerBarrer_Close:
+			m_bBlend = false;
 			break;
 		case Player_Barrier::PlayerBarrer_Open:
+			m_bBlend = false;
 			break;
 		case Player_Barrier::End:
 			break;
@@ -200,6 +208,7 @@ void CPlayer_Barrier::StateActor(_float fDeltaTime)
 		m_fFrameSpeed = 0.f;
 		break;
 	case Player_Barrier::STATE_IDLE_CLOSE:
+	{
 		if (!m_bSpawn)
 		{
 			m_fSpawnSpeed += fDeltaTime;
@@ -210,7 +219,30 @@ void CPlayer_Barrier::StateActor(_float fDeltaTime)
 
 			}
 		}
+		else
+		{
+			vector<CGameObject*> m_vecEnemy= CSpawnMgr::GetInstance()->GetGrinnerVec();
+			
+			if (!m_vecEnemy.empty())
+			{
+				for (auto iter : m_vecEnemy)
+				{
+					if (iter->GetActive())
+					{
+						m_bClose = false;
+						break;
+					}
+					else
+						m_bClose = true;
+				}
+				if (m_bClose)
+				{
+					m_eMachineState = Player_Barrier::STATE_OPEN;
+				}
+			}
+		}
 		m_fFrameSpeed = 0.f;
+	}
 		break;
 	case Player_Barrier::STATE_OPEN:
 		m_fFrameSpeed = fDeltaTime;

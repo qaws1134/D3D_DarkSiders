@@ -4,6 +4,7 @@
 #include "UIMgr.h"
 #include "GameMgr.h"
 #include "Export_Function.h"
+#include "SoundMgr.h"
 
 CUI::CUI(LPDIRECT3DDEVICE9 pGraphicDev)
 	: CGameObject(pGraphicDev)
@@ -74,7 +75,7 @@ _int CUI::Update_Object(const _float& fTimeDelta)
 {
 
 	_float Timer_UI = Get_TimeDelta(L"Timer_UI");
-
+	m_AccTime += Timer_UI;
 	_int iExit = CGameObject::Update_Object(Timer_UI);
 	//타임을 다른 타임으로 바꿔주자
 	if (m_bActive)
@@ -96,7 +97,33 @@ void CUI::Render_Object(void)
 	if (m_eType == UI::TYPE_FONT)
 	{
 
+		if (m_eShade == UI::SHADE_UVMOVE_STORE)
+		{
+			RECT rcScissor;
+
+			rcScissor.left = 550;
+			rcScissor.top = 100;
+			rcScissor.right = 1150;
+			rcScissor.bottom = 600;
+
+			m_pGraphicDev->SetScissorRect(&rcScissor);
+			m_pGraphicDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);	
+		}
+		if (m_eShade == UI::SHADE_UVMOVE_STONE)
+		{
+
+			RECT rcScissor;
+
+			rcScissor.left = 50;
+			rcScissor.top = 130;
+			rcScissor.right = 700;
+			rcScissor.bottom = 600;
+
+			m_pGraphicDev->SetScissorRect(&rcScissor);
+			m_pGraphicDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
+		}
 		Render_Font(m_tFont.wstrFont.c_str(), m_tFont.wstrText.c_str(), &_vec2(m_tFont.vPos.x+ m_tInfo.vPos.x, m_tFont.vPos.y + m_tInfo.vPos.y), D3DXCOLOR(m_tFont.vColor.x, m_tFont.vColor.y, m_tFont.vColor.z, m_tFont.vColor.w));
+		m_pGraphicDev->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 		return;
 	}
 
@@ -116,6 +143,7 @@ void CUI::Render_Object(void)
 	m_pBufferCom->Render_Buffer();
 
 	pEffect->EndPass();
+
 
 	pEffect->End();
 	Safe_Release(pEffect);
@@ -178,7 +206,7 @@ HRESULT CUI::Add_Component(void)
 	
 	// Transform
 	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Clone_Prototype(L"Proto_Transform"));
-	NULL_CHECK_RETURN(m_pBufferCom, E_FAIL);
+	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
 	// Calculator
@@ -213,15 +241,119 @@ HRESULT CUI::SetUp_ConstantTable(LPD3DXEFFECT& pEffect)
 	matWorld = *m_pTransformCom->Get_WorldMatrix()*matWorld;
 
 	pEffect->SetMatrix("g_matWorld", &matWorld);
-
 	pEffect->SetMatrix("g_matProj", &m_matProj);
-
 	m_pTextureCom->Set_Texture(pEffect, "g_BaseTexture", m_tInfo.iTextureNum);
 
-	if(m_bSubTex1)
-		m_pSubTextureCom1->Set_Texture(pEffect, "g_SubTexture1", m_iSubTexNum1);
-	if(m_bSubTex2)
-		m_pSubTextureCom2->Set_Texture(pEffect, "g_SubTexture2", m_iSubTexNum2);
+	switch (m_eShade)
+	{
+	case UI::SHADE_DEAFAULT:
+		break;
+	case UI::SHADE_UVMOVE_STONE:
+	{
+		m_iPassIdx = 1;
+
+		RECT rcScissor;
+
+		rcScissor.left = 50;
+		rcScissor.top = 130;
+		rcScissor.right = 700;
+		rcScissor.bottom = 570;
+
+		m_pGraphicDev->SetScissorRect(&rcScissor);
+
+
+		//D3DRS_SCISSORTESTENABLE;
+
+		pEffect->SetFloat("g_fAlpha", vColor.a);
+	}
+	break;
+	case UI::SHADE_UVMOVE_STORE:
+	{
+		m_iPassIdx = 1;
+		
+		RECT rcScissor;
+
+		rcScissor.left = 635;
+		rcScissor.top = 100;
+		rcScissor.right = 1150;
+		rcScissor.bottom = 600;
+
+		m_pGraphicDev->SetScissorRect(&rcScissor);
+
+		
+		//D3DRS_SCISSORTESTENABLE;
+		
+		pEffect->SetFloat("g_fAlpha", vColor.a);
+		
+	}
+		break;
+	case UI::SHADE_BLEND:
+		m_iPassIdx = 6;
+		break;
+	case UI::SHADE_STONE:
+	{
+		m_iPassIdx = 4;
+		_uint iTextureNum = 0;
+		if (m_bRare)
+			iTextureNum = 2;
+
+		STONE tStone = CGameMgr::GetInstance()->GetStone((UI::STONE)m_tInfo.iTextureNum);
+		pEffect->SetFloat("g_fUVx", m_AccTime);
+		pEffect->SetFloat("g_fUVy", m_AccTime);
+		pEffect->SetBool("g_bStoneRare", tStone.bRare);
+
+		if(m_pSubTextureCom1)
+			m_pSubTextureCom1->Set_Texture(pEffect, "g_StoneEffTexture", 0);
+		if (m_pSubTextureCom2)
+		{
+			m_pSubTextureCom2->Set_Texture(pEffect, "g_StoneTexture", iTextureNum);
+			m_pSubTextureCom2->Set_Texture(pEffect, "g_StoneBaseTexture", iTextureNum + 1);
+		}
+	}
+		break;
+	case UI::SHADE_CORETREE_ELEMENT:
+		if (m_bIsElement)
+		{
+			if (1 == m_tInfo.iTextureNum)
+				m_bRare = true;
+
+			m_iPassIdx = 5;
+			pEffect->SetFloat("g_fUVx", m_AccTime);
+			pEffect->SetFloat("g_fUVy", m_AccTime);
+			pEffect->SetBool("g_bStoneRare", m_bRare);
+			
+			if (m_pSubTextureCom1)
+				m_pSubTextureCom1->Set_Texture(pEffect, "g_SubTexture1", m_iStoneElement);
+			if (m_pSubTextureCom2)
+				m_pSubTextureCom2->Set_Texture(pEffect, "g_SubTexture2", _uint(m_bRare));
+			if(m_pSubTextureCom3)
+				m_pSubTextureCom3->Set_Texture(pEffect, "g_StoneEffTexture",0);
+		}
+
+		break;
+	case UI::SHADE_SELFILL:
+	{
+		m_iPassIdx = 2;
+
+		RECT rcScissor;
+
+		rcScissor.left = 635;
+		rcScissor.top = 100;
+		rcScissor.right = 1150;
+		rcScissor.bottom = 600;
+		m_pGraphicDev->SetScissorRect(&rcScissor);
+
+		_float fUVx =  m_fUVSpeed/ m_fUVTimer;
+
+		pEffect->SetFloat("g_fUVx", fUVx);
+		break;
+	}
+	case UI::SHADE_END:
+		break;
+	default:
+		break;
+	}
+
 
 	return S_OK;
 }
@@ -273,6 +405,8 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+			CSoundMgr::Get_Instance()->PlaySound(L"ui_tab.ogg", CSoundMgr::CHANNEL_UI);
 			switch (m_tInfo.iTextureNum)
 			{
 			case UI::ELEMENT_00:
@@ -365,7 +499,26 @@ void CUI::UI_CoreTreeUpdate(const _float & fTimeDelta)
 
 			if (Key_Down(KEY_LBUTTON))
 			{
-				CUIMgr::GetInstance()->SetCoreSelIdx(_wtoi(&m_tInfo.wstrObjTag.back()));
+
+				_uint iCoreIdx = _wtoi(m_tInfo.wstrObjTag.substr(m_tInfo.wstrObjTag.size()-2, m_tInfo.wstrObjTag.size()).c_str());
+				if (iCoreIdx == 0)
+				{
+					iCoreIdx = _wtoi(m_tInfo.wstrObjTag.substr(m_tInfo.wstrObjTag.size() - 1, m_tInfo.wstrObjTag.size()).c_str());
+				}
+
+		
+				if (0 == iCoreIdx || 1 == iCoreIdx ||
+					8 == iCoreIdx || 16 == iCoreIdx || 17 == iCoreIdx)
+				{
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+					CSoundMgr::Get_Instance()->PlaySound(L"ui_equip_core_major.ogg", CSoundMgr::CHANNEL_UI);
+				}
+				else
+				{
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+					CSoundMgr::Get_Instance()->PlaySound(L"ui_equip_core_minor.ogg", CSoundMgr::CHANNEL_UI);
+				}
+				CUIMgr::GetInstance()->SetCoreSelIdx(iCoreIdx);
 				CUIMgr::GetInstance()->SetActiveStoneListUI(true);
 				CUIMgr::GetInstance()->SetActiveCoreTreeUI(false);
 
@@ -374,6 +527,7 @@ void CUI::UI_CoreTreeUpdate(const _float & fTimeDelta)
 			{
 				//돌 삭제 
 
+				m_iPassIdx = 0;
 			}
 
 		}
@@ -413,11 +567,33 @@ void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 				_uint iWheelState = CUIMgr::GetInstance()->GetWheelMove();
 				if (WHEEL::MOVE_UP== (WHEEL::MOVE) iWheelState)
 				{
-					
+
+					USES_CONVERSION;
+
+					_uint iIdx = RandNext(0, 6);
+					wstring wstrSound = L"ui_gen_scroll_0";
+					wstring wstrTag = L".ogg";
+					wstrSound += to_wstring(iIdx);
+					wstrSound += wstrTag;
+					TCHAR* pTag = W2BSTR(wstrSound.c_str());
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+					CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_UI);
 					CUIMgr::GetInstance()->MoveStoneList(fTimeDelta, 600.f);
 				}
 				else if(WHEEL::MOVE_DOWN == (WHEEL::MOVE) iWheelState)
 				{
+
+					USES_CONVERSION;
+
+					_uint iIdx = RandNext(0, 6);
+					wstring wstrSound = L"ui_gen_scroll_0";
+					wstring wstrTag = L".ogg";
+					wstrSound += to_wstring(iIdx);
+					wstrSound += wstrTag;
+					TCHAR* pTag = W2BSTR(wstrSound.c_str());
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+					CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_UI);
+
 					CUIMgr::GetInstance()->MoveStoneList(fTimeDelta, -600.f);
 				}
 			}
@@ -476,8 +652,14 @@ void CUI::UI_StoneListUpdate(const _float & fTimeDelta)
 
 			if (Key_Down(KEY_LBUTTON))
 			{
+
+
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+				CSoundMgr::Get_Instance()->PlaySound(L"ui_tab.ogg", CSoundMgr::CHANNEL_UI);
+
 				CUIMgr::GetInstance()->SetActiveStoneListUI(false);
 				CUIMgr::GetInstance()->SetActiveStoneInfoUI(false, iStoneIdx);
+				CUIMgr::GetInstance()->SetCoreBase(iStoneIdx,true);
 				CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
 			}
 		}
@@ -526,11 +708,34 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 				_uint iWheelState = CUIMgr::GetInstance()->GetWheelMove();
 				if (WHEEL::MOVE_UP == (WHEEL::MOVE) iWheelState)
 				{
+
+					USES_CONVERSION;
+
+					_uint iIdx = RandNext(0, 6);
+					wstring wstrSound = L"ui_gen_scroll_0";
+					wstring wstrTag = L".ogg";
+					wstrSound += to_wstring(iIdx);
+					wstrSound += wstrTag;
+					TCHAR* pTag = W2BSTR(wstrSound.c_str());
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+					CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_UI);
+
 					CUIMgr::GetInstance()->MoveStoreActiveList(fTimeDelta, 600.f);
 					CUIMgr::GetInstance()->MoveStoreStoneList(fTimeDelta, 600.f);
 				}
 				else if (WHEEL::MOVE_DOWN == (WHEEL::MOVE) iWheelState)
 				{
+					USES_CONVERSION;
+
+					_uint iIdx = RandNext(0, 6);
+					wstring wstrSound = L"ui_gen_scroll_0";
+					wstring wstrTag = L".ogg";
+					wstrSound += to_wstring(iIdx);
+					wstrSound += wstrTag;
+					TCHAR* pTag = W2BSTR(wstrSound.c_str());
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+					CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_UI);
+
 					CUIMgr::GetInstance()->MoveStoreActiveList(fTimeDelta, -600.f);
 					CUIMgr::GetInstance()->MoveStoreStoneList(fTimeDelta, -600.f);
 				}
@@ -539,10 +744,12 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 	}
 
 
-	if (m_tInfo.wstrTexture == L"Proto_Texture_List")
+	if (m_tInfo.wstrTexture == L"Proto_Texture_List"|| m_tInfo.wstrTexture == L"Proto_Texture_Store_SelFill")
 	{
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI2);
+			CSoundMgr::Get_Instance()->PlaySound(L"ui_tab.ogg", CSoundMgr::CHANNEL_UI2);
 	
 			_uint iSelIdx;
 			_int iPrice;
@@ -624,23 +831,50 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 				//쉐이더 처리
 				//타이머 
 				
-				if (!CUIMgr::GetInstance()->GetToastUIActive())
+				if (!listSelStoneList.empty())
 				{
-					m_fUVSpeed += fTimeDelta;
-					if (m_fUVTimer < m_fUVSpeed)
+					if (!CUIMgr::GetInstance()->GetToastUIActive())
 					{
-						CUIMgr::GetInstance()->SetStoreGetIdx(iSelIdx);				
-						STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(iSelIdx));
-						CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, tStone);
-						CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev, tStone);
-						CUIMgr::GetInstance()->SetActiveToastMsgItemInfo(iSelIdx);
-						CGameMgr::GetInstance()->TakeSoul(-iPrice);
-						dynamic_cast<CUI*>(CGameMgr::GetInstance()->GetFontObj())->GetFont().wstrText = to_wstring(CGameMgr::GetInstance()->GetSoul());
+						m_fUVSpeed += fTimeDelta;
+						if (m_fUVTimer < m_fUVSpeed)
+						{
+							CUIMgr::GetInstance()->SetStoreGetIdx(iSelIdx);
+
+							CUIMgr::GetInstance()->SetActiveToastMsgItemInfo(iSelIdx);
+							CGameMgr::GetInstance()->TakeSoul(-iPrice);
+							dynamic_cast<CUI*>(CGameMgr::GetInstance()->GetFontObj())->GetFont().wstrText = to_wstring(CGameMgr::GetInstance()->GetSoul());
+							CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+							CSoundMgr::Get_Instance()->PlaySound(L"ui_toast_item_in.ogg", CSoundMgr::CHANNEL_UI);
+							CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+							CSoundMgr::Get_Instance()->PlaySound(L"Vulgrim_NewStock_1.ogg", CSoundMgr::CHANNEL_NPC);
+						}
+					}
+				}
+				else
+				{
+					if (!CUIMgr::GetInstance()->GetToastUIActive())
+					{
+						m_fUVSpeed += fTimeDelta;
+						if (m_fUVTimer < m_fUVSpeed)
+						{
+							CUIMgr::GetInstance()->SetStoreGetIdx(iSelIdx);
+							CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_NPC);
+							CSoundMgr::Get_Instance()->PlaySound(L"Dis_Selling_5.ogg", CSoundMgr::CHANNEL_NPC);
+							CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+							CSoundMgr::Get_Instance()->PlaySound(L"ui_toast_item_in.ogg", CSoundMgr::CHANNEL_UI);
+							//CUIMgr::GetInstance()->SetActiveToastMsgItemInfo(iSelIdx);
+
+							//CGameMgr::GetInstance()->UnlockPlayerCombo(iSelIdx);
+    						CGameMgr::GetInstance()->TakeSoul(-iPrice);
+							dynamic_cast<CUI*>(CGameMgr::GetInstance()->GetFontObj())->GetFont().wstrText = to_wstring(CGameMgr::GetInstance()->GetSoul());
+							m_fUVSpeed = 0.f;
+						}
 					}
 				}
 			}
 			else
 			{
+
 				m_fUVSpeed = 0.f;
 			}
 		}
@@ -711,25 +945,85 @@ void CUI::SetUI(UISET tInfo)
 
 void CUI::SetSubTex1(wstring wstrProtoTag, _uint iTextureNum)
 {
-	m_bSubTex1 = true;
-	m_iSubTexNum1 = iTextureNum;
-
 	CComponent*		pComponent = nullptr;
-	pComponent = m_pSubTextureCom1 = dynamic_cast<CTexture*>(Clone_Prototype(wstrProtoTag.c_str()));
-	NULL_CHECK_RETURN(m_pTextureCom, );
-	m_mapComponent[ID_STATIC].emplace(L"Com_SubTexture1", pComponent);
-	m_iPassIdx++;
+	m_iSubTexture1Num = iTextureNum;
+
+	USES_CONVERSION;
+	const _tchar* pConvComponentTag = W2BSTR(wstrProtoTag.c_str());
+	if (!m_pSubTextureCom1)
+	{
+		pComponent = m_pSubTextureCom1 = dynamic_cast<CTexture*>(Clone_Prototype(pConvComponentTag));
+		NULL_CHECK_RETURN(m_pSubTextureCom1, );
+		m_mapComponent[ID_STATIC].emplace(pConvComponentTag, pComponent);
+	}
+	else
+	{
+		auto& iter_find = find_if(m_mapComponent[ID_STATIC].begin(), m_mapComponent[ID_STATIC].end(), CTag_Finder(pConvComponentTag));
+		if (iter_find == m_mapComponent[ID_STATIC].end())
+		{
+			pComponent = m_pSubTextureCom1 = dynamic_cast<CTexture*>(Clone_Prototype(pConvComponentTag));
+			NULL_CHECK_RETURN(m_pSubTextureCom1, );
+			m_mapComponent[ID_STATIC].emplace(pConvComponentTag, pComponent);
+		}
+		else
+		{
+			m_pSubTextureCom1 = dynamic_cast<CTexture*>(iter_find->second);
+		}
+	}
 }
 
 void CUI::SetSubTex2(wstring wstrProtoTag, _uint iTextureNum)
 {
-	m_bSubTex2 = true;
-	m_iSubTexNum2 = iTextureNum;
-
 	CComponent*		pComponent = nullptr;
-	pComponent = m_pSubTextureCom2 = dynamic_cast<CTexture*>(Clone_Prototype(wstrProtoTag.c_str()));
-	NULL_CHECK_RETURN(m_pTextureCom, );
-	m_mapComponent[ID_STATIC].emplace(L"Com_SubTexture2", pComponent);
-	m_iPassIdx++;
+	m_iSubTexture2Num = iTextureNum;
+	USES_CONVERSION;
+	const _tchar* pConvComponentTag = W2BSTR(wstrProtoTag.c_str());
+	if (!m_pSubTextureCom2)
+	{
+		pComponent = m_pSubTextureCom2 = dynamic_cast<CTexture*>(Clone_Prototype(pConvComponentTag));
+		NULL_CHECK_RETURN(m_pSubTextureCom2, );
+		m_mapComponent[ID_STATIC].emplace(pConvComponentTag, pComponent);
+	}
+	else
+	{
+		auto& iter_find =find_if(m_mapComponent[ID_STATIC].begin(), m_mapComponent[ID_STATIC].end(), CTag_Finder(pConvComponentTag));
+		if (iter_find == m_mapComponent[ID_STATIC].end())
+		{
+			pComponent = m_pSubTextureCom2 = dynamic_cast<CTexture*>(Clone_Prototype(pConvComponentTag));
+			NULL_CHECK_RETURN(m_pSubTextureCom2, );
+			m_mapComponent[ID_STATIC].emplace(pConvComponentTag, pComponent);
+		}
+		else
+		{
+			m_pSubTextureCom2 = dynamic_cast<CTexture*>(iter_find->second);
+		}
+	}
 }
 
+void CUI::SetSubTex3(wstring wstrProtoTag, _uint iTextureNum)
+{
+	CComponent*		pComponent = nullptr;
+	m_iSubTexture3Num = iTextureNum;
+	USES_CONVERSION;
+	const _tchar* pConvComponentTag = W2BSTR(wstrProtoTag.c_str());
+	if (!m_pSubTextureCom3)
+	{
+		pComponent = m_pSubTextureCom3 = dynamic_cast<CTexture*>(Clone_Prototype(pConvComponentTag));
+		NULL_CHECK_RETURN(m_pSubTextureCom3, );
+		m_mapComponent[ID_STATIC].emplace(pConvComponentTag, pComponent);
+	}
+	else
+	{
+		auto& iter_find = find_if(m_mapComponent[ID_STATIC].begin(), m_mapComponent[ID_STATIC].end(), CTag_Finder(pConvComponentTag));
+		if (iter_find == m_mapComponent[ID_STATIC].end())
+		{
+			pComponent = m_pSubTextureCom3 = dynamic_cast<CTexture*>(Clone_Prototype(pConvComponentTag));
+			NULL_CHECK_RETURN(m_pSubTextureCom3, );
+			m_mapComponent[ID_STATIC].emplace(pConvComponentTag, pComponent);
+		}
+		else
+		{
+			m_pSubTextureCom3 = dynamic_cast<CTexture*>(iter_find->second);
+		}
+	}
+}

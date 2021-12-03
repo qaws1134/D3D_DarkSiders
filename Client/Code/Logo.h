@@ -32,6 +32,7 @@ private:
 	CLoading*			m_pLoading = nullptr;
 	_bool				m_bBeginScene = false;
 	_bool				m_bSceneStart= false; 
+	_bool				m_bMain = false;
 	CLoading::LOADINGID m_eLoadID = CLoading::LOADING_END;
 public:
 	static CLogo*		Create(LPDIRECT3DDEVICE9 pGraphicDev);

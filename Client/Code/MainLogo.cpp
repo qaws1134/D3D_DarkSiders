@@ -31,7 +31,7 @@ HRESULT CMainLogo::Ready_Object(void)
 	m_fSizeY = WINCY;
 	D3DXMatrixOrthoLH(&m_matProj, WINCX, WINCY, 0.f, 1.f);
 
-	//m_bActive = true;
+	m_bActive = true;
 	return S_OK;
 }
 

@@ -131,7 +131,6 @@ void Engine::CDynamicMesh::Render_Meshes(void)
 
 		//소프트웨어 스키닝을 수행하는 함수(스키닝뿐 아니라 애니메이션 변경 시, 뼈와 정점들의 정보도 동시에 변경해줌)
 		pDerivedMeshContainer->pSkinInfo->UpdateSkinnedMesh(pDerivedMeshContainer->pRenderingMatrix, NULL, pSrcVtx, pDestVtx);
-		
 		for (_ulong i = 0; i < pDerivedMeshContainer->NumMaterials; ++i)
 		{
 			m_pGraphicDev->SetTexture(0, pDerivedMeshContainer->ppTexture[i]);
@@ -148,10 +147,11 @@ void Engine::CDynamicMesh::Render_Meshes(void)
 
 void CDynamicMesh::Render_Meshes(LPD3DXEFFECT & pEffect)
 {
+
+
 	for (auto& iter : m_MeshContainerList)
 	{
 		D3DXMESHCONTAINER_DERIVED*		pDerivedMeshContainer = iter;
-
 		for (_ulong i = 0; i < pDerivedMeshContainer->dwNumBones; ++i)
 			pDerivedMeshContainer->pRenderingMatrix[i] = pDerivedMeshContainer->pFrameOffSetMatrix[i]
 			* *pDerivedMeshContainer->ppCombinedTransformMatrix[i];
@@ -163,8 +163,10 @@ void CDynamicMesh::Render_Meshes(LPD3DXEFFECT & pEffect)
 		pDerivedMeshContainer->MeshData.pMesh->LockVertexBuffer(0, &pDestVtx);
 
 		//소프트웨어 스키닝을 수행하는 함수(스키닝뿐 아니라 애니메이션 변경 시, 뼈와 정점들의 정보도 동시에 변경해줌)
-		pDerivedMeshContainer->pSkinInfo->UpdateSkinnedMesh(pDerivedMeshContainer->pRenderingMatrix, NULL, pSrcVtx, pDestVtx);
+		//m_pGraphicDev->CreateVertexDeclaration(vertexDecl, &pDerivedMeshContainer->pDecl);
+		pDerivedMeshContainer->pSkinInfo->SetDeclaration(vertexDecl);
 
+		pDerivedMeshContainer->pSkinInfo->UpdateSkinnedMesh(pDerivedMeshContainer->pRenderingMatrix, NULL, pSrcVtx, pDestVtx);
 		for (_ulong i = 0; i < pDerivedMeshContainer->NumMaterials; ++i)
 		{
 			pEffect->SetTexture("g_BaseTexture", pDerivedMeshContainer->ppTexture[i]);
@@ -191,6 +193,7 @@ void CDynamicMesh::Render_Meshes(LPD3DXEFFECT & pEffect)
 
 		pDerivedMeshContainer->pOriMesh->UnlockVertexBuffer();
 		pDerivedMeshContainer->MeshData.pMesh->UnlockVertexBuffer();
+
 	}
 }
 

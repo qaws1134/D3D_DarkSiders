@@ -1,5 +1,9 @@
 matrix		g_matWorld, g_matView, g_matProj;		// 상수 테이블
 texture		g_BaseTexture;
+vector g_vColor = {1.f,1.f,1.f,1.f};
+float g_fLifeSpeed = 0.f;
+float g_fLifeTime= 0.f;
+
 
 
 sampler BaseSampler = sampler_state
@@ -56,7 +60,7 @@ PS_OUT		PS_MAIN(PS_IN In)
 	Out.vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
 	
 	//Out.vColor.rb = 0.5f;
-
+	Out.vColor = Out.vColor* g_vColor;
 	return Out;
 }
 
@@ -65,12 +69,45 @@ PS_OUT		PS_MAIN_TEMP(PS_IN In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	Out.vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
-
-	Out.vColor.a = 0.5f;
+	//Out.vColor= Out.vColor* g_vColor;
 
 	return Out;
 }
 
+PS_OUT		PS_MAIN_BLACKOUT(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	vector vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
+	
+	if (vColor.z > 0.2f)
+	{
+		Out.vColor = vColor*g_vColor;
+	}
+
+
+	return Out;
+}
+
+
+PS_OUT		PS_MAIN_BLACKOUT_LIGHTNING(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	vector vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
+
+	if (vColor.z > 0.2f)
+	{
+		float fUvy = g_fLifeSpeed / (g_fLifeTime - 0.4);
+		if(In.vTexUV.y < fUvy)
+			Out.vColor = vColor*g_vColor;
+		if(1.f<g_fLifeSpeed / (g_fLifeTime - 0.4))
+			Out.vColor = vColor*g_vColor;
+	}
+
+
+	return Out;
+}
 
 technique Default_Device
 {
@@ -79,6 +116,7 @@ technique Default_Device
 
 	pass Alphablend
 	{
+		alphatestenable = false;
 		Alphablendenable = true;
 		srcblend = srcalpha;
 		destblend = invsrcalpha;
@@ -90,12 +128,47 @@ technique Default_Device
 
 	pass alphatest
 	{
-		alphatestenable = true;
+		Alphablendenable = false;
+
+		ALPHATESTENABLE = TRUE;
 		alphafunc = greater;
-		alpharef = 0xc0;
+		alpharef = 254;
 
 		vertexshader = compile vs_3_0 VS_MAIN();
 		pixelshader = compile ps_3_0 PS_MAIN_TEMP();
+
+	}
+
+	pass Black3
+	{
+
+		//Alphablendenable = false;
+		//ALPHATESTENABLE = TRUE;
+		//alphafunc = greater;
+		//alpharef = 0x00000008f;
+		zwriteenable = false;
+		alphatestenable = false;
+		Alphablendenable = true;
+		cullmode = none;
+		srcblend = srcalpha;
+		destblend = invsrcalpha;
+
+		vertexshader = compile vs_3_0 VS_MAIN();
+		pixelshader = compile ps_3_0 PS_MAIN_BLACKOUT();
+
+	}
+		pass Black3
+	{
+
+		zwriteenable = false;
+		alphatestenable = false;
+		Alphablendenable = true;
+		cullmode = none;
+		srcblend = srcalpha;
+		destblend = invsrcalpha;
+
+		vertexshader = compile vs_3_0 VS_MAIN();
+		pixelshader = compile ps_3_0 PS_MAIN_BLACKOUT_LIGHTNING();
 
 	}
 };

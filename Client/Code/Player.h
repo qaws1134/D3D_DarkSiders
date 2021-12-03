@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Define.h"
 #include "Enum.h"
+#include "Struct.h"
 BEGIN(Engine)
 
 class CDynamicMesh;
@@ -36,6 +37,10 @@ public:
 	void		DirSet_Combo();
 
 	void		ElementAniSet();
+
+	void		SetShake(_bool bShake) { m_bShake = bShake; }
+
+
 	_bool		Combat_to_Idle_Timer(_float fDeltaTime);
 	HRESULT		SetUp_ConstantTable(LPD3DXEFFECT& pEffect);
 	virtual		void TakeDmg(_float fDmg);
@@ -51,6 +56,7 @@ public:
 	_float		m_fGlideEndTime;
 	_bool		m_bGlideOn = false;
 
+	_bool m_bShake = false;
 
 
 	void		InteractionTimer(_float fDeltaTime);
@@ -61,7 +67,8 @@ public:
 	_float		m_fInteractionSpeed= 1.f;
 	_bool		m_bInteractionOn = false;
 
-	void SetOnUI(_bool bUIOn) { m_bUIOn = bUIOn; }
+	void		SpawnTrail();
+	void		SetOnUI(_bool bUIOn) { m_bUIOn = bUIOn; }
 
 	_float m_fFrameSpeed = 0.f;
 	_float	m_fChestOpenTime = 1.f;
@@ -80,7 +87,9 @@ public:
 #pragma  endregion Set 함수
 #pragma region Get 함수
 
-#pragma  endregion Set 함수
+	_vec3	GetDir() { return m_vDir; }
+
+#pragma  endregion Get 함수
 
 
 private:
@@ -118,7 +127,10 @@ private:
 	_double dJumpLandCheckFrame;
 
 	War::WEAPON_ELEMENT m_eElement;
-
+	War::WEAPON_ELEMENT m_ePreElement;
+	TRAIL m_tTrail;
+	TRAIL m_tOutTrail;	//내보내는 트레일 
+	_float m_fTrailSizeOffset = 0.f;
 
 	//애니메이션 블랜드
 	_bool	m_bBlend = true;
@@ -168,7 +180,12 @@ private:
 	_float	m_fJumpBallSpeed = 1.f;
 	_bool	m_bJumpBallStart = false;
 
+	_float m_fSoundTime = 0.f;
+	_float m_fSoundSpeed = 0.f;
+	_bool  m_bSound = false;
 
+
+	_bool m_bTrail = false;
 	_vec3	m_vHitDir;
 
 public:

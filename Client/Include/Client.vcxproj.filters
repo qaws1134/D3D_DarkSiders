@@ -145,6 +145,18 @@
     <Filter Include="02. GameObject\07. Effect\Effect2D">
       <UniqueIdentifier>{5d2921b2-0f2b-4d3a-aac7-fea7b986c346}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObject\14. SkyBox">
+      <UniqueIdentifier>{b36ceb9a-908c-42ef-a3b6-46764dc19cfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.SoundMgr">
+      <UniqueIdentifier>{04e60779-0bd8-482b-9484-18588a8dee36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\07. Effect\Trail">
+      <UniqueIdentifier>{7e676ecb-22ba-4ce7-a1db-217a2d7418b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\15.WaterFloor">
+      <UniqueIdentifier>{12571ef5-fddb-4cce-8a38-769744673b35}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -273,6 +285,18 @@
     <ClInclude Include="..\Code\Effect.h">
       <Filter>02. GameObject\07. Effect\Effect2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\SkyBox.h">
+      <Filter>02. GameObject\14. SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\SoundMgr.h">
+      <Filter>94.SoundMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Effect_Trail.h">
+      <Filter>02. GameObject\07. Effect\Trail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\WaterFloor.h">
+      <Filter>02. GameObject\15.WaterFloor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -385,6 +409,18 @@
     </ClCompile>
     <ClCompile Include="..\Code\Effect.cpp">
       <Filter>02. GameObject\07. Effect\Effect2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SkyBox.cpp">
+      <Filter>02. GameObject\14. SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\SoundMgr.cpp">
+      <Filter>94.SoundMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Effect_Trail.cpp">
+      <Filter>02. GameObject\07. Effect\Trail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\WaterFloor.cpp">
+      <Filter>02. GameObject\15.WaterFloor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

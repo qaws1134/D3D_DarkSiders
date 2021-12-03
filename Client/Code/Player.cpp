@@ -4,7 +4,14 @@
 #include "Export_Function.h"
 #include "UIMgr.h"
 #include "GameMgr.h"
+#include "Effect.h"
 #include "StaticCamera.h"
+#include "SoundMgr.h"
+#include "ColMesh.h"
+#include "Effect_Trail.h"
+#include "EffectMesh.h"
+
+
 #define	  MOVEROTSPEED 360.f
 
 
@@ -55,10 +62,16 @@ HRESULT CPlayer::Ready_Object(void)
 	
 	m_fGlideEndSpeed = 2.5f;
 	m_fGlideEndTime = 2.5f;
-
+	m_ePreElement = War::ELEMENT_END;
 
 	SetCharInfo(100.f, 1.f);
 	m_eElement = War::ELEMENT_EARTH;		//장착한 속성
+
+	m_tTrail.iTrailCount = 30;
+	m_tTrail.fTrailEmitRate = 0.0015f;
+	m_tTrail.fTrailSize = 380.f;
+	m_tTrail.vColor = { 1.f,1.f,1.f,0.8f };
+
 
 	return S_OK;
 }
@@ -70,6 +83,7 @@ void CPlayer::Late_Ready_Object()
 
 _int CPlayer::Update_Object(const _float& fTimeDelta)
 {
+
 	m_fFrameSpeed = fTimeDelta;
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	Key_Input(fTimeDelta);
@@ -150,6 +164,8 @@ HRESULT CPlayer::Add_Component()
 
 void CPlayer::Render_Object(void)
 {
+
+
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
 
@@ -188,6 +204,8 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 	{
 		if (!m_bUIOn)
 		{
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+			CSoundMgr::Get_Instance()->PlaySound(L"ui_window_open.ogg", CSoundMgr::CHANNEL_UI);
 			CUIMgr::GetInstance()->SetActiveElementUI(true);
 			Stop_TimeDelta(L"Timer_Immediate", false);
 			m_bUIShowing = true;
@@ -207,6 +225,8 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 
 	if (Key_Down(KEY_I))
 	{
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+		CSoundMgr::Get_Instance()->PlaySound(L"ui_window_open.ogg", CSoundMgr::CHANNEL_UI);
 			if (!m_bUIOn)
 			{
 				CUIMgr::GetInstance()->SetActiveCoreTreeUI(true);
@@ -518,6 +538,75 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 
 void CPlayer::StateChange()
 {
+	
+	if (m_ePreElement != m_eElement)
+	{
+		switch (m_eElement)
+		{
+		case War::ELEMENT_EARTH:
+			m_tTrail.iTrailCount = 20;
+			m_tTrail.fTrailEmitRate = 0.00005f;
+			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTextureNum = 4;
+			m_tTrail.vColor = { 0.2f,0.7f,0.2f,0.7f };
+			break;
+		case War::ELEMENT_FLAME:
+			m_tTrail.iTrailCount = 30;
+			m_tTrail.fTrailEmitRate = 0.00005f;
+			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTextureNum = 1;
+			m_tTrail.vColor = { 0.9f,0.5f,0.1f,0.7f };
+			break;
+		case War::ELEMENT_LIGHTNING:
+			m_tTrail.iTrailCount = 20;
+			m_tTrail.fTrailEmitRate = 0.00005f;
+			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTextureNum = 4;
+			m_tTrail.vColor = { 1.f,0.9f,0.1f,0.7f };
+			break;
+		case War::ELEMENT_VAMP:
+			m_tTrail.iTrailCount = 30;
+			m_tTrail.fTrailEmitRate = 0.00005f;
+			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTextureNum = 1;
+			m_tTrail.vColor = { 0.8f,0.1f,0.1f,0.7f };
+			break;
+		case War::ELEMENT_WIND:
+			m_tTrail.iTrailCount = 20;
+			m_tTrail.fTrailEmitRate = 0.00005f;
+			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTextureNum = 4;
+			m_tTrail.vColor = { 0.7f,0.7f,0.7f,0.7f };
+			break;
+		case War::ELEMENT_DEATH:
+			m_tTrail.iTrailCount = 20;
+			m_tTrail.fTrailEmitRate = 0.00005f;
+			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTextureNum = 4;
+			m_tTrail.vColor = { 0.f,0.6f,0.9f,0.7f };
+			break;
+		case War::ELEMENT_END:
+			break;
+		}
+		if (!m_bTrail)
+		{
+			CGameObject* pTrail = Get_GameObject(L"Environment", L"Trail");
+			if (pTrail)
+			{
+				const _matrix *BoneMat;
+				const D3DXFRAME_DERIVED*		pFrame = m_pMeshCom->Get_FrameByName("Bone_War_Weapon_Sword");
+				BoneMat = &pFrame->CombinedTransformMatrix;
+				dynamic_cast<CEffect_Trail*>(pTrail)->Set_MatrixInfo(m_pTransformCom->Get_WorldMatrix(), BoneMat);
+				m_tOutTrail = m_tTrail;
+				m_bTrail = true;
+			}
+
+		}		//else
+			//pTrail->SetOption(&m_tOutTrail);
+		m_ePreElement = m_eElement;
+	}
+
+
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
@@ -575,6 +664,7 @@ void CPlayer::StateChange()
 			}
 			m_bJumpBall = false;
 			m_bBlend = true;
+			m_fSoundTime = 0.4f;
 			break;
 
 		case War::ATTACK:
@@ -782,6 +872,9 @@ void CPlayer::StateChange()
 
 	if (m_ePreAniState != m_eCurAniState)
 	{
+		m_tOutTrail = m_tTrail;
+		
+
 		switch (m_eCurAniState)
 		{
 		case War::War_Idle:
@@ -806,11 +899,10 @@ void CPlayer::StateChange()
 			
 			break;
 		case War::War_Jump:
-			m_eKeyState = War::KEYSTATE_END;
-
-			break;
 		case War::War_Jump_Combat:
 			m_eKeyState = War::KEYSTATE_END;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_jump_02.ogg", CSoundMgr::CHANNEL_PLAYER);
 			break;
 		case War::War_Jump_Combat_Land:
 			break;
@@ -818,16 +910,24 @@ void CPlayer::StateChange()
 			break;
 		case War::War_Jump_Double:
 			m_eKeyState = War::KEYSTATE_END;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_jumpdouble_01.ogg", CSoundMgr::CHANNEL_PLAYER);
 			break;
 		case War::War_Jump_Fall:
 		case War::War_Jump_Fall_Combat:
 			m_eKeyState = War::KEYSTATE_END;
 			break;
 		case War::War_Jump_Land:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_jump_ledge_02.ogg", CSoundMgr::CHANNEL_PLAYER);
+
 			break;
 		case War::War_Jump_Land_Heavy:
 			break;
 		case War::War_Jump_Land_Run:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_jump_ledge_02.ogg", CSoundMgr::CHANNEL_PLAYER);
+
 			break;
 		case War::War_Dash:
 			m_eKeyState = War::KEYSTATE_END;
@@ -835,6 +935,9 @@ void CPlayer::StateChange()
 			m_fDashSpeed = m_fInitDashSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_dash_1_02.ogg", CSoundMgr::CHANNEL_PLAYER);
+
 			break;
 		case War::War_Dash_Air_Land:
 			break;
@@ -845,9 +948,28 @@ void CPlayer::StateChange()
 		case War::War_DashTo_Back:
 			break;
 		case War::War_Atk_Light_01:
+			m_tCharInfo.fAtk = 1.f;
+			m_eKeyState = War::KEYSTATE_END;
+			DirSet_Combo();
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_1_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			m_fInitAttackMoveSpeed = 500.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			break;
 		case War::War_Atk_Light_02:
+			m_tCharInfo.fAtk = 1.f;
+			m_eKeyState = War::KEYSTATE_END;
+			DirSet_Combo();
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_2_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
+			m_fInitAttackMoveSpeed = 500.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			break;
 		case War::War_Atk_Light_03:
-		case War::War_Atk_Light_04:
 			m_tCharInfo.fAtk = 1.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
@@ -856,19 +978,50 @@ void CPlayer::StateChange()
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			m_bSound = false;
+
+			break;
+		case War::War_Atk_Light_04:
+			m_tCharInfo.fAtk = 1.f;
+			m_eKeyState = War::KEYSTATE_END;
+			DirSet_Combo();
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_4_a_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			m_fInitAttackMoveSpeed = 500.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			m_bSound = false;
 			break;
 		case War::War_Atk_Air_Light_01:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_1_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			m_bBlend = false;
+			m_tCharInfo.fAtk = 1.f;
+			m_eKeyState = War::KEYSTATE_END;
+			break;
 		case War::War_Atk_Air_Light_02:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_air_attack_3.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_bBlend = false;
 			m_tCharInfo.fAtk = 1.f;
 			m_eKeyState = War::KEYSTATE_END;
 			break;
 		case War::War_Atk_Air_Filpsaw_Start:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_flamebrand_start_01.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_bBlend = false;
 			DirSet_Combo();
 			break;
 		case War::War_Atk_Air_Filpsaw_Loop:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_flamebrand_level1_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			m_fSoundTime = 0.5f;
+			m_tOutTrail.fTrailSize = m_tTrail.fTrailSize + 40.f;
+			m_tOutTrail.iTrailCount = m_tTrail.iTrailCount + 30;
+
 			m_bBlend = false;
+			m_bShake = false;
 			break;
 		case War::War_Atk_Air_Filpsaw_Land:
 			m_eKeyState = War::KEYSTATE_END;
@@ -881,40 +1034,84 @@ void CPlayer::StateChange()
 			
 			break;
 		case War::War_Atk_Dash:
+			//사운드
 			m_fInitDashSpeed = 1500.f;
 			m_fDashSpeed = m_fInitDashSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_dash.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			break;
 		case War::War_Atk_Earth_Start:
+		{
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_special_charge.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			//사운드
 			DirSet_Combo();
 			m_bBlend = true;
+		}
 			break;
 		case War::War_Atk_Earth_Loop:
+		{
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_special_charge_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CGameObject* pObj = CGameMgr::GetInstance()->GetEffect((_uint)EFFECT::EFFECT_ACT1_2x2);
+			m_fSoundTime = 0.5f;
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			vPos.y += 2.f;
+			pObj->SetPos(vPos, ID_DYNAMIC);
+			dynamic_cast<CEffect*>(pObj)->SetEffColor(_vec4{ 0.1f,0.9f,0.1f,1.f });
 			m_bBlend = false;
+			//사운드
+		}
 			break;
 		case War::War_Atk_Earth_End:
+		{
+			CGameObject* pEff =CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONECLUSTER);
+			dynamic_cast<CEffectMesh*>(pEff)->SetDir(m_vDir);
+			_vec3 vPos;
+			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+			_vec3 vNormalDir = m_vDir;
+			D3DXVec3Normalize(&vNormalDir, &vNormalDir);
+			pEff->SetPos(vPos + (vNormalDir), ID_DYNAMIC);
+
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_earthsplitter_land.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_eKeyState = War::KEYSTATE_END;
+			//사운드
+
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+		}
 			break;
 		case War::War_Atk_Lightning:
+		{
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
-
+			m_bSound = false;
 			m_fInitAttackMoveSpeed = 500.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
 
 			break;
+		}
 		case War::War_Atk_Flamebrand:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_flamebrand_level1_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_tCharInfo.fAtk = 1.f;
+			m_fSoundTime = 1.f;
 			DirSet_Combo();
+			m_tOutTrail.fTrailSize = m_tTrail.fTrailSize + 40.f;
+			m_tOutTrail.iTrailCount = m_tTrail.iTrailCount + 70;
 			break;
 		case War::War_Atk_Flamebrand_Start:
+
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_flamebrand_start_01.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			break;
 		case War::War_Atk_Flamebrand_End:
 			m_tCharInfo.fAtk = 1.f;
@@ -923,6 +1120,8 @@ void CPlayer::StateChange()
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_flamebrand_end_level1.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			break;
 		case	War::War_Atk_LoomingDeath:
 			m_tCharInfo.fAtk = 3.f;
@@ -933,10 +1132,12 @@ void CPlayer::StateChange()
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
 			m_bNexAni2 = false;
+			m_bSound = false;
 
 			break;
 		case	War::War_Atk_Vamp_Start:
-
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_vampiric_flipsaw_start.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
@@ -944,17 +1145,31 @@ void CPlayer::StateChange()
 			m_bAttackMoveEnd = false;
 			break;
 		case	War::War_Atk_Vamp_Loop:
+			m_fSoundTime = 0.5f;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_vampiric_flipsaw_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_tCharInfo.fAtk = 1.f;
+			m_tOutTrail.fTrailSize = m_tTrail.fTrailSize + 70.f;
+			m_tOutTrail.iTrailCount = m_tTrail.iTrailCount + 30;
+
 			break;
 		case	War::War_Atk_Vamp_Finish:
+			dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.25f, 0.1f);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_vampiric_grind_1.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_tCharInfo.fAtk = 3.f;
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			m_tOutTrail.fTrailSize = m_tTrail.fTrailSize + 150.f;
+			m_tOutTrail.iTrailCount = m_tTrail.iTrailCount + 30;
+
 			break;
 		case	War::War_Atk_Launch_A:
 		case	War::War_Atk_Launch_B:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_launch_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_tCharInfo.fAtk = 1.f;
 			DirSet_Combo();
 			m_bBlend = false;					
@@ -967,19 +1182,28 @@ void CPlayer::StateChange()
 			m_eCharState = War::AIR;
 			break;
 		case	War::War_Atk_Wind_Start   :
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_special_charge.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			DirSet_Combo();
 			break;
 		case	War::War_Atk_Wind_Loop    :
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_special_charge_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			m_fSoundTime = 0.5f;
 			break;
 		case	War::War_Atk_Wind_End :
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_special_charge_indicator.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
 			m_tCharInfo.fAtk = 3.f;
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			m_bShake = false;
 			break;
 		case War::War_Chest_Open:
-		
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_chest_open.ogg", CSoundMgr::CHANNEL_PLAYER);
 			m_bBlend = false;
 			break;
 		case War::War_Death:
@@ -988,25 +1212,36 @@ void CPlayer::StateChange()
 			m_bBlend = false;
 			break;
 		case War::War_Block_Impact_Heavy:
+
+			dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.3f, 0.1f);
 			m_bBlend = true;
 			m_fInitAttackMoveSpeed = 8.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"imp_sword_01.ogg", CSoundMgr::CHANNEL_PLAYER);
+
 			break;
 		case War::War_Block_Impact_Light:
+			dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.2f, 0.1f);
 			m_bBlend = true;
 			m_fInitAttackMoveSpeed = 5.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"imp_sword_01.ogg", CSoundMgr::CHANNEL_PLAYER);
 			break;
 		case War::War_Block_Impact_Medium:
+			dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.25f, 0.1f);
 			m_bBlend = true;
 			m_fInitAttackMoveSpeed = 6.5f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"imp_sword_01.ogg", CSoundMgr::CHANNEL_PLAYER);
 			break;
 		case War::War_Block_Start:
 			m_bBlend = false;
@@ -1016,6 +1251,8 @@ void CPlayer::StateChange()
 			m_fInitJumpPower = m_fJumpPower;
 			break;
 		case War::War_Knockback_Land:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_jumpdouble_01.ogg", CSoundMgr::CHANNEL_PLAYER);
 			m_bBlend = true;
 			break;
 		case War::War_Knockback_Loop:
@@ -1024,6 +1261,9 @@ void CPlayer::StateChange()
 			m_bBlend = false;
 			break;
 		case War::War_Knockback_Start:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"imp_fire_03.ogg", CSoundMgr::CHANNEL_PLAYER);
+			dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.3f, 0.1f);
 			m_fJumpPower = 15.f;
 			m_fInitJumpPower = m_fJumpPower;
 			m_bBlend = false;
@@ -1032,6 +1272,7 @@ void CPlayer::StateChange()
 		case War::War_Impack_From_Front:
 		case War::War_Impack_From_Left:
 		case War::War_Impack_From_Right:
+			dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.1f, 0.1f);
 			m_fInitAttackMoveSpeed = 800.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
@@ -1039,6 +1280,7 @@ void CPlayer::StateChange()
 
 			break;
 		case War::War_Skill_01:
+			m_bSound = false;
 			m_tCharInfo.fAtk = 3.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
@@ -1076,13 +1318,16 @@ void CPlayer::StateChange()
 			m_bAttackMoveEnd = false;
 			break;
 		case War::War_Glide:
+			m_bSound = false;
 			break;
 		case War::War_Glide_Start:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_shared_glide.ogg", CSoundMgr::CHANNEL_PLAYER);
 			m_bGlideOn = true;
 			break;
 		case War::War_Atk_Heavy_01:
-		case War::War_Atk_Heavy_02:
-		case War::War_Atk_Heavy_03:
+
+			m_bSound = false;
 			m_tCharInfo.fAtk = 2.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
@@ -1090,6 +1335,33 @@ void CPlayer::StateChange()
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
 			m_bNexAni = false;
 			m_bAttackMoveEnd = false;
+			break;
+
+		case War::War_Atk_Heavy_02:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_3_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
+			m_bSound = false;
+			m_tCharInfo.fAtk = 2.f;
+			m_eKeyState = War::KEYSTATE_END;
+			DirSet_Combo();
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			m_bShake = false;
+			break;
+
+		case War::War_Atk_Heavy_03:
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_heavy_3.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+			m_tCharInfo.fAtk = 2.f;
+			m_eKeyState = War::KEYSTATE_END;
+			DirSet_Combo();
+			m_fInitAttackMoveSpeed = 800.f;
+			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
+			m_bNexAni = false;
+			m_bAttackMoveEnd = false;
+			m_bShake = false;
 			break;
 		case War::War_End:
 			break;
@@ -1112,27 +1384,9 @@ void CPlayer::StateActer(_float fDeltaTime)
 		break;
 	case War::MOVE:
 	{		
-		//내 위치가 최소 y보다 크면 떨어지는 상태로 바뀜 
 		_vec3 vPos;
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-		//인덱스 예외처리
-	/*	switch (CGameMgr::GetInstance()->GetPlayerNaviIdx())
-		{
-		case 6:
-		case 7:
-		case 8:
-		case 9:
-			if (vPos.y > m_fJumpY)
-			{
-				if (m_eCharState == War::COMBAT)
-				{
-					m_eMachineState = War::JUMP_CB;
-				}
-				else
-					m_eMachineState = War::JUMP;
-			}
-			break;
-		}*/
+
 	}
 	break;
 	case War::ATTACK:
@@ -1273,6 +1527,22 @@ void CPlayer::StateActer(_float fDeltaTime)
 		_vec3	vPos;
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_pTransformCom->Set_Pos(&m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, m_fMoveSpeed, fDeltaTime, m_pCalculatorCom));
+
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			USES_CONVERSION;
+
+			_uint iIdx = RandNext(0, 9);
+			wstring wstrSound = L"char_war_foot_0";
+			wstring wstrTag= L".ogg";
+			wstrSound += to_wstring(iIdx);
+			wstrSound += wstrTag;
+			TCHAR* pTag = W2BSTR(wstrSound.c_str());
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+			CSoundMgr::Get_Instance()->PlaySound(pTag,CSoundMgr::CHANNEL_PLAYER);
+			m_fSoundSpeed = 0.f;
+		}
 	}
 	break;
 	case War::War_Jump:
@@ -1325,7 +1595,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		{
 			_vec3	vPos;
 			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 10000.f, 3800.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 8000.f, 3800.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
 
 		}
 		else
@@ -1397,6 +1667,12 @@ void CPlayer::StateActer(_float fDeltaTime)
 		AtkColActive(0, dAttackCheckFrame - 0.1);
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.2))
 		{
+			if (!m_bSound)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_3_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+				m_bSound = true;
+			}
 			_vec3	vPos;
 			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
@@ -1437,7 +1713,13 @@ void CPlayer::StateActer(_float fDeltaTime)
 		AtkColLoop();
 		if (!m_bJumpEnd)
 		{
-
+			m_fSoundSpeed += fDeltaTime;
+			if (m_fSoundSpeed > m_fSoundTime)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_flamebrand_level1_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+				m_fSoundSpeed = 0.f;
+			}
 			m_pTransformCom->MoveStep(MOVETYPE_ACC, &m_fJumpPower, 40.f, 70.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
 			m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*150.f, fDeltaTime);
 		}
@@ -1466,7 +1748,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		if (!m_pMeshCom->Is_Animationset(dDashCheckFrame - 0.35))
 		{
-			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 8000.f, 3800.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 6000.f, 3800.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
 
 			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fDashSpeed, 8000.f, 3800.f, &m_vDir, fDeltaTime);
 		}
@@ -1490,9 +1772,16 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::War_Atk_Earth_Start:
 		break;
 	case War::War_Atk_Earth_Loop:
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			m_fSoundSpeed = 0.f;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_special_charge_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+		}
 		break;
 	case War::War_Atk_Earth_End:
 	{
+		m_bShake = true;
 		_vec3	vPos;
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.1))
@@ -1520,6 +1809,14 @@ void CPlayer::StateActer(_float fDeltaTime)
 		AtkColLoop();
 		m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
 		m_pTransformCom->Set_PosY(m_fJumpY);
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			m_fSoundSpeed = 0.f;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_flamebrand_level1_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+		}
+
 		break;
 	case War::War_Atk_Flamebrand_Start:
 	case War::War_Atk_Flamebrand_End:
@@ -1550,6 +1847,38 @@ void CPlayer::StateActer(_float fDeltaTime)
 		{
 			if (!m_bNexAni)
 			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_thunderclap_hit_2.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.25f, 0.1f);
+				//이펙트 
+				CGameObject* pObj = CGameMgr::GetInstance()->GetEffect((_uint)EFFECT::EFFECT_LIGHTNING_WEAPON_CLUSTER);
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+
+				const _matrix *BoneMat;
+				const D3DXFRAME_DERIVED*		pFrame = m_pMeshCom->Get_FrameByName("Bone_War_Weapon_Sword");
+				BoneMat = &pFrame->CombinedTransformMatrix;
+
+				_vec3 vNormalDir;
+				D3DXVec3Normalize(&vNormalDir, &m_vDir);
+				pObj->SetPos((vPos), ID_DYNAMIC);
+				CTransform* pTrans=  dynamic_cast<CTransform*> (pObj->Get_Component(L"Com_Transform", ID_DYNAMIC));
+				_matrix* pEffMat = m_pTransformCom->Get_WorldMatrix();
+				pTrans->Set_WorldMatrix(&(*BoneMat  * *pEffMat));
+				_vec3 vEffPos;
+				pTrans->Get_INFO(INFO_POS, &vEffPos);
+				pObj->SetPos((vEffPos+(vNormalDir*8.5f)), ID_DYNAMIC);
+
+				pObj = CGameMgr::GetInstance()->GetEffect((_uint)EFFECT::EFFECT_EXPLOSION);
+				pObj->SetPos((vEffPos + (vNormalDir*13.f)), ID_DYNAMIC);
+
+				pObj = CGameMgr::GetInstance()->GetPlayerBullet(BULLET::BULLET_SPAWNFADE_PLAYER);
+				pObj->SetPos((vEffPos + (vNormalDir*13.f)), ID_DYNAMIC);
+				pObj = CGameMgr::GetInstance()->GetPlayerBullet(BULLET::BULLET_SPAWNFADE_PLAYER);
+				pObj->SetPos((vEffPos + (vNormalDir*9.f)), ID_DYNAMIC);
+				pObj = CGameMgr::GetInstance()->GetPlayerBullet(BULLET::BULLET_SPAWNFADE_PLAYER);
+				pObj->SetPos((vEffPos + (vNormalDir*5.f)), ID_DYNAMIC);
+				//////////////////////////////////////////////////////////////////////////
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
 			}
@@ -1562,6 +1891,13 @@ void CPlayer::StateActer(_float fDeltaTime)
 	case War::War_Atk_Wind_Start:
 		break;
 	case War::War_Atk_Wind_Loop:
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			m_fSoundSpeed = 0.f;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_special_charge_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+		}
 		break;
 	case War::War_Atk_Wind_End:
 	{
@@ -1587,6 +1923,13 @@ void CPlayer::StateActer(_float fDeltaTime)
 		AtkColActive(0, dAttackCheckFrame + 0.3);
 		if (!m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.3))
 		{
+			if (!m_bSound)
+			{
+				m_bSound = true;
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_looming_death_start.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.1f, 0.1f);
+			}
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
 
 			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
@@ -1597,8 +1940,11 @@ void CPlayer::StateActer(_float fDeltaTime)
 		{	//0.3~1.0
 			if (!m_bNexAni)
 			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_looming_death_land.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
 				m_bAttackMoveEnd = true;
 				m_bNexAni = true;
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.1f, 0.1f);
 			}
 
 			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
@@ -1609,13 +1955,25 @@ void CPlayer::StateActer(_float fDeltaTime)
 		{
 			if (!m_bNexAni2)
 			{
+
 				m_bAttackMoveEnd = true;
 				m_bNexAni2 = true;
+		
 			}
 
 			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1400.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
 
 			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1400.f, 0.f, &m_vDir, fDeltaTime);
+		}
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.1))
+		{	
+			if (m_bSound)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_looming_death_end.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.2f, 0.1f);
+				m_bSound = false;
+			}
 		}
 		m_pTransformCom->Set_PosY(m_fJumpY);
 
@@ -1636,6 +1994,13 @@ void CPlayer::StateActer(_float fDeltaTime)
 		break;
 	case War::War_Atk_Vamp_Loop:
 		AtkColLoop();
+		m_fSoundSpeed += fDeltaTime;
+		if (m_fSoundSpeed > m_fSoundTime)
+		{
+			m_fSoundSpeed = 0.f;
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+			CSoundMgr::Get_Instance()->PlaySound(L"char_war_vampiric_flipsaw_loop.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+		}
 		break;
 	case War::War_Atk_Vamp_Finish:
 		AtkColActive(0, dAttackCheckFrame - 0.1);
@@ -1772,8 +2137,10 @@ void CPlayer::StateActer(_float fDeltaTime)
 			m_fAddPower = 0.f;
 		}
 		//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 4000.f, &m_vDir, fDeltaTime);	
-		if (m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 4000.f, &m_vDir, fDeltaTime))
+		if (m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 6000.f, 2000.f, &m_vDir, fDeltaTime))
+		{
 			m_pTransformCom->Set_PosY(m_fJumpY);
+		}
 		if (!m_pMeshCom->Is_AnimationsetFinish())
 		{
 			auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(L"Col_Body"));
@@ -1783,6 +2150,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		{
 			auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(L"Col_Body"));
 			iter_find->second->SetCol(true);
+			
 		}
 		break;
 	case War::War_Skill_02_Start:
@@ -1823,6 +2191,15 @@ void CPlayer::StateActer(_float fDeltaTime)
 			m_pTransformCom->MoveStep(MOVETYPE_ACC, &fGlidePower, 120.f, 100.f, &_vec3(0.f, -1.f, 0.f), fDeltaTime);
 			m_pTransformCom->Move_Pos(&m_vDir, m_fMoveSpeed*100.f, fDeltaTime);
 		}
+		if (m_bJumpBall)
+		{
+			if (m_bSound)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_shared_glide_breath_01.ogg", CSoundMgr::CHANNEL_PLAYER);
+				m_bSound = true;
+			}
+		}
 		break;
 	case War::War_Atk_Heavy_01:
 		AtkColActive(dAttackCheckFrame-0.2, dAttackCheckFrame );
@@ -1844,7 +2221,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 			}
 			_vec3	vPos;
 			m_pTransformCom->Get_INFO(INFO_POS, &vPos);
-			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2100.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 8000.f, 1500.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
 
 			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_ACC, &m_fAttackMoveSpeed, 10000.f, 2100.f, &m_vDir, fDeltaTime);
 		}
@@ -1859,7 +2236,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
 
-			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 600.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
 
 			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 500.f, 0.f, &m_vDir, fDeltaTime);
 		}
@@ -1887,7 +2264,7 @@ void CPlayer::StateActer(_float fDeltaTime)
 		{
 			//m_pTransformCom->Move_Pos(&m_vDir, m_fAttackMoveSpeed*10.f, fDeltaTime);
 
-			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
+			m_pTransformCom->Set_Pos(&m_pNavi->MoveStepOn_NaviMesh(&vPos, MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 1000.f, 0.f, &m_vDir, fDeltaTime, m_pCalculatorCom));
 
 
 			//m_pTransformCom->MoveStep(MOVETYPE::MOVETYPE_BREAK, &m_fAttackMoveSpeed, 800.f, 0.f, &m_vDir, fDeltaTime);
@@ -2198,12 +2575,32 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Light_04:
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.1))
+		{
+			if (!m_bSound)
+			{
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.3f, 0.15f);
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_land_explode.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
+				CGameObject* pEff = CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONE_CIRCLE);
+				dynamic_cast<CEffectMesh*>(pEff)->SetDir(m_vDir);
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+
+				_vec3 vNorDir = m_vDir;
+				D3DXVec3Normalize(&vNorDir, &vNorDir);
+				pEff->SetPos(vPos + vNorDir*3.f, ID_DYNAMIC);
+
+				m_bSound = true;
+			}
+		}
+
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
 		{
-
 			//키 상태가 확인되면 
 			if (m_eKeyState == War::LBUTTON)
 			{
+
 				m_eCurAniState = War::War_Atk_Light_01;
 
 			}
@@ -2259,7 +2656,20 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		if (m_bJumpEnd)
 		{
 			m_eCurAniState = War::War_Atk_Air_Filpsaw_Land;
-			
+			if (!m_bShake)
+			{
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.4f, 0.2f);
+
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_land_explode.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+				CGameObject* pEff = CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONE_CIRCLE);
+				dynamic_cast<CEffectMesh*>(pEff)->SetDir(m_vDir);
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+				pEff->SetPos(vPos, ID_DYNAMIC);
+				m_bShake = true;
+
+			}
 		}
 		
 		break;
@@ -2320,6 +2730,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Earth_Loop:
+		dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.f, 0.1f);
 		if (Key_Pressing(KEY_RBUTTON))
 			m_eKeyState = War::RBUTTON;
 		else if (!Key_Pressing(KEY_RBUTTON))
@@ -2335,6 +2746,11 @@ void CPlayer::StateLinker(_float fDeltaTime)
 	case War::War_Atk_Earth_End:
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame+0.2))
 		{
+			if (!m_bShake)
+			{
+				m_bShake = true;
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.25f, 0.1f);
+			}
 			m_bBlend = true;
 			switch (m_eKeyState)
 			{
@@ -2356,6 +2772,7 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		break;
 	case War::War_Atk_Flamebrand:
 		DirSet(m_eDir, fDeltaTime, MOVEROTSPEED);
+
 		if (m_pMeshCom->Is_AnimationsetFinish())
 		{
 			if (Key_Up(KEY_RBUTTON))
@@ -2423,13 +2840,18 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		break;
 	case	War::War_Atk_Wind_Loop:
 		DirSet(m_eDir, fDeltaTime, MOVEROTSPEED);
-
+		dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.1f, 0.05f);
 		if (Key_Up(KEY_RBUTTON))
 		{
 			m_eCurAniState = War::War_Atk_Wind_End;
 		}
 		break;
 	case	War::War_Atk_Wind_End:
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.25))
+		{
+			if(!m_bShake)
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.3f, 0.1f);
+		}
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame + 0.2))
 		{
 			m_bBlend = true;
@@ -2631,9 +3053,29 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Skill_01:
+		if (m_pMeshCom->Is_Animationset(0.25))
+		{
+			if (!m_bShake)
+			{
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.4f, 0.2f);
+				m_bShake = true;
+			}
+			if (!m_bSound)
+			{
+				m_bSound = true;
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_land_explode.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
+				CGameObject* pEff = CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONE_CIRCLE);
+				dynamic_cast<CEffectMesh*>(pEff)->SetDir(m_vDir);
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+				pEff->SetPos(vPos, ID_DYNAMIC);
+			}
+		}
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_eMachineState = War::STATE_IDLE_CB;
+			m_bShake = false;
 		}
 		break;
 	case War::War_Skill_02_Start:
@@ -2690,6 +3132,15 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Heavy_01:
+		if (m_pMeshCom->Is_Animationset(0.1))
+		{
+			if (!m_bSound)
+			{
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_heavy_1.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
+				m_bSound = true;
+			}
+		}
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
 		{
 			//키 상태가 확인되면 
@@ -2712,6 +3163,27 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Heavy_02:
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.03))
+		{
+			if (!m_bShake)
+			{
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.3f, 0.15f);
+
+				CGameObject* pEff = CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONE_CIRCLE);
+				dynamic_cast<CEffectMesh*>(pEff)->SetDir(m_vDir);
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+				_vec3 vNorDir = m_vDir;
+				D3DXVec3Normalize(&vNorDir, &vNorDir);
+				pEff->SetPos(vPos + vNorDir*3.f, ID_DYNAMIC);
+				
+				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
+				CSoundMgr::Get_Instance()->PlaySound(L"char_war_land_explode.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
+				m_bShake = true;
+
+			}
+		}
+
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame))
 		{
 			//키 상태가 확인되면 
@@ -2734,6 +3206,22 @@ void CPlayer::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case War::War_Atk_Heavy_03:
+		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame - 0.15))
+		{
+			if (!m_bShake)
+			{
+				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.3f, 0.2f);
+
+				CGameObject* pEff = CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONE_CIRCLE);
+				dynamic_cast<CEffectMesh*>(pEff)->SetDir(m_vDir);
+				_vec3 vPos;
+				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+				pEff->SetPos(vPos+m_vDir*3.f , ID_DYNAMIC);
+
+				m_bShake = true;
+
+			}
+		}
 		if (m_pMeshCom->Is_Animationset(dAttackCheckFrame-0.1))
 		{
 			//키 상태가 확인되면 
@@ -3036,15 +3524,19 @@ void CPlayer::ElementAniSet()
 		break;
 	case War::ELEMENT_LIGHTNING:
 		m_eCurAniState = War::War_Atk_Lightning;
+
 		break;
 	case War::ELEMENT_VAMP:
 		m_eCurAniState = War::War_Atk_Vamp_Start;
+
 		break;
 	case War::ELEMENT_WIND:
 		m_eCurAniState = War::War_Atk_Wind_Start;
+
 		break;
 	case War::ELEMENT_DEATH:
 		m_eCurAniState = War::War_Atk_LoomingDeath;
+
 		break;
 	case War::ELEMENT_END:
 		break;
@@ -3113,6 +3605,7 @@ void CPlayer::AtkColActive(double dStart, double dEnd)
 	}
 	else if(m_pMeshCom->Is_Animationset(dStart))
 	{
+		SpawnTrail();
 		iter_find->second->SetActive(true);
 	}
 }
@@ -3122,6 +3615,7 @@ void CPlayer::AtkColLoop()
 	auto iter_find = find_if(m_mapColider.begin(), m_mapColider.end(), CTag_Finder(L"Col_Weapon0"));
 	if (iter_find == m_mapColider.end())
 		return;
+	SpawnTrail();
 	iter_find->second->SetActive(true);
 }
 
@@ -3154,5 +3648,19 @@ void CPlayer::InteractionTimer(_float fDeltaTime)
 		return;
 	}
 	m_bInteraction = true;
+}
+
+void CPlayer::SpawnTrail()
+{
+	const _matrix *BoneMat;
+	const D3DXFRAME_DERIVED*		pFrame = m_pMeshCom->Get_FrameByName("Bone_War_Weapon_Sword");
+	BoneMat = &pFrame->CombinedTransformMatrix;
+	CGameObject* pTrail = Get_GameObject(L"Environment", L"Trail");
+	if (pTrail)
+	{
+		dynamic_cast<CEffect_Trail*>(pTrail)->Set_MatrixInfo(m_pTransformCom->Get_WorldMatrix(), BoneMat);
+		pTrail->SetOption(&m_tOutTrail);
+	}
+
 }
 

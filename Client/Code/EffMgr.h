@@ -17,13 +17,27 @@ public:
 
 
 public:
-	void	 SpawnEff(EFFECT::TYPE eEffect);
+	void	 SpawnEff(EFFECTSET::TYPE eEffect, _vec3 vPos);
 	void	 EffectListUpdate();
 
 	
-private:
-	list<CGameObject*> m_listEffect;
+	_float m_fStartTimeBegin = 0.f; 
+	_float m_fStartTimeEnd= 0.f;
 
+	_float m_fStartSpeed = 0.f;
+	_bool	m_bRandBegin = false;
+	_bool  m_bRandomPos =false;
+
+
+
+private:
+	list<EFFECT::TYPE2D> m_listReadyEff2D;
+	list<EFFECT::TYPE3D> m_listReadyEff3D;
+
+	list<CGameObject*> m_listEffect;
+	EFFECTSET::TYPE m_eNextEff;
+	EFFECT::TYPE2D m_eEff2D;
+	EFFECT::TYPE2D m_eEff3D;
 
 public:
 	virtual void			Free(void);

@@ -33,6 +33,10 @@ _int CBuilding::Update_Object(const _float& fTimeDelta)
 {
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
+	_vec3	vPos;
+	m_pTransformCom->Get_INFO(INFO_POS, &vPos);
+
+
 	Add_RenderGroup(RENDER_NONALPHA, this);
 	return iExit;
 }
@@ -115,6 +119,7 @@ HRESULT CBuilding::Add_Component(void)
 	//pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, m_pMeshCom->Get_VtxPos(),m_pMeshCom->Get_VtxCnt());
 	//NULL_CHECK_RETURN(m_pColliderCom, E_FAIL);
 	//m_mapComponent[ID_STATIC].emplace(L"Com_Collider", pComponent);
+
 
 
 	return S_OK;

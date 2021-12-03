@@ -119,7 +119,7 @@ void CUIMgr::InitCoretree(LPDIRECT3DDEVICE9 pGraphicDev)
 	m_listCoreTree.emplace_back(pGameObject);
 
 	//배경 추가 
-	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5), _float(WINCY*0.5)), _vec2(fBgUISize, fBgUISize), 3, L"Proto_Texture_CoreTree_Bg", L"UI_CoreTree_Bg"), bActive);
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5), _float(WINCY*0.5)), _vec2(fBgUISize, fBgUISize), 1, L"Proto_Texture_CoreTree_Bg", L"UI_CoreTree_Bg"), bActive);
 	pGameObject->SetZPos(fBgZ, ID_DYNAMIC);
 	m_listCoreTree.emplace_back(pGameObject);
 
@@ -139,10 +139,13 @@ void CUIMgr::InitCoretree(LPDIRECT3DDEVICE9 pGraphicDev)
 			pGameObject = CUI::Create(pGraphicDev, Set_UISET(GetCoretreePos(i), _vec2(fStoneUISize, fStoneUISize), 1, L"Proto_Texture_CoreTree_Core", L"UI_CoreTree_Core" + to_wstring(i)), bActive);
 		}
 		else
-			pGameObject = CUI::Create(pGraphicDev, Set_UISET(GetCoretreePos(i), _vec2(fStoneUISize, fStoneUISize), 0, L"Proto_Texture_CoreTree_Core", L"UI_CoreTree_Core"+ to_wstring(i)), bActive);
+		{
+			pGameObject = CUI::Create(pGraphicDev, Set_UISET(GetCoretreePos(i), _vec2(fStoneUISize, fStoneUISize), 0, L"Proto_Texture_CoreTree_Core", L"UI_CoreTree_Core" + to_wstring(i)), bActive);
+		}
 		//조건문 변경 쉐이더 변경 
 		//dynamic_cast<CUI*>(pGameObject)->SetSubTex1(L"Proto_Texture_CoreTree_StoneElement",0);
 		
+		dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_CORETREE_ELEMENT);
 		pGameObject->SetZPos(fStoneBaseZ, ID_DYNAMIC);
 		m_listCoreTree.emplace_back(pGameObject);
 	}
@@ -187,6 +190,7 @@ void CUIMgr::InitCoreList(LPDIRECT3DDEVICE9 pGraphicDev)
 	pGameObject = CUI::Create(pGraphicDev,
 		Set_UISET(_vec2(940.f, 380.f), _vec2(fListSize, fListSize+130.f),
 			0, L"Proto_Texture_CoreTree_StoneList_Base", L"UI_CoreTree_StoneList_ListBg"), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_BLEND);			//안되면 새로 만들어서 ㄱ 
 	pGameObject->SetZPos(flistBgZ, ID_DYNAMIC); 
 	m_listCoreList.emplace_back(pGameObject);
 
@@ -232,6 +236,7 @@ void CUIMgr::InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 	for (_uint i = 0; i < 3; i++)
 	{
 		pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(780.f, 690.f+(40.f*i)), _vec2(fTypeSize, fTypeSize), (i*2), L"Proto_Texture_CoreTree_StoneElement", L"UI_Info_Element"+ to_wstring(i)), bActive);
+
 		pGameObject->SetZPos(fUIZ, ID_DYNAMIC);
 		m_listPlayerInfo.emplace_back(pGameObject);
 		wstring wstrType;
@@ -253,6 +258,10 @@ void CUIMgr::InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 		dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"PlayerInfo_Font_L_Normal" + to_wstring(i));
 		m_listPlayerInfo.emplace_back(pGameObject);
 
+		pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal_Small", to_wstring(100), _vec2(1000.f,  680.f + (40.f*i)), D3DXCOLOR(0.7f, 0.7f, 0.7f, 0.7f) }, bActive);
+		dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"PlayerInfo_Font_L_Stat" + to_wstring(i));
+		CGameMgr::GetInstance()->SetStatFont(pGameObject);
+		m_listPlayerInfo.emplace_back(pGameObject);
 
 	}
 
@@ -313,6 +322,15 @@ void CUIMgr::InitToastInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 		pGameObject = CUI::Create(pGraphicDev,
 			Set_UISET(_vec2(600.f, 500.f), _vec2(fIconSize, fIconSize),
 			(_uint)tStone.eCreature, L"Proto_Texture_CoreTree_Creature", L"UI_CoreTree_StoneList_Creature" + to_wstring(tStone.eCreature)), bActive);
+		dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_STONE);
+		dynamic_cast<CUI*>(pGameObject)->SetSubTex1(L"Proto_Texture_CoreTree_StoneEffect", 0);
+		_uint iBase = 0;
+		if (tStone.bRare)
+		{
+			iBase = 2;
+		}
+		dynamic_cast<CUI*>(pGameObject)->SetSubTex2(L"Proto_Texture_CoreTree_StoneBase", iBase);
+
 		pGameObject->SetZPos(fIconZ, ID_DYNAMIC);
 		m_listToastInfo.emplace_back(pGameObject);
 
@@ -350,11 +368,13 @@ void CUIMgr::InitStore(LPDIRECT3DDEVICE9 pGraphicDev)
 	//블랜드 처리 
 	//Bg 
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5)+300.f, _float(WINCY*0.5)), _vec2(_float(WINCX)*0.5f, _float(WINCY)), 0, L"Proto_Texture_Store_Base", L"UI_Store_Base"), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_BLEND);
 	pGameObject->SetZPos(fBaseZ, ID_DYNAMIC);
 	m_listStoreBase.emplace_back(pGameObject);
 
 	//Info
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, _float(WINCY*0.5)+300.f), _vec2(_float(WINCX)*0.5f-50.f, _float(WINCY)*0.3f-100.f), 2, L"Proto_Texture_Store_Base", L"UI_Store_Info"), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_BLEND);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
 	m_listStoreBase.emplace_back(pGameObject);
 
@@ -411,6 +431,7 @@ void CUIMgr::InitStoreList(LPDIRECT3DDEVICE9 pGraphicDev,list<CGameObject*> list
 	wstring wstrListIdx= to_wstring(m_iStoreIdx)+to_wstring(eItemIdx) ;
 	//리스트박스
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f,150.f+(m_iStoreIdx*90.f)), _vec2(520.f, 80.f), 0, L"Proto_Texture_List", L"UI_Store_List"+ wstrListIdx), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 	pGameObject->SetZPos(fListZ, ID_DYNAMIC);
 	listStore.emplace_back(pGameObject);
 
@@ -418,13 +439,15 @@ void CUIMgr::InitStoreList(LPDIRECT3DDEVICE9 pGraphicDev,list<CGameObject*> list
 
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 90.f, 150.f + (m_iStoreIdx*90.f)), _vec2(100.f, 80.f), 0, L"Proto_Texture_Store_Sel", L"UI_Store_Sel" + wstrListIdx), bActive);
 	pGameObject->SetZPos(fSelZ, ID_DYNAMIC);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 	listStore.emplace_back(pGameObject);
 
 	//셀필
-	//pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, 150.f + (m_iStoreIdx*90.f)), _vec2(520.f, 80.f), 0, L"Proto_Texture_Store_SelFill", L"UI_Store_SelFill" + wstrListIdx), bActive);
-	//pGameObject->SetZPos(fSelFillZ, ID_DYNAMIC);
-	//listStore.emplace_back(pGameObject);
-	//
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(_float(WINCX*0.5) + 300.f, 150.f + (m_iStoreIdx*90.f)), _vec2(520.f, 80.f), 0, L"Proto_Texture_Store_SelFill", L"UI_Store_SelFill" + wstrListIdx), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_SELFILL);
+	pGameObject->SetZPos(fSelFillZ, ID_DYNAMIC);
+	listStore.emplace_back(pGameObject);
+	
 	
 	////아이콘
 	//_bool  bActive = false;
@@ -469,6 +492,20 @@ void CUIMgr::BeginUISet()
 
 
 
+void CUIMgr::SetCoreBase(_uint iStoneIdx,_bool bIsStone)
+{
+	wstring wstrObjTag = L"UI_CoreTree_Core" + to_wstring(m_iCoreIdx);
+	STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(iStoneIdx));
+	CGameObject* pObj = Get_GameObject(L"UI", wstrObjTag.c_str());
+	dynamic_cast<CUI*> (pObj)->SetStoneElement(tStone.iElementType*2, bIsStone);
+	dynamic_cast<CUI*> (pObj)->SetSubTex1(L"Proto_Texture_CoreTree_StoneElement", tStone.iElementType*2);
+	dynamic_cast<CUI*> (pObj)->SetSubTex2(L"Proto_Texture_CoreTree_Eff", 0);
+	dynamic_cast<CUI*> (pObj)->SetSubTex3(L"Proto_Texture_CoreTree_StoneEffect", 0);
+	CGameMgr::GetInstance()->AddPlayerStat(UI::STONE(iStoneIdx));
+
+
+}
+
 void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, list<CGameObject*>& listItemInsert)
 {
 	CGameObject* pGameObject = nullptr;
@@ -479,7 +516,7 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 	//내용
 	//가격
 	_float fIconBSize = 80.f;
-	_float fIconInfoSize = 40.f;
+	_float fIconInfoSize = 45.f;
 	_float fInfoZ = 0.38f;
 	
 	wstring wstrProtoTag;
@@ -729,18 +766,21 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 	//아이콘
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(685.f, 150.f + (m_iStoreIdx*90.f)), _vec2(fIconBSize, fIconBSize), m_iStoreIdx, wstrProtoTag.c_str(), L"UI_Store_Active_Icon" + wstrListIdx), bActive);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 	listItemInsert.emplace_back(pGameObject);
 
 	//이름
 	pGameObject = CUI::Create(pGraphicDev, tNameFont, bActive);
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Normal_Name" + wstrListIdx);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 	listItemInsert.emplace_back(pGameObject);
 
 	//내용 폰트
 	pGameObject = CUI::Create(pGraphicDev, tInfoFont, bActive);
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Light_Info" + wstrListIdx);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 	listItemInsert.emplace_back(pGameObject);
 
 
@@ -752,17 +792,20 @@ void CUIMgr::SetItemInfoList(LPDIRECT3DDEVICE9 pGraphicDev, UI::ITEM eItemIdx, l
 
 		pGameObject = CUI::Create(pGraphicDev, iter, bActive);
 		pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+		dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 		listItemInsert.emplace_back(pGameObject);
 	}
 
 	//소울 아이콘
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(1050.f, 165.f + (m_iStoreIdx*90.f)), _vec2(fIconInfoSize, fIconInfoSize), 0, L"Proto_Texture_Store_Soul", L"UI_Store_Soul" + wstrListIdx), bActive);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 	listItemInsert.emplace_back(pGameObject);
 
 	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Light",to_wstring(iPrice), _vec2(1065, 160.f + (m_iStoreIdx*90.f)), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
 	
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoreActive_Font_L_Light_Price" + wstrListIdx);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STORE);
 	pGameObject->SetZPos(fInfoZ, ID_DYNAMIC);
 
 	listItemInsert.emplace_back(pGameObject);
@@ -845,7 +888,7 @@ void CUIMgr::MoveStoreStoneList(_float fTimeDelta, _float fSpeed)
 void CUIMgr::SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone) //순서대로 아래로 생성 열때마다 맨위로 조정 
 {
 	auto iter_find = m_mapStoneList.find(tStone.eCreature);
-	if (iter_find == m_mapStoneList.end())
+	if (iter_find != m_mapStoneList.end())
 	{
 		return;
 	}
@@ -865,11 +908,20 @@ void CUIMgr::SetStoneInfoUI(LPDIRECT3DDEVICE9 pGraphicDev,STONE tStone) //순서대
 	//오른쪽 설명 리스트에 스톤 ->빤짝 쉐이더 먹인 스톤 
 	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(780.f, 180.f), _vec2(fStoneSize, fStoneSize), (_uint)tStone.eCreature, L"Proto_Texture_CoreTree_Creature", L"UI_Info_Stone" + to_wstring(tStone.eCreature)), bActive);
 	pGameObject->SetZPos(fStoneZ, ID_DYNAMIC);
-	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_STONE);
+	dynamic_cast<CUI*>(pGameObject)->SetSubTex1(L"Proto_Texture_CoreTree_StoneEffect",0);
+	_uint iBase = 0;
+	if (tStone.bRare)
+	{
+		iBase = 2;
+	}
+	dynamic_cast<CUI*>(pGameObject)->SetSubTex2(L"Proto_Texture_CoreTree_StoneBase", iBase);
+	
+
 	m_listStoneInfo.emplace_back(pGameObject);
 
 
-	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(840.f, 225.f), _vec2(fIconSize, fIconSize), tStone.iElementType, L"Proto_Texture_CoreTree_StoneElement", L"UI_Info_Element" + to_wstring(tStone.eCreature)), bActive);
+	pGameObject = CUI::Create(pGraphicDev, Set_UISET(_vec2(840.f, 225.f), _vec2(fIconSize, fIconSize), tStone.iElementType*2, L"Proto_Texture_CoreTree_StoneElement", L"UI_Info_Element" + to_wstring(tStone.eCreature)), bActive);
 	pGameObject->SetZPos(fStoneZ, ID_DYNAMIC);
 	m_listStoneInfo.emplace_back(pGameObject);
 
@@ -944,6 +996,7 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone)
 	pGameObject = CUI::Create(pGraphicDev,
 		Set_UISET(_vec2(80.f, fPosy), _vec2(fIconSize, fIconSize),
 			0, L"Proto_Texture_CoreTree_StoneList_Sel", L"UI_CoreTree_StoneList_SelBar"+to_wstring(tStone.eCreature)), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STONE);
 	pGameObject->SetZPos(fSelZ, ID_DYNAMIC);
 	m_listStoneList.emplace_back(pGameObject);
 	//Add_GameObject();
@@ -955,6 +1008,7 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone)
 	pGameObject = CUI::Create(pGraphicDev,
 		Set_UISET(_vec2(95.f, fPosy), _vec2(fIconSize, fIconSize),
 			(_uint)tStone.eCreature, L"Proto_Texture_CoreTree_Creature", L"UI_CoreTree_StoneList_Creature" + to_wstring(tStone.eCreature)), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STONE);
 	pGameObject->SetZPos(fCoreZ, ID_DYNAMIC);
 	m_listStoneList.emplace_back(pGameObject);
 
@@ -962,6 +1016,7 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone)
 	pGameObject = CUI::Create(pGraphicDev,
 		Set_UISET(_vec2(600.f, fPosy), _vec2(fIconSize, fIconSize),
 			tStone.iElementType*2, L"Proto_Texture_CoreTree_StoneElement", L"UI_CoreTree_StoneList_Element" + to_wstring(tStone.eCreature)), bActive);
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STONE);
 	pGameObject->SetZPos(fCoreZ, ID_DYNAMIC);
 	m_listStoneList.emplace_back(pGameObject);
 
@@ -969,6 +1024,7 @@ void CUIMgr::SetStoneListUI(LPDIRECT3DDEVICE9 pGraphicDev, STONE tStone)
 
 	pGameObject = CUI::Create(pGraphicDev, UIFONT{ L"Font_L_Normal",tStone.wstrName.c_str() , _vec2(145.f, fPosy-10.f), D3DXCOLOR(1.f, 1.f, 1.f, 1.f) }, bActive);
 	dynamic_cast<CUI*>(pGameObject)->SetObjTag(L"StoneList_Font_L_Normal" + to_wstring(tStone.eCreature));
+	dynamic_cast<CUI*>(pGameObject)->SetShade(UI::SHADE_UVMOVE_STONE);
 	m_listStoneList.emplace_back(pGameObject);
 
 	for (auto iter : m_listStoneList)
@@ -990,20 +1046,72 @@ void CUIMgr::SetActiveToastMsgItemInfo(_uint iSelIdx)
 	switch (iSelIdx)
 	{
 	case UI::ITEM_BOX1:
+	{
 		SetActiveToastBoxUI(true);
-		SetActiveToastInfoUI(true, RandNext(0,3));
+		_uint iRandNum = RandNext(0, 3);
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(iRandNum));
+		SetStoneInfoUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetStoneListUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+
+		SetActiveToastInfoUI(true, iRandNum);
+	}
 		break;
 	case UI::ITEM_BOX2:
+	{
+		SetActiveToastBoxUI(true);
+		_uint iRandNum = RandNext(14, 18);
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(iRandNum));
+		SetStoneInfoUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetStoneListUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+
+		SetActiveToastInfoUI(true, iRandNum);
+	}
 		break;
-	case UI::ITEM_BOX3:
+	case UI::ITEM_BOX3: 
+	{
+		SetActiveToastBoxUI(true);
+		_uint iRandNum = RandNext(18,21);
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(iRandNum));
+		SetStoneInfoUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetStoneListUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetActiveToastInfoUI(true, iRandNum);
+	}
 		break;
 	case UI::ITEM_GRINNER:
+	{
+		SetActiveToastBoxUI(true);
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(UI::GRINNER));
+		SetStoneInfoUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetStoneListUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetActiveToastInfoUI(true, 12);
+	}
 		break;
 	case UI::ITEM_SKULLMAGE:
+	{
+		SetActiveToastBoxUI(true);
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(UI::SKULLMAGE));
+		SetStoneInfoUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetStoneListUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetActiveToastInfoUI(true, 13);
+	}
 		break;
 	case UI::ITEM_BROODI:
+	{
+		SetActiveToastBoxUI(true);
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(UI::BROODI));
+		SetStoneInfoUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetStoneListUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetActiveToastInfoUI(true, 14);
+	}
 		break;
 	case UI::ITEM_BAT:
+	{
+		SetActiveToastBoxUI(true);
+		STONE tStone = CGameMgr::GetInstance()->GetStone(UI::STONE(UI::BAT));
+		SetStoneInfoUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetStoneListUI(CGameMgr::GetInstance()->GetDevice(), tStone);
+		SetActiveToastInfoUI(true, 15);
+	}
 		break;
 	case UI::ITEM_END:
 		break;
@@ -1210,6 +1318,8 @@ _bool CUIMgr::GetCoreTreeUIActive()
 _bool CUIMgr::GetStoneInfoUIActive(_uint iStoneIdx)
 {
 	auto iter_find = m_mapStoneInfo.find(iStoneIdx);
+	if (iter_find == m_mapStoneInfo.end())
+		return false;
 
 	return iter_find->second.front()->GetActive();
 

@@ -8,6 +8,7 @@
 #include "RcTex.h"
 #include "TerrainTex.h"
 #include "CubeTex.h"
+#include "Trail_Texture.h"
 
 #include "Texture.h"
 #include "Transform.h"

@@ -26,8 +26,10 @@ Engine::CVIBuffer::CVIBuffer(const CVIBuffer& rhs)
 	, m_dwTriCnt(rhs.m_dwTriCnt)
 	, m_IdxFmt(rhs.m_IdxFmt)
 {
-	m_pIB->AddRef();
-	m_pVB->AddRef();
+	if(m_pIB)
+		m_pIB->AddRef();
+	if (m_pVB)
+		m_pVB->AddRef();
 }
 
 Engine::CVIBuffer::~CVIBuffer(void)
