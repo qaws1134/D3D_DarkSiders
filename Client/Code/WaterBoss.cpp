@@ -52,6 +52,8 @@ void CWaterBoss::Late_Ready_Object()
 
 _int CWaterBoss::Update_Object(const _float& fTimeDelta)
 {
+
+
 	if (!m_bActive)
 		return 0;
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
@@ -165,6 +167,10 @@ void CWaterBoss::StateChange()
 		if (iter_find != m_mapColider.end())
 			iter_find->second->SetActive(false);
 	}
+	if (Key_Down(KEY_NUM1))
+	{
+		m_eMachineState = WaterBoss::STATE_DEAD;
+	}
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
@@ -208,6 +214,9 @@ void CWaterBoss::StateChange()
 			m_eCurAniState = WaterBoss::TidalWave_Loop;
 			m_fPatternTimer = 7.f;
 			m_fPatternSpeed = 0.f;
+			break;
+		case WaterBoss::STATE_DEAD:
+			m_eCurAniState = WaterBoss::Impact_Stun;
 			break;
 		case WaterBoss::STATE_END:
 			break;
@@ -571,10 +580,7 @@ void CWaterBoss::StateLinker(_float fDeltaTime)
 		}
 		break;
 	case WaterBoss::Impact_Stun_Loop:
-		if (Pattern_Timer(fDeltaTime))
-		{
-			m_eMachineState = WaterBoss::STATE_IDLE;
-		}
+
 		break;
 	case WaterBoss::TidalWave:
 		if (m_pMeshCom->Is_Animationset(0.9))

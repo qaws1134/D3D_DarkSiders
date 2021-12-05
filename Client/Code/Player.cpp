@@ -544,44 +544,44 @@ void CPlayer::StateChange()
 		switch (m_eElement)
 		{
 		case War::ELEMENT_EARTH:
-			m_tTrail.iTrailCount = 20;
-			m_tTrail.fTrailEmitRate = 0.00005f;
-			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTrailCount = 40;
+			m_tTrail.fTrailEmitRate = 0.00015f;
+			m_tTrail.fTrailSize = 400.f;
 			m_tTrail.iTextureNum = 4;
 			m_tTrail.vColor = { 0.2f,0.7f,0.2f,0.7f };
 			break;
 		case War::ELEMENT_FLAME:
 			m_tTrail.iTrailCount = 30;
-			m_tTrail.fTrailEmitRate = 0.00005f;
-			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.fTrailEmitRate = 0.00015f;
+			m_tTrail.fTrailSize = 400.f;
 			m_tTrail.iTextureNum = 1;
 			m_tTrail.vColor = { 0.9f,0.5f,0.1f,0.7f };
 			break;
 		case War::ELEMENT_LIGHTNING:
-			m_tTrail.iTrailCount = 20;
-			m_tTrail.fTrailEmitRate = 0.00005f;
-			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTrailCount = 40;
+			m_tTrail.fTrailEmitRate = 0.00015f;
+			m_tTrail.fTrailSize = 400.f;
 			m_tTrail.iTextureNum = 4;
 			m_tTrail.vColor = { 1.f,0.9f,0.1f,0.7f };
 			break;
 		case War::ELEMENT_VAMP:
 			m_tTrail.iTrailCount = 30;
-			m_tTrail.fTrailEmitRate = 0.00005f;
-			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.fTrailEmitRate = 0.00015f;
+			m_tTrail.fTrailSize = 400.f;
 			m_tTrail.iTextureNum = 1;
 			m_tTrail.vColor = { 0.8f,0.1f,0.1f,0.7f };
 			break;
 		case War::ELEMENT_WIND:
-			m_tTrail.iTrailCount = 20;
-			m_tTrail.fTrailEmitRate = 0.00005f;
-			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTrailCount = 40;
+			m_tTrail.fTrailEmitRate = 0.00015f;
+			m_tTrail.fTrailSize = 400.f;
 			m_tTrail.iTextureNum = 4;
 			m_tTrail.vColor = { 0.7f,0.7f,0.7f,0.7f };
 			break;
 		case War::ELEMENT_DEATH:
-			m_tTrail.iTrailCount = 20;
-			m_tTrail.fTrailEmitRate = 0.00005f;
-			m_tTrail.fTrailSize = 350.f;
+			m_tTrail.iTrailCount = 40;
+			m_tTrail.fTrailEmitRate = 0.00015f;
+			m_tTrail.fTrailSize = 400.f;
 			m_tTrail.iTextureNum = 4;
 			m_tTrail.vColor = { 0.f,0.6f,0.9f,0.7f };
 			break;
@@ -606,7 +606,14 @@ void CPlayer::StateChange()
 		m_ePreElement = m_eElement;
 	}
 
-
+	if (Key_Down(KEY_4))
+	{
+		m_eMachineState = War::STATE_IDLE_CB;
+	}
+	if (Key_Down(KEY_5))
+	{
+		m_eMachineState = War::MOVE;
+	}
 	//플레이어 상태 전환 시 
 	if (m_ePreMachineState != m_eMachineState)
 	{
@@ -3169,13 +3176,13 @@ void CPlayer::StateLinker(_float fDeltaTime)
 			{
 				dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.3f, 0.15f);
 
-				CGameObject* pEff = CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONE_CIRCLE);
+			/*	CGameObject* pEff = CGameMgr::GetInstance()->GetEffect3D(EFFECT::EFFECT3D_STONE_CIRCLE);
 				dynamic_cast<CEffectMesh*>(pEff)->SetDir(m_vDir);
 				_vec3 vPos;
 				m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 				_vec3 vNorDir = m_vDir;
 				D3DXVec3Normalize(&vNorDir, &vNorDir);
-				pEff->SetPos(vPos + vNorDir*3.f, ID_DYNAMIC);
+				pEff->SetPos(vPos + vNorDir*3.f, ID_DYNAMIC);*/
 				
 				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
 				CSoundMgr::Get_Instance()->PlaySound(L"char_war_land_explode.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);

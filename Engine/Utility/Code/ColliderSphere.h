@@ -33,7 +33,7 @@ private:
 	ID3DXMesh* m_pSphereMesh = nullptr;
 
 
-#ifdef _DEBUG
+
 	LPDIRECT3DVERTEXBUFFER9		m_pVB;
 	LPDIRECT3DINDEXBUFFER9		m_pIB;
 	LPDIRECT3DTEXTURE9			m_pTexture[COL_END];
@@ -41,7 +41,7 @@ private:
 	ID3DXBuffer* mtrlBuffer = 0;
 	DWORD        numMtrls = 0;
 
-#endif
+
 
 public:
 	static CColliderSphere*		Create(LPDIRECT3DDEVICE9 pGraphicDev, _vec3* pPos, _float fRadius = 0);

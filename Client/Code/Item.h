@@ -35,7 +35,7 @@ public:
 public:
 	void BillBord();
 	_float GetRandomFloat(_float lowBound,_float highBound);
-	wstring m_wstrTexture;
+	wstring m_wstrTexture =L"";
 
 	
 

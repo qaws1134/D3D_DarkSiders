@@ -104,6 +104,8 @@ private:
 
 	_float m_fUVTimer;
 	_float m_fUVSpeed;
+
+	_bool m_bOnUI = false;
 	
 
 

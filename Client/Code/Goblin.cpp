@@ -36,8 +36,8 @@ HRESULT CGoblin::Ready_Object(void)
 	m_eCurAniState = Goblin::Goblin_Idle;
 	m_iPatternNum = 0;
 	m_fAngleSpeed = 360.f;
-//	m_eMachineState = Goblin::STATE_IDLE;
-	m_eMachineState = Goblin::STATE_SPAWN_IDLE;
+	m_eMachineState = Goblin::STATE_IDLE;
+	//m_eMachineState = Goblin::STATE_SPAWN_IDLE;
 	//m_eSpawnType = Goblin::SPAWN_POTRAL;
 	m_fHitSpeed = .0f;
 	m_fHitTime = 0.05f;

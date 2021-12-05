@@ -423,7 +423,7 @@ _bool CColMgr::ColCheckWeapon(CGameObject* pSrcObj, wstring ColTag,CGameObject *
 	//===========================공격 충돌 ====================================
 	if(pDstColObj->GetActive())
 	{
-		if (!pSrcObj->GetHit())
+		if (!pSrcObj->GetCol())
 		{
 			if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
 			{
@@ -457,7 +457,7 @@ _bool CColMgr::ColCheckBullet(CGameObject * pSrcObj, wstring ColTag, CGameObject
 	//===========================공격 충돌 ====================================
 	if (pDstColObj->GetActive())
 	{
-		if (!pSrcObj->GetHit())
+		if (!pSrcObj->GetCol())
 		{
 			if (pDstCalcul->Collision_Sphere(&vDstPos, &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
 			{
@@ -492,7 +492,7 @@ _bool CColMgr::ColCheckOrb(CGameObject * pSrcObj, wstring ColTag, CGameObject * 
 	//===========================공격 충돌 ====================================
 	if (iter_Src->second->GetActive())
 	{
-		if (!pDstColObj->GetHit())
+		if (!pDstColObj->GetCol())
 		{
 			if (pDstCalcul->Collision_Sphere(&vDstPos, &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
 			{

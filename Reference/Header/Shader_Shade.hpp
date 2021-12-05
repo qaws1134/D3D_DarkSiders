@@ -52,12 +52,12 @@ PS_OUT		PS_DIRECTIONAL(PS_IN In)
 	
 	vNormal = vector(vNormal.xyz * 2.f - 1.f, 0.f);
 
-	Out.vShade = saturate(dot(normalize(vector(0.5f,1.f,0.f, 0.5f)) * -1.f, vNormal)) * (vector(1.f,1.f,1.f,1.f) * g_vMtrlDiffuse) + (vector(0.9f, 0.9f, 0.9f,1.f) * g_vMtrlAmbient);
+	//Out.vShade = saturate(dot(normalize(vector(0.5f,1.f,0.f, 0.5f)) * -1.f, vNormal)) * (vector(1.f,1.f,1.f,1.f) * g_vMtrlDiffuse) + (vector(0.9f, 0.9f, 0.9f,1.f) * g_vMtrlAmbient);
 
 
 
 
-	//Out.vShade = saturate(dot(normalize(vector(g_vLightDir.xyz, 0.f)) * -1.f, vNormal)) * (g_vLightDiffuse * g_vMtrlDiffuse) + (g_vLightAmbient * g_vMtrlAmbient);
+	Out.vShade = saturate(dot(normalize(vector(g_vLightDir.xyz, 0.f)) * -1.f, vNormal)) * (g_vLightDiffuse * g_vMtrlDiffuse) + (g_vLightAmbient * g_vMtrlAmbient);
 
 	//vector		vWorldPos;
 

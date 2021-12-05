@@ -39,7 +39,7 @@ HRESULT CColliderSphere::Ready_Collider(const _vec3 * pPos,_float fRadius)
 	m_fRadius = fRadius;
 	//D3DXMatrixIdentity(&m_matColMatrix);
 #ifdef  _DEBUG
-	
+
 	D3DXCreateSphere(
 		m_pGraphicDev,
 		fRadius,

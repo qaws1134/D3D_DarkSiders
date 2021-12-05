@@ -405,7 +405,7 @@ void CUI::UI_ElementUpdate(const _float& fTimeDelta)
 
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
+			//CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI);
 			CSoundMgr::Get_Instance()->PlaySound(L"ui_tab.ogg", CSoundMgr::CHANNEL_UI);
 			switch (m_tInfo.iTextureNum)
 			{
@@ -748,9 +748,13 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 	{
 		if (m_pCalculatorCom->Picking_OnUI(g_hWnd, m_tRcUI))
 		{
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI2);
-			CSoundMgr::Get_Instance()->PlaySound(L"ui_tab.ogg", CSoundMgr::CHANNEL_UI2);
-	
+			//CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_UI2);
+			if (!m_bOnUI)
+			{
+				CSoundMgr::Get_Instance()->PlaySound(L"ui_tab.ogg", CSoundMgr::CHANNEL_UI2);
+				m_bOnUI = true;
+			}
+
 			_uint iSelIdx;
 			_int iPrice;
 			list<CGameObject*> listSelActiveList = CUIMgr::GetInstance()->GetItemActiveSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
@@ -882,6 +886,7 @@ void CUI::UI_StoreListUpdate(const _float & fTimeDelta)
 		{
 
 			_uint iSelIdx;
+			m_bOnUI = false;
 			list<CGameObject*> listSelActiveList = CUIMgr::GetInstance()->GetItemActiveSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
 			list<CGameObject*> listSelStoneList = CUIMgr::GetInstance()->GetItemStoneSelIdxList(m_tInfo.wstrObjTag.c_str(), &iSelIdx);
 

@@ -38,7 +38,7 @@ HRESULT CCollider::Ready_Collider(const _vec3 * pPos,
 	//가장 작은 좌표 값과 가증 큰 좌표 값을 만들어주는 함수
 	D3DXComputeBoundingBox(pPos, dwVtxCnt, sizeof(_vec3), &m_vMin, &m_vMax);
 
-#ifdef  _DEBUG
+
 	if (FAILED(m_pGraphicDev->CreateVertexBuffer(sizeof(VTXCUBE) * 8,
 		0,
 		FVF_CUBE,
@@ -165,7 +165,7 @@ HRESULT CCollider::Ready_Collider(const _vec3 * pPos,
 		m_pTexture[i]->UnlockRect(0);
 	}
 
-#endif //  _DEBUG
+
 
 	return S_OK;
 }
@@ -174,7 +174,7 @@ void CCollider::Render_Collider(COLTYPE eType, const _matrix * pColliderMatrix)
 {
 	m_matColMatrix = *pColliderMatrix;
 
-#ifdef _DEBUG
+
 	m_pGraphicDev->SetTransform(D3DTS_WORLD, pColliderMatrix);
 	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	m_pGraphicDev->SetTexture(0, m_pTexture[eType]);
@@ -184,7 +184,7 @@ void CCollider::Render_Collider(COLTYPE eType, const _matrix * pColliderMatrix)
 	m_pGraphicDev->SetIndices(m_pIB);
 	m_pGraphicDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 8, 0, 12);
 	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-#endif
+
 
 }
 

@@ -27,9 +27,9 @@ HRESULT CWaterBoss_Orb::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 
-	m_pTransformCom->Set_Scale(0.15f, 0.15f, 0.15f);
+	m_pTransformCom->Set_Scale(0.2f, 0.2f, 0.2f);
 	m_bActive = false;
-	m_vColor = _vec4(0.0f, 0.05f,0.6f, 1.f);
+	m_vColor = _vec4(0.f, 0.f, 0.f, 1.f);
 	m_iPass = 6;
 
 	m_fHitTime = 0.5f;

@@ -91,10 +91,14 @@ PS_OUT		PS_MAIN_BLACKOUT(PS_IN In)
 
 	vector vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
 	
-	if (vColor.x > 0.1f)
-	{
-		Out.vColor = vColor*g_vColor;
-	}
+
+	Out.vColor = vector(vColor.xyz*g_vColor.xyz,vColor.r);
+	//Out.vColor.w = vColor.r;
+
+	//if (vColor.x > 0.06f)
+	//{
+	//	Out.vColor = vColor*g_vColor;
+	//}
 	
 
 	return Out;
@@ -108,20 +112,18 @@ PS_OUT		PS_MAIN_BLACKOUT_BackGround(PS_IN In)
 	vector vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
 	vector vBack = tex2D(BackSampler, In.vTexUV);
 
-
+	vBack = vBack* g_vColor;
 	if (vBack.x > 0.2f)
 	{
 		vBack = vBack* g_vColor;
 	}
-	if (vColor.z > 0.2f)
-	{
-		vColor = vColor*g_vColor;
-	}
+
+	vBack = vector(vBack.xyz*g_vColor.xyz, vBack.r);
+
+	vColor = vector(vColor.xyz*g_vColor.xyz, vColor.r);
+
 	Out.vColor = vBack + vColor;
-	if (Out.vColor.x < 0.1f)
-		Out.vColor = 0.f;
-	else
-		Out.vColor.w = 0.9f;
+
 	return Out;
 }
 

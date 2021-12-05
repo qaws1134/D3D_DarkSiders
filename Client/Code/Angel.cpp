@@ -37,7 +37,7 @@ HRESULT CAngel::Ready_Object(void)
 	m_iPatternNum = 0;
 	m_fAngleSpeed = 360.f;
 
-	m_bActive = true;
+	m_bActive = false;
 
 	m_eMachineState = Angel::STATE_SPAWN_IDLE;
 	m_fHitSpeed = 1.0f;
@@ -55,8 +55,7 @@ void CAngel::Late_Ready_Object()
 
 _int CAngel::Update_Object(const _float& fTimeDelta)
 {
-	if (!m_bActive)
-		return 0;
+
 	if (m_bDead)
 		return 0;
 	m_fFrameSpeed = fTimeDelta;
@@ -1244,7 +1243,8 @@ void CAngel::SetOption(void * pArg)
 	//}
 
 	m_eMachineState = Angel::STATE_SPAWN;
-	m_pNavi->Set_CellIndex(m_iNaviIdx);
+	if(m_pNavi)
+		m_pNavi->Set_CellIndex(m_iNaviIdx);
 	//m_bActive = true;
 }
 

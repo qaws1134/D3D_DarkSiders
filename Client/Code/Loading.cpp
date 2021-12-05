@@ -61,10 +61,7 @@ Engine::_uint CLoading::Loading_ForStage(void)
 	USES_CONVERSION;
 	lstrcpy(m_szLoading, L"다이나믹 메시 로딩중");
 #pragma region DYNAMICMESH
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"GoblinSpear", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/GoblinSpear/", L"GoblinSpear.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBossBullet", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X")), E_FAIL);
+
 
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
 	//FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
@@ -149,12 +146,15 @@ _uint CLoading::Loading_ForStartStage(void)
 	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBoss", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/WaterBoss/", L"WaterBoss.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"Chest", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Chest/", L"Chest.X")), E_FAIL);
 	FAILED_CHECK_RETURN(Ready_Prototype(L"PlayerBarrier", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/PlayerBarrier/", L"PlayerBarrier.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Serpent", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Serpent/", L"Serpent.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Vulgrim", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Vulgrim/", L"Vulgrim.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Dis", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Dis/", L"Dis.X")), E_FAIL);
-	FAILED_CHECK_RETURN(Ready_Prototype(L"Angel", CDynamicMesh::Create(CGameMgr::GetInstance()->GetDevice(), L"../../Resource/Mesh/DynamicMesh/Angel/", L"Angel.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Serpent", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Serpent/", L"Serpent.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Vulgrim", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Vulgrim/", L"Vulgrim.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Dis", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Dis/", L"Dis.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Angel", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Angel/", L"Angel.X")), E_FAIL);
 
-	
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Grinner", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Grinner/", L"Grinner.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"Goblin", CDynamicMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/DynamicMesh/Goblin/", L"Goblin.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"GoblinSpear", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/GoblinSpear/", L"GoblinSpear.X")), E_FAIL);
+	FAILED_CHECK_RETURN(Ready_Prototype(L"WaterBossBullet", CStaticMesh::Create(m_pGraphicDev, L"../../Resource/Mesh/StaticMesh/Effect/", L"WaterBossBullet.X")), E_FAIL);
 	//이펙트 
 	lstrcpy(m_szLoading, L"스테틱 메시 로딩중");
 

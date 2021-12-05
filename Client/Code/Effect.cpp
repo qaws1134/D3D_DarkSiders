@@ -970,7 +970,7 @@ void CEffect::UpdateEffect(_float fTimeDelta)
 			if (vScale.x < 0.f)
 				EffectEnd();
 		}
-		m_vColor = { 0.1f,0.1f,0.1f,0.1f };
+		m_vColor = { 1.f,0.1f,0.1f,0.6f };
 	}
 		break;
 	case EFFECT::EFFECT_EXPLOSION:

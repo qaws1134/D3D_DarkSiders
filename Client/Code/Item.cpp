@@ -75,6 +75,8 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 		}
 		else
 		{
+			//이동이 true일떄 
+
 			_vec3 vTargetPos;
 			dynamic_cast<CTransform*>(CGameMgr::GetInstance()->GetPlayer()->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS, &vTargetPos);
 			m_vDir = vTargetPos - vInitPos;
@@ -88,34 +90,34 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 			}
 	
 
-
-			if (m_bCol)
+			if (fDis < 1.f)
 			{
-				//아이템 판단
-				switch (m_tItem.eType)
+				if (m_bCol)
 				{
-				case DROPITEM::ITEM_STONE:
-					CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
-					CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
-					m_bActive = true;
-					break;
-				case DROPITEM::ITEM_SOUL:
-					CGameMgr::GetInstance()->TakeSoul(RandNext(5,20));
-					m_bActive = true;
-					break;
-				default:
-					break;
+					//아이템 판단
+					switch (m_tItem.eType)
+					{
+					case DROPITEM::ITEM_STONE:
+						CUIMgr::GetInstance()->SetStoneInfoUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
+						CUIMgr::GetInstance()->SetStoneListUI(m_pGraphicDev, CGameMgr::GetInstance()->GetStone(m_tStone.eCreature));
+						m_bActive = true;
+						break;
+					case DROPITEM::ITEM_SOUL:
+						CGameMgr::GetInstance()->TakeSoul(RandNext(5, 20));
+						m_bActive = true;
+						break;
+					default:
+						break;
+
+					}
+					CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ITEM);
+					CSoundMgr::Get_Instance()->PlaySound(L"prop_pickup_orb_health_01.ogg", CSoundMgr::CHANNEL_ITEM);
+					CGameMgr::GetInstance()->RetunItem(this);
 
 				}
-				CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_ITEM);
-				CSoundMgr::Get_Instance()->PlaySound(L"prop_pickup_orb_health_01.ogg", CSoundMgr::CHANNEL_ITEM);
-
-
-				CGameMgr::GetInstance()->RetunItem(this);
-			
 			}
 		}
-		Add_RenderGroup(RENDER_ALPHA, this);
+		Add_RenderGroup(RENDER_EFFECT, this);
 	}
 	return iExit;
 }
@@ -202,6 +204,7 @@ void CItem::SetOption(void * pArg)
 	_float fRadius = 0.3f;
 	m_vDir.x = fRadius*cosf(m_fAngle) - fRadius*sinf(m_fAngle);
 	m_vDir.z = fRadius*sinf(m_fAngle) + fRadius*cosf(m_fAngle);
+
 	if (m_wstrTexture == L"")
 		return;
 

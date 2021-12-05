@@ -177,9 +177,6 @@ HRESULT CStartStage::Ready_Layer_UI(const _tchar * pLayerTag)
 
 	CGameObject*			pGameObject = nullptr;
 
-
-
-
 	for (auto iter : CUIMgr::GetInstance()->InitCreateUI(m_pGraphicDev))
 	{
 		for (auto iter_second : iter.second)

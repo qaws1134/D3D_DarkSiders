@@ -650,7 +650,6 @@ void CGameMgr::AddPlayerStat(UI::STONE eStone)
 
 void CGameMgr::Free(void)
 {
-
 }
 
 
