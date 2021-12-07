@@ -428,6 +428,7 @@ _bool CColMgr::ColCheckWeapon(CGameObject* pSrcObj, wstring ColTag,CGameObject *
 			if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
 			{
 				pSrcObj->SetColTarget(pDstColObj);
+				pSrcObj->SetCol(true);
 				//iter_Src->second->SetColTarget(pDstColObj);
 				iter_Src->second->SetCol(true);
 				return true;
@@ -465,8 +466,6 @@ _bool CColMgr::ColCheckBullet(CGameObject * pSrcObj, wstring ColTag, CGameObject
 				iter_Src->second->SetCol(true);
 				return true;
 			}
-			else
-				iter_Src->second->SetCol(false);
 		}
 	}
 	return false;

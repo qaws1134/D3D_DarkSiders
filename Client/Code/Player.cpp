@@ -83,19 +83,25 @@ void CPlayer::Late_Ready_Object()
 
 _int CPlayer::Update_Object(const _float& fTimeDelta)
 {
-
+	if (!m_pTransformCom)
+		return 0;
 	m_fFrameSpeed = fTimeDelta;
+	if (!m_bHit)
+	{
+		m_bCol = false;
+	}
+
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	Key_Input(fTimeDelta);
 	StateChange();
 	StateActer(fTimeDelta);
 	StateLinker(fTimeDelta);
 
-	m_pMeshCom->Play_Animation(m_fFrameSpeed);
-	Add_RenderGroup(RENDER_NONALPHA, this);
+	
+	Engine::Add_RenderGroup(RENDER_NONALPHA, this);
 
 	return iExit;
-}
+} 
 
 CPlayer* CPlayer::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 {
@@ -117,47 +123,50 @@ CPlayer * CPlayer::Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _boo
 
 void CPlayer::Free(void)
 {
+	
+	m_mapComponent[0].erase(L"Com_Transform");
+	m_mapComponent[0].clear();
+	for_each(m_mapComponent[1].begin(), m_mapComponent[1].end(), CDeleteMap());
+	m_mapComponent[1].clear();
 	CGameObject::Free();
 }
 
 
-void CPlayer::Set_NaviMesh(CNaviMesh * pNavi)
-{
-	m_pNavi = pNavi;
-	m_mapComponent[ID_STATIC].emplace(L"Com_Navi", m_pNavi);
-}
+
 
 HRESULT CPlayer::Add_Component()
 {
 	CComponent*		pComponent = nullptr;
 
 	// Mesh
-	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Clone_Prototype(L"War"));
+	pComponent = m_pMeshCom = dynamic_cast<CDynamicMesh*>(Engine::Clone_Prototype(L"War"));
 	NULL_CHECK_RETURN(m_pMeshCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Mesh", pComponent);
 
 	// Transform
-	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Clone_Prototype(L"Proto_Transform"));
+	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Engine::Clone_Prototype(L"Proto_Transform"));
 	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
-	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	//// Renderer
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//pComponent->AddRef();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
 
 	// Calculator
-	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));
+	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Engine::Clone_Prototype(L"Proto_Calculator"));
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Calculator", pComponent);
 
-
 	// Shader
-	pComponent = m_pShaderCom = dynamic_cast<CShader*>(Clone_Prototype(L"Proto_Shader_Mesh"));
+	pComponent = m_pShaderCom = dynamic_cast<CShader*>(Engine::Clone_Prototype(L"Proto_Shader_Mesh"));
 	NULL_CHECK_RETURN(m_pShaderCom, E_FAIL);
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
+	pComponent=m_pNavi = dynamic_cast<CNaviMesh*>(Engine::Clone_Prototype(L"Proto_Navi"));
+	NULL_CHECK_RETURN(m_pNavi, E_FAIL);
+	m_mapComponent[ID_STATIC].emplace(L"Com_Navi", pComponent);
 
 	return S_OK;
 }
@@ -165,11 +174,11 @@ HRESULT CPlayer::Add_Component()
 void CPlayer::Render_Object(void)
 {
 
-
+	m_pMeshCom->Play_Animation(m_fFrameSpeed);
 	LPD3DXEFFECT	 pEffect = m_pShaderCom->Get_EffectHandle();
 	pEffect->AddRef();
 
-	FAILED_CHECK_RETURN(SetUp_ConstantTable(pEffect), );
+	FAILED_CHECK_RETURN(SetUp_ConstantTable(pEffect), )
 
 	_uint iMaxPass = 0;
 
@@ -178,8 +187,8 @@ void CPlayer::Render_Object(void)
 	pEffect->BeginPass(0);
 
 	m_pMeshCom->Render_Meshes(pEffect);
-	if(m_pNavi)
-		m_pNavi->Render_NaviMesh();
+	//if(m_pNavi)
+	//	m_pNavi->Render_NaviMesh();
 	pEffect->EndPass();
 	pEffect->End();
 
@@ -527,6 +536,7 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		////5.f 속도로 이동.
 		////y값 가져와서 점프 최소 y값을 셋팅하자 -> 지금 비긴 y로 셋팅중 -> 네비 y로 셋팅하면 될듯?
 		_vec3	vPos;
+		
 		m_pTransformCom->Get_INFO(INFO_POS, &vPos);
 		m_fJumpY = m_pNavi->MoveOn_NaviMesh(&vPos, &m_vDir, 1.f, fTimeDelta, m_pCalculatorCom).y;
 
@@ -538,7 +548,7 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 
 void CPlayer::StateChange()
 {
-	
+
 	if (m_ePreElement != m_eElement)
 	{
 		switch (m_eElement)
@@ -590,13 +600,14 @@ void CPlayer::StateChange()
 		}
 		if (!m_bTrail)
 		{
-			CGameObject* pTrail = Get_GameObject(L"Environment", L"Trail");
+			CGameObject* pTrail = Engine::Get_GameObject(L"Environment", L"Trail");
 			if (pTrail)
 			{
 				const _matrix *BoneMat;
 				const D3DXFRAME_DERIVED*		pFrame = m_pMeshCom->Get_FrameByName("Bone_War_Weapon_Sword");
 				BoneMat = &pFrame->CombinedTransformMatrix;
-				dynamic_cast<CEffect_Trail*>(pTrail)->Set_MatrixInfo(m_pTransformCom->Get_WorldMatrix(), BoneMat);
+
+					dynamic_cast<CEffect_Trail*>(pTrail)->Set_MatrixInfo(m_pTransformCom->Get_WorldMatrix(), BoneMat);
 				m_tOutTrail = m_tTrail;
 				m_bTrail = true;
 			}
@@ -1335,7 +1346,7 @@ void CPlayer::StateChange()
 		case War::War_Atk_Heavy_01:
 
 			m_bSound = false;
-			m_tCharInfo.fAtk = 2.f;
+			m_tCharInfo.fAtk = 1.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 800.f;
@@ -1348,7 +1359,7 @@ void CPlayer::StateChange()
 			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK2);
 			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_3_02.ogg", CSoundMgr::CHANNEL_PLAYER_ATK2);
 			m_bSound = false;
-			m_tCharInfo.fAtk = 2.f;
+			m_tCharInfo.fAtk = 1.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 800.f;
@@ -1361,7 +1372,7 @@ void CPlayer::StateChange()
 		case War::War_Atk_Heavy_03:
 			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_PLAYER_ATK1);
 			CSoundMgr::Get_Instance()->PlaySound(L"char_war_attack_heavy_3.ogg", CSoundMgr::CHANNEL_PLAYER_ATK1);
-			m_tCharInfo.fAtk = 2.f;
+			m_tCharInfo.fAtk =1.f;
 			m_eKeyState = War::KEYSTATE_END;
 			DirSet_Combo();
 			m_fInitAttackMoveSpeed = 800.f;
@@ -3662,7 +3673,7 @@ void CPlayer::SpawnTrail()
 	const _matrix *BoneMat;
 	const D3DXFRAME_DERIVED*		pFrame = m_pMeshCom->Get_FrameByName("Bone_War_Weapon_Sword");
 	BoneMat = &pFrame->CombinedTransformMatrix;
-	CGameObject* pTrail = Get_GameObject(L"Environment", L"Trail");
+	CGameObject* pTrail = Engine::Get_GameObject(L"Environment", L"Trail");
 	if (pTrail)
 	{
 		dynamic_cast<CEffect_Trail*>(pTrail)->Set_MatrixInfo(m_pTransformCom->Get_WorldMatrix(), BoneMat);

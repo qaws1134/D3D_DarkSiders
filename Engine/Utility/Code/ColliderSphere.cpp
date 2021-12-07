@@ -113,18 +113,18 @@ void CColliderSphere::Render_Collider(COLTYPE eType,  _matrix * pColliderMatrix)
 {
 	m_matColMatrix = *pColliderMatrix;
 
-//#ifdef _DEBUG
-//	m_pGraphicDev->SetTransform(D3DTS_WORLD, &m_matColMatrix);
-//	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-//	m_pGraphicDev->SetTexture(0, m_pTexture[eType]);
-//	
-//	if(m_pSphereMesh)
-//		m_pSphereMesh->DrawSubset(0);
-//
-//	m_pGraphicDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 8, 0, 12);
-//	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-//#endif
-//
+#ifdef _DEBUG
+	m_pGraphicDev->SetTransform(D3DTS_WORLD, &m_matColMatrix);
+	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	m_pGraphicDev->SetTexture(0, m_pTexture[eType]);
+
+	if (m_pSphereMesh)
+		m_pSphereMesh->DrawSubset(0);
+
+	m_pGraphicDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 8, 0, 12);
+	m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+#endif
+
 }
 
 void CColliderSphere::Update_Radius(_float fRadius)

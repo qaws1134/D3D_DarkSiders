@@ -85,7 +85,7 @@ _int CItem::Update_Object(const _float& fTimeDelta)
 			if (fDis < 5.f)
 			{
 				D3DXVec3Normalize(&m_vDir, &m_vDir);
-				m_fChaseSpeed += fTimeDelta;
+				m_fChaseSpeed += fTimeDelta*0.2f;
 				m_pTransformCom->Move_Pos(&m_vDir, m_fChaseSpeed);
 			}
 	
@@ -250,17 +250,12 @@ CItem* CItem::Create(LPDIRECT3DDEVICE9 pGraphicDev)
 
 void CItem::Free(void)
 {
-	if(m_bActive)
-		CGameMgr::GetInstance()->RetunItem(this);
-
 	CGameObject::Free();
 }
 
 
 void CItem::BillBord()
 {
-
-
 	CTransform* pCamTrans = dynamic_cast<CTransform*>(CGameMgr::GetInstance()->GetCamera()->Get_Component(L"Com_Transform", ID_DYNAMIC));
 
 	_matrix *pWorld= pCamTrans->Get_WorldMatrix();
@@ -305,10 +300,10 @@ HRESULT CItem::Add_Component(void)
 	m_mapComponent[ID_STATIC].emplace(L"Com_Shader", pComponent);
 
 	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//pComponent->AddRef();
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
 	
 	// Transform
 	pComponent = m_pTransformCom = dynamic_cast<CTransform*>(Clone_Prototype(L"Proto_Transform"));

@@ -124,11 +124,11 @@ HRESULT CColMesh::Add_Component()
 	m_pTransformCom->Set_Pos(&m_vPos);
 	m_pTransformCom->Update_Component(0.f);
 
-	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	//// Renderer
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//pComponent->AddRef();
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
 
 	// Calculator
 	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));

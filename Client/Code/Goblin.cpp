@@ -40,9 +40,9 @@ HRESULT CGoblin::Ready_Object(void)
 	//m_eMachineState = Goblin::STATE_SPAWN_IDLE;
 	//m_eSpawnType = Goblin::SPAWN_POTRAL;
 	m_fHitSpeed = .0f;
-	m_fHitTime = 0.05f;
+	m_fHitTime = 0.3f;
 	m_fAttackMoveSpeed = 5.f;
-	SetCharInfo(15.f, 1.f);
+	SetCharInfo(50.f, 1.f);
 
 	return S_OK;
 }
@@ -57,6 +57,11 @@ _int CGoblin::Update_Object(const _float& fTimeDelta)
 
 	if (m_bDead)
 		return 0;
+
+	if (!m_bHit)
+	{
+		m_bCol = false;
+	}
 
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	if (!m_pNavi)
@@ -127,10 +132,10 @@ HRESULT CGoblin::Add_Component()
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
 	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//pComponent->AddRef();
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
 
 	// Calculator
 	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));
@@ -255,7 +260,7 @@ void CGoblin::StateChange()
 				m_iPatternNum = RandNext(0, 3);
 			//m_iPrePatternNum = m_iPatternNum;
 			//m_iPatternNum = 1;
-			//m_bSpear = false;
+			m_bSpear = false;
 			SetAtkPattern();
 		}
 			break;
@@ -318,7 +323,8 @@ void CGoblin::StateChange()
 			break;
 		}
 
-		m_ePreMachineState = m_eMachineState;
+		if(m_eMachineState != Goblin::STATE_HIT)
+			m_ePreMachineState = m_eMachineState;
 	}
 
 
@@ -447,6 +453,9 @@ void CGoblin::StateChange()
 		default:
 			break;
 		}
+
+
+
 		m_ePreAniState = m_eCurAniState;
 	}
 
@@ -596,21 +605,29 @@ void CGoblin::StateActor(_float fDeltaTime)
 				{
 					if (L"Col_Front" == ColKey)
 					{
+
+						if(m_eCurAniState == Goblin::Goblin_Impact_F)
+							m_pMeshCom->Set_AnimationIndex(Goblin::Goblin_Idle, m_bBlend);
+
 						m_eCurAniState = Goblin::Goblin_Impact_F;
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.5f;
 						break;
 					}
 					else if (L"Col_Back" == ColKey)
 					{
+
+						if (m_eCurAniState == Goblin::Goblin_Impact_B)
+							m_pMeshCom->Set_AnimationIndex(Goblin::Goblin_Idle, m_bBlend);
+
 						m_eCurAniState = Goblin::Goblin_Impact_B;
 					
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
 						iter.second->SetCol(false);
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.5f;
 						break;
 					}
 				}
@@ -696,7 +713,7 @@ void CGoblin::StateActor(_float fDeltaTime)
 		}
 		break;
 	case Goblin::Goblin_Attack_Spear:
-		if (m_pMeshCom->Is_Animationset(0.3))
+		if (m_pMeshCom->Is_Animationset(0.5))
 		{
 			if (!m_bSpear)
 			{
@@ -1095,10 +1112,12 @@ void CGoblin::SetAtkPattern()
 
 void CGoblin::TakeDmg(_float fDmg)
 {
+
+
 	m_tCharInfo.fDmg = fDmg;
 	m_tCharInfo.fHp -= fDmg;
 	m_eMachineState = Goblin::STATE_HIT;
-	//m_bHit = true;
+
 }
 
 void CGoblin::AtkColActive(double dStart, double dEnd, _uint iWeaponIdx)

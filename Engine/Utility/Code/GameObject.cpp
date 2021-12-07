@@ -23,7 +23,9 @@ _bool CGameObject::HitTimer(_float fDeltaTime)
 {
 	m_fHitSpeed += fDeltaTime;
 	if (m_fHitSpeed > m_fHitTime)
+	{
 		return false;
+	}
 	return true;
 }
 
@@ -95,6 +97,8 @@ Engine::CComponent* Engine::CGameObject::Get_Component(const _tchar* pComponentT
 void Engine::CGameObject::Compute_ViewZ(const _vec3 * pPos)
 {
 	_matrix		matCamWorld;
+	if (!m_pGraphicDev)
+		return;
 	m_pGraphicDev->GetTransform(D3DTS_VIEW, &matCamWorld);
 	D3DXMatrixInverse(&matCamWorld, NULL, &matCamWorld);
 
@@ -169,9 +173,10 @@ void CGameObject::Set_Component(const _tchar * pComTag, CComponent * pComponent,
 
 void Engine::CGameObject::Free(void)
 {
+
 	for (_uint i = 0; i < ID_END; ++i)
 	{
-		for_each(m_mapComponent[i].begin(), m_mapComponent[i].end(), CDeleteMap());
+		for_each(m_mapComponent[i].begin(), m_mapComponent[i].end(), CDeleteMap());	
 		m_mapComponent[i].clear();
 	}
 

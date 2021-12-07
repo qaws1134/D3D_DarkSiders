@@ -102,6 +102,8 @@
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxguid.lib;System.lib;%(AdditionalDependencies);Utility.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../Reference/Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
+      <StackReserveSize>
+      </StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -121,7 +123,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -134,6 +136,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxguid.lib;%(AdditionalDependencies);System.lib;Utility.lib</AdditionalDependencies>
+      <StackReserveSize>
+      </StackReserveSize>
+      <LargeAddressAware>true</LargeAddressAware>
+      <AdditionalLibraryDirectories>../../Reference/Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -169,7 +175,6 @@
     <ClInclude Include="..\Code\Effect.h" />
     <ClInclude Include="..\Code\EffectMesh.h" />
     <ClInclude Include="..\Code\Effect_Trail.h" />
-    <ClInclude Include="..\Code\EffMgr.h" />
     <ClInclude Include="..\Code\Enum.h" />
     <ClInclude Include="..\Code\GameMgr.h" />
     <ClInclude Include="..\Code\Goblin.h" />
@@ -216,7 +221,6 @@
     <ClCompile Include="..\Code\Effect.cpp" />
     <ClCompile Include="..\Code\EffectMesh.cpp" />
     <ClCompile Include="..\Code\Effect_Trail.cpp" />
-    <ClCompile Include="..\Code\EffMgr.cpp" />
     <ClCompile Include="..\Code\GameMgr.cpp" />
     <ClCompile Include="..\Code\Goblin.cpp" />
     <ClCompile Include="..\Code\Grinner.cpp" />

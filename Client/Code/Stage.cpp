@@ -3,7 +3,6 @@
 #include "GameMgr.h"
 #include "LoadMgr.h"
 #include "WaterBoss_Orb.h"
-#include "EffMgr.h"
 #include "Export_Function.h"
 #include "SkyBox.h"
 #include "SoundMgr.h"
@@ -63,11 +62,7 @@ Engine::_int CStage::Update_Scene(const _float& fTimeDelta)
 	{
 		CGameMgr::GetInstance()->GetItem(DROPITEM::ITEM_STONE);
 	}
-	//if (Key_Down(KEY_NUM4))
-	//{
-	//	CGameMgr::GetInstance()->GetEnemyBullet(BULLET::BULLET_CALLLIGHTNING);
-	//	CEffMgr::GetInstance()->SpawnEff(EFFECT::EFFECT_LIGHTNING);
-	//}
+
 	CGameMgr::GetInstance()->CameraEvent();
 
 	//if (Key_Down(KEY_K))

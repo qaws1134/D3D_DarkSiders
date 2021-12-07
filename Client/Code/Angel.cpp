@@ -41,7 +41,7 @@ HRESULT CAngel::Ready_Object(void)
 
 	m_eMachineState = Angel::STATE_SPAWN_IDLE;
 	m_fHitSpeed = 1.0f;
-	m_fHitTime = 0.1f;
+	 m_fHitTime = 0.3f;
 	m_fAttackMoveSpeed = 5.f;
 	SetCharInfo(20.f, 1.f);
 
@@ -58,6 +58,12 @@ _int CAngel::Update_Object(const _float& fTimeDelta)
 
 	if (m_bDead)
 		return 0;
+
+	if (!m_bHit)
+	{
+		m_bCol = false;
+	}
+
 	m_fFrameSpeed = fTimeDelta;
 
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
@@ -124,10 +130,10 @@ HRESULT CAngel::Add_Component()
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
 	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//pComponent->AddRef();
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
 
 	// Calculator
 	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));
@@ -626,7 +632,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Back" == ColKey)
@@ -635,7 +641,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Left" == ColKey)
@@ -644,7 +650,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						 m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Right" == ColKey)
@@ -653,7 +659,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						 m_fHitTime = 0.3f;
 						break;
 					}
 				}
@@ -665,7 +671,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						 m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Back" == iter.first)
@@ -674,7 +680,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						 m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Left" == iter.first)
@@ -683,7 +689,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						 m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Right" == iter.first)
@@ -692,7 +698,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						 m_fHitTime = 0.3f;
 						break;
 					}
 				}

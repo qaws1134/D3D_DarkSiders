@@ -77,11 +77,11 @@ HRESULT CTerrain::Add_Component(void)
 	NULL_CHECK_RETURN(m_pBufferCom, E_FAIL);
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
-	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	//// Renderer
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//pComponent->AddRef();
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
 
 	return S_OK;
 }

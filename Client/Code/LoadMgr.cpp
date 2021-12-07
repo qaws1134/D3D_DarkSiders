@@ -27,7 +27,7 @@ HRESULT CLoadMgr::LoadData(wstring szFilePath)
 	//LoadColTool(szFilePath+L"Colider28.dat");
 	//LoadMeshTool(szFilePath+L"TestNpc.dat");
 	//LoadMeshTool(szFilePath + L"TestEffect.dat");
-	//LoadMeshTool(szFilePath + L"MapStart.dat");
+	LoadMeshTool(szFilePath + L"MapStart.dat");
 	LoadMeshTool(szFilePath + L"Map43Obj.dat");
 	return S_OK;
 }
@@ -132,7 +132,7 @@ HRESULT CLoadMgr::LoadMeshTool(wstring szFilePath)
 		}
 		m_mapNaviData.emplace(i, mapNavi);
 	}
-
+	Ready_Prototype(L"Proto_Navi", CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData));
 
 	ReadFile(hFile, &dwMapSize, sizeof(DWORD), &dwbyte, nullptr);
 	for (_uint i = 0; i < dwMapSize; i++)
@@ -254,12 +254,12 @@ map<wstring,CGameObject*> CLoadMgr::SpawnData()
 	//네비매시 추가 
 	//CComponent* pComponent = CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData);
 
-	Ready_Prototype(L"Proto_Navi", CNaviMesh::Create(CGameMgr::GetInstance()->GetDevice(), m_mapNaviData));
 
-	CComponent* pComponent = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
+
+	//CComponent* pComponent = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
 
 	//CGameMgr::GetInstance()->SetNavi(dynamic_cast<CNaviMesh*>(pComponent));
-	dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_NaviMesh(dynamic_cast<CNaviMesh*>(pComponent));
+	//dynamic_cast<CPlayer*> (CGameMgr::GetInstance()->GetPlayer())->Set_NaviMesh(dynamic_cast<CNaviMesh*>(pComponent));
 	//CGameMgr::GetInstance()->GetPlayer()->Set_Component(L"Com_Navi", pComponent,ID_STATIC);
 
 	return m_mapHead;

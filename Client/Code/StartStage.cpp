@@ -3,7 +3,6 @@
 #include "GameMgr.h"
 #include "LoadMgr.h"
 #include "WaterBoss_Orb.h"
-#include "EffMgr.h"
 #include "Stage.h"
 #include "Logo.h"
 #include "Export_Function.h"

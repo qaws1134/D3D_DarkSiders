@@ -142,7 +142,7 @@ void CManagement::ReleaseScene()
 	SaveLayer(L"Bullet_Player");
 	SaveLayer(L"Particle");
 	SaveLayer(L"Effect3D");
-	//SaveLayer(L"Item");
+	//SaveLayer(L"War");
 
 
 	Safe_Release(m_pScene);

@@ -44,16 +44,14 @@ private:
 	explicit CGameMgr();
 	virtual ~CGameMgr();
 
-public:
-
 
 public:
-	void				SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer;  }
+	void				SetPlayer(CGameObject*	pPlayer) { m_pPlayer = pPlayer; }
 	void				SetStatFont( CGameObject* pObj);
-	void				SetPlayerNaviIdx(_uint iIdx) { m_iNaviIdx = iIdx; }
+	void				SetPlayerNaviIdx(_uint iIdx) {m_iNaviIdx = iIdx;}
 	_uint				GetPlayerNaviIdx() { return m_iNaviIdx; }
 
-	void				SetDevice(LPDIRECT3DDEVICE9 pGraphicDev) { m_pGraphicDev = pGraphicDev; }
+	void				SetDevice(LPDIRECT3DDEVICE9 pGraphicDev) {m_pGraphicDev = pGraphicDev;}
 
 	CGameObject*		GetPlayer() { return m_pPlayer; }
 	vector<STONE>		GetStoneVec() { return m_vecStone; }

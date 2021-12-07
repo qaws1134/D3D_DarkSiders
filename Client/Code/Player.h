@@ -79,8 +79,8 @@ public:
 public:
 	void		Set_Element(War::WEAPON_ELEMENT eElement) { m_eElement = eElement; }
 	void		Set_PlayerState(War::STATE eState) { m_eMachineState = eState; }
-//	void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
-	void		Set_NaviMesh(CNaviMesh* pNavi);
+	//void		Take_Dmg(_float fDmg) { m_fDmg = fDmg;  }
+	//void		Set_NaviMesh(CNaviMesh* pNavi);
 	void		Set_JumpBall(_bool bJumpBall) {m_bJumpBall= bJumpBall;}
 
 
@@ -101,7 +101,7 @@ private:
 	CTransform*		m_pTransformCom = nullptr;
 	CRenderer*		m_pRendererCom = nullptr;
 	CCalculator*	m_pCalculatorCom = nullptr;
-	CShader*			m_pShaderCom = nullptr;
+	CShader*		m_pShaderCom = nullptr;
 	CNaviMesh*		m_pNavi = nullptr;
 
 private:

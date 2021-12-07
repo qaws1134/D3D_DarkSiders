@@ -19,27 +19,25 @@ public:
 	CComponent*		Get_Component(const _tchar* pComponentTag, COMPONENTID eID);
 	void			Compute_ViewZ(const _vec3* pPos);
 
+	_float	GetColShpereRadius() { return m_tColSphere.fRadius; }
+	_vec3*	GetPos(COMPONENTID eID);
 
-
-	_float GetColShpereRadius() { return m_tColSphere.fRadius; }
-	_vec3* GetPos(COMPONENTID eID);
-
-	void SetPos(_vec3 vPos, COMPONENTID eID);
-	void SetZPos(_float fzPos, COMPONENTID eID);
-	_float GetWorldZ(COMPONENTID eID);
-	void	SetColTarget(CGameObject* pColTarget) { m_pColTarget = pColTarget; }
-
+	void	SetPos(_vec3 vPos, COMPONENTID eID);
+	void	SetZPos(_float fzPos, COMPONENTID eID);
+	_float	GetWorldZ(COMPONENTID eID);
+	void	SetColTarget(CGameObject* pColTarget) {  m_pColTarget = pColTarget;  }
 
 public:
 	void	SetCol(_bool bCol) { m_bCol = bCol; }
 	_bool	GetCol() { return m_bCol; }
-
 	_bool	HitTimer(_float fDeltaTime);
+
 public:
 	virtual	HRESULT		Ready_Object(void);
 	virtual void		Late_Ready_Object(void);
 	virtual	_int		Update_Object(const _float& fTimeDelta);
 	virtual	void		Render_Object(void);
+
 public :
 	CGameObject* GetTarget() { return m_pTarget; }
 	_bool GetActive() { return m_bActive; }
@@ -48,7 +46,7 @@ public :
 	COLLIDERSPHERE m_tColSphere;
 
 	void SetObjTag(wstring& wstrObjTag) { m_wstrObjTag = wstrObjTag; }
-	void SetTarget(CGameObject* pTarget) { m_pTarget = pTarget; }
+	void SetTarget(CGameObject* pTarget) {  m_pTarget = pTarget;  }
 	void SetActive(_bool bActive) { m_bActive = bActive; }
 
 	void Set_Component(const _tchar* pComTag, CComponent* pComponent,COMPONENTID eID);
@@ -60,7 +58,7 @@ public :
 	void SetHP(_float fHp) { m_tCharInfo.fHp = fHp; }
 	void SetAtk(_float fAtk) { m_tCharInfo.fAtk = fAtk; }
 
-
+																	
 	_float GetAtk() { return m_tCharInfo.fAtk; }
 	_float GetHp() { return m_tCharInfo.fHp; }
 	_float GetDmg() { return m_tCharInfo.fDmg; }

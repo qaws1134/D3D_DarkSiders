@@ -56,6 +56,12 @@ _int CWaterBoss::Update_Object(const _float& fTimeDelta)
 
 	if (!m_bActive)
 		return 0;
+
+	if (!m_bHit)
+	{
+		m_bCol = false;
+	}
+
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 	StateChange();
 	StateActor(fTimeDelta);
@@ -107,10 +113,10 @@ HRESULT CWaterBoss::Add_Component()
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
 	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//pComponent->AddRef();
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
 
 	// Calculator
 	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));

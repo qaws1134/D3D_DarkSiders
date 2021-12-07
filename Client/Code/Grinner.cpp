@@ -43,7 +43,7 @@ HRESULT CGrinner::Ready_Object(void)
 	m_fHitSpeed = 1.0f;
 	m_fHitTime = 0.1f;
 	m_fAttackMoveSpeed = 5.f;
-	SetCharInfo(15.f, 1.f);
+	SetCharInfo(30.f, 1.f);
 	m_bActive = false;
 	return S_OK;
 }
@@ -57,7 +57,15 @@ _int CGrinner::Update_Object(const _float& fTimeDelta)
 {
 	if (m_bDead)
 		return 0;
+
+	if (!m_bHit)
+	{
+		m_bCol = false;
+	}
+
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
+
+
 	if (!m_pNavi)
 	{
 		m_pNavi = dynamic_cast<CNaviMesh*>(Clone_Prototype(L"Proto_Navi"));
@@ -128,12 +136,12 @@ HRESULT CGrinner::Add_Component()
 	NULL_CHECK_RETURN(m_pTransformCom, E_FAIL);
 	m_mapComponent[ID_DYNAMIC].emplace(L"Com_Transform", pComponent);
 
-	// Renderer
-	pComponent = m_pRendererCom = Engine::Get_Renderer();
-	NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
-	pComponent->AddRef();
-	m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
-
+	//// Renderer
+	//pComponent = m_pRendererCom = Engine::Get_Renderer();
+	//NULL_CHECK_RETURN(m_pRendererCom, E_FAIL);
+	//pComponent->AddRef();
+	//m_mapComponent[ID_STATIC].emplace(L"Com_Renderer", pComponent);
+	
 	// Calculator
 	pComponent = m_pCalculatorCom = dynamic_cast<CCalculator*>(Clone_Prototype(L"Proto_Calculator"));
 	NULL_CHECK_RETURN(m_pCalculatorCom, E_FAIL);
@@ -314,7 +322,6 @@ void CGrinner::StateChange()
 		default:
 			break;
 		}
-
 		m_ePreMachineState = m_eMachineState;
 	}
 
@@ -648,7 +655,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Back" == ColKey)
@@ -657,7 +664,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Left" == ColKey)
@@ -666,7 +673,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Right" == ColKey)
@@ -675,7 +682,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 				}
@@ -687,7 +694,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Back" == iter.first)
@@ -696,7 +703,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Left" == iter.first)
@@ -705,7 +712,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 					else if (L"Col_Right" == iter.first)
@@ -714,7 +721,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.1f;
+						m_fHitTime = 0.3f;
 						break;
 					}
 				}

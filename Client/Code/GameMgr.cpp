@@ -4,7 +4,6 @@
 #include "Bullet.h"
 #include "Effect.h"
 #include "ParticleSystem.h"
-#include "EffMgr.h"
 #include "Item.h"
 #include "SpawnMgr.h"
 #include "Grinner.h"
@@ -650,6 +649,9 @@ void CGameMgr::AddPlayerStat(UI::STONE eStone)
 
 void CGameMgr::Free(void)
 {
+
+
+
 }
 
 
