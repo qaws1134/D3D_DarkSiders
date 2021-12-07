@@ -42,7 +42,7 @@ HRESULT CGoblin::Ready_Object(void)
 	m_fHitSpeed = .0f;
 	m_fHitTime = 0.3f;
 	m_fAttackMoveSpeed = 5.f;
-	SetCharInfo(50.f, 1.f);
+	SetCharInfo(30.f, 1.f);
 
 	return S_OK;
 }
@@ -58,9 +58,13 @@ _int CGoblin::Update_Object(const _float& fTimeDelta)
 	if (m_bDead)
 		return 0;
 
-	if (!m_bHit)
+	if (m_eMachineState != Goblin::STATE_SPAWN)
 	{
-		m_bCol = false;
+		if (!m_bHit)
+		{
+			if(m_eMachineState!= Goblin::STATE_IDLE )
+				m_bCol = false;
+		}
 	}
 
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
@@ -289,9 +293,10 @@ void CGoblin::StateChange()
 
 			break;
 		case Goblin::STATE_HIT:
-			m_bSpear =  false;
+		{
+			m_bSpear = false;
 			m_bHitEnd = false;
-			
+		}
 			break;
 		case Goblin::STATE_HITEND:
 			break;
@@ -378,16 +383,7 @@ void CGoblin::StateChange()
 		case Goblin::Goblin_Impact_B:
 		case Goblin::Goblin_Impact_F:
 		{
-			USES_CONVERSION;
 
-			_uint iIdx = RandNext(0, 3);
-			wstring wstrSound = L"imp_general_0";
-			wstring wstrTag = L".ogg";
-			wstrSound += to_wstring(iIdx);
-			wstrSound += wstrTag;
-			TCHAR* pTag = W2BSTR(wstrSound.c_str());
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN);
-			CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GOBLIN);
 
 			m_fInitAttackMoveSpeed = 5.f;
 			m_fAttackMoveSpeed = m_fInitAttackMoveSpeed;
@@ -610,10 +606,22 @@ void CGoblin::StateActor(_float fDeltaTime)
 							m_pMeshCom->Set_AnimationIndex(Goblin::Goblin_Idle, m_bBlend);
 
 						m_eCurAniState = Goblin::Goblin_Impact_F;
+						USES_CONVERSION;
+
+						_uint iIdx = RandNext(0, 3);
+						wstring wstrSound = L"imp_general_0";
+						wstring wstrTag = L".ogg";
+						wstrSound += to_wstring(iIdx);
+						wstrSound += wstrTag;
+						TCHAR* pTag = W2BSTR(wstrSound.c_str());
+						CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN_Vo);
+						CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GOBLIN_Vo);
+					
+
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.5f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Back" == ColKey)
@@ -623,11 +631,20 @@ void CGoblin::StateActor(_float fDeltaTime)
 							m_pMeshCom->Set_AnimationIndex(Goblin::Goblin_Idle, m_bBlend);
 
 						m_eCurAniState = Goblin::Goblin_Impact_B;
-					
+						USES_CONVERSION;
+
+						_uint iIdx = RandNext(0, 3);
+						wstring wstrSound = L"imp_general_0";
+						wstring wstrTag = L".ogg";
+						wstrSound += to_wstring(iIdx);
+						wstrSound += wstrTag;
+						TCHAR* pTag = W2BSTR(wstrSound.c_str());
+						CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN_Vo);
+						CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GOBLIN_Vo);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
 						iter.second->SetCol(false);
-						m_fHitTime = 0.5f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 				}
@@ -637,7 +654,16 @@ void CGoblin::StateActor(_float fDeltaTime)
 						L"Col_Back" == ColKey)
 					{
 						m_eCurAniState = Goblin::Goblin_Knock_b_Apex;
+						USES_CONVERSION;
 
+						_uint iIdx = RandNext(0, 3);
+						wstring wstrSound = L"imp_general_0";
+						wstring wstrTag = L".ogg";
+						wstrSound += to_wstring(iIdx);
+						wstrSound += wstrTag;
+						TCHAR* pTag = W2BSTR(wstrSound.c_str());
+						CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNEL_GOBLIN_Vo);
+						CSoundMgr::Get_Instance()->PlaySound(pTag, CSoundMgr::CHANNEL_GOBLIN_Vo);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
 						m_fHitTime = 1.f;
@@ -713,7 +739,7 @@ void CGoblin::StateActor(_float fDeltaTime)
 		}
 		break;
 	case Goblin::Goblin_Attack_Spear:
-		if (m_pMeshCom->Is_Animationset(0.5))
+		if (m_pMeshCom->Is_Animationset(0.45))
 		{
 			if (!m_bSpear)
 			{
@@ -864,9 +890,12 @@ void CGoblin::StateActor(_float fDeltaTime)
 		if (m_fDissolveAmount > 1.f)
 		{
 			m_bActive = false;
-			for (auto& iter : m_mapColider)
+			if (!m_bDead)
 			{
-				iter.second->SetDead(true);
+				for (auto& iter : m_mapColider)
+				{
+					iter.second->SetDead(true);
+				}
 			}
 			m_bDead = true;
 		}
@@ -1021,6 +1050,7 @@ void CGoblin::StateLinker(_float fDeltaTime)
 		if (m_pMeshCom->Is_Animationset(0.9))
 		{
 			m_bHitStart = false;
+			m_eCurAniState = Goblin::Goblin_Idle;
 			m_eMachineState = Goblin::STATE_IDLE;
 		}
 		break;

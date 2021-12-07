@@ -27,9 +27,9 @@ HRESULT CWaterBoss_Orb::Ready_Object(void)
 	FAILED_CHECK_RETURN(CGameObject::Ready_Object(), E_FAIL);
 	FAILED_CHECK_RETURN(Add_Component(), E_FAIL);
 
-	m_pTransformCom->Set_Scale(0.2f, 0.2f, 0.2f);
+	m_pTransformCom->Set_Scale(0.15f, 0.15f, 0.15f);
 	m_bActive = false;
-	m_vColor = _vec4(0.f, 0.f, 0.f, 1.f);
+	m_vColor = _vec4(0.1f, 0.1f, 0.9f, 1.f);
 	m_iPass = 6;
 
 	m_fHitTime = 0.5f;
@@ -40,8 +40,6 @@ HRESULT CWaterBoss_Orb::Ready_Object(void)
 
 _int CWaterBoss_Orb::Update_Object(const _float& fTimeDelta)
 {
-
-
 	if (!m_bActive)
 	{
 		m_fBulletSpeed = 0.f;
@@ -134,7 +132,7 @@ void CWaterBoss_Orb::Render_Object(void)
 						
 
 	if(!m_bDead)
-		pEffect->BeginPass(m_iPass);
+		pEffect->BeginPass(7);
 	else
 	{
 		m_fDissolveAmount += fTimeDelta*1.f;
@@ -199,7 +197,7 @@ HRESULT CWaterBoss_Orb::Add_Component(void)
 
 	// Collider
 	COLLIDERSPHERE tSphere;
-	tSphere.fRadius = 0.01f;
+	tSphere.fRadius = 150.f;
 	tSphere.vCenterPos= _vec3(0.f,0.f,0.f);
 
 	pComponent = m_pColliderCom = CColliderSphere::Create(m_pGraphicDev, &m_tColSphere.vCenterPos, m_tColSphere.fRadius);

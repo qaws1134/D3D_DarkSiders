@@ -210,7 +210,7 @@ void CUIMgr::InitPlayerInfo(LPDIRECT3DDEVICE9 pGraphicDev)
 
 	_float fUIZ = 0.18f;
 	_float fInfoZ = 0.2f;
-	_float fBgUIZ = 0.3f;
+	_float fBgUIZ = 0.21f;
 	_bool  bActive = false;
 
 	//Bg 

@@ -49,6 +49,12 @@ _int CChest::Update_Object(const _float& fTimeDelta)
 {
 	if (m_bDead)
 		return 0;
+
+	if (!m_bHit)
+	{
+		m_bCol = false;
+	}
+
 	_int iExit = CGameObject::Update_Object(fTimeDelta);
 
 

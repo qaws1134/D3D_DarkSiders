@@ -4,6 +4,7 @@
 #include "Export_Function.h"
 #include "GameMgr.h"
 #include "Effect.h"
+#include "StaticCamera.h"
 #include "SoundMgr.h"
 
 
@@ -37,7 +38,7 @@ HRESULT CWaterBoss::Ready_Object(void)
 	m_eCurAniState = WaterBoss::Idle;
 	m_iSlamPatternNum = 0;
 	m_iPatternNum = 0;
-	m_eMachineState = WaterBoss::STATE_SPAWN;
+	m_eMachineState = WaterBoss::STATE_IDLE;
 	m_bActive = false;
 
 	SetCharInfo(50.f, 4.f);
@@ -158,7 +159,8 @@ void CWaterBoss::SpawnTentaFog(_float fAngle, _vec3 vPos)
 
 	CGameObject* pEff = CGameMgr::GetInstance()->GetEffect(EFFECT::EFFECT_FOG1_2x2);
 	_float fRadius = 2.f;
-	_vec3 vDir = { cosf(D3DXToRadian(fAngle))*fRadius,vPos.y,-sinf(D3DXToRadian(fAngle))*fRadius };	
+	_vec3 vDir = { cosf(D3DXToRadian(fAngle))*fRadius,0.f,-sinf(D3DXToRadian(fAngle))*fRadius };	
+	vPos.y += 1.f;
 	pEff->SetPos(vPos, ID_DYNAMIC);
 	dynamic_cast<CEffect*>(pEff)->SetDir(-vDir);
 }
@@ -846,10 +848,12 @@ void CWaterBoss::AtkColActive(double dStart, double dEnd,_uint iWeaponIdx,_vec3*
 	dynamic_cast<CTransform*>(iter_find->second->Get_Component(L"Com_Transform", ID_DYNAMIC))->Get_INFO(INFO_POS,&vPos);
 
 	*pPos = vPos;
-	if (m_pMeshCom->Is_Animationset(dEnd - 0.08))
+
+	if (m_pMeshCom->Is_Animationset(dStart))
 	{
 		if (!m_bSpawnEff)
 		{
+			dynamic_cast<CStaticCamera*>(CGameMgr::GetInstance()->GetCamera())->CameraShake(0.4f, 0.1f);
 			for (_uint i = 0; i < 9; i++)
 			{
 				_float fAngle = -80.f + (i * 20);

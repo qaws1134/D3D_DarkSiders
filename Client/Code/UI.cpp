@@ -117,7 +117,7 @@ void CUI::Render_Object(void)
 			rcScissor.left = 50;
 			rcScissor.top = 130;
 			rcScissor.right = 700;
-			rcScissor.bottom = 600;
+			rcScissor.bottom = 565;
 
 			m_pGraphicDev->SetScissorRect(&rcScissor);
 			m_pGraphicDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);

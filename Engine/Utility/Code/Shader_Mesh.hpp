@@ -262,7 +262,22 @@ PS_OUT		PS_DISSOLVE_ALPHA(PS_IN In)
 	return Out;
 }
 
+PS_OUT_WATER		PS_ORB(PS_IN_WATER In)
+{
+	PS_OUT_WATER		Out = (PS_OUT_WATER)0;
 
+	float2 vTexUV = In.vTexUV;
+	vTexUV.y = (In.vTexUV.y - g_fUVTime* g_fUVSpeed);
+
+	vector vColor = tex2D(BaseSampler, vTexUV);
+
+	Out.vColor = vector(g_vColor.xyz, vColor.r);
+
+
+	//Out.vColor = tex2D(BaseSampler, vTexUV);
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	return Out;
+}
 
 PS_OUT_WATER		PS_UVMOVEY(PS_IN_WATER In)
 {
@@ -401,6 +416,18 @@ technique Default_Device
 
 		vertexshader = compile vs_3_0 VS_MAIN2();
 		pixelshader = compile ps_3_0 PS_WATERFLOOR();
+
+	}
+		pass Water4
+	{
+		lighting = false;
+		alphatestenable = true;
+		alphafunc = greater;
+		ZWRITEENABLE = true;
+		alpharef = 1;
+
+		vertexshader = compile vs_3_0 VS_MAIN2();
+		pixelshader = compile ps_3_0 PS_ORB();
 
 	}
 };

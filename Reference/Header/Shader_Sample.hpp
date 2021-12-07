@@ -66,7 +66,7 @@ PS_OUT		PS_MAIN_TEMP(PS_IN In)
 
 	Out.vColor = tex2D(BaseSampler, In.vTexUV);	// 2차원 텍스처에서 uv좌표에 해당하는 픽셀의 색상을 추출하는 함수, 반환 타입은 vector 타입
 
-	Out.vColor.a = 0.5f;
+	//Out.vColor.a = 0.5f;
 
 	return Out;
 }

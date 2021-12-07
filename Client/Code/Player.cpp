@@ -367,12 +367,26 @@ void CPlayer::Key_Input(const _float & fTimeDelta)
 		m_fCToISpeed = 0.f;
 
 	}
-	if (Key_Down(KEY_RBUTTON))
+	if (Key_Pressing(KEY_RBUTTON))
 	{
+		m_fElementSpeed += fTimeDelta;
+		if (m_fElementSpeed > m_fElementTime)
+		{
+			m_bElement = true;
+		}
+		else
+			m_bElement = false;
+
 		m_eKeyState = War::RBUTTON;
 		m_eMachineState = War::ATTACK;
 		m_fCToISpeed = 0.f;
 	}
+	//if (Key_Down(KEY_RBUTTON))
+	//{
+	//	m_eKeyState = War::RBUTTON;
+	//	m_eMachineState = War::ATTACK;
+	//	m_fCToISpeed = 0.f;
+	//}
 
 
 	//½ºÅ³
@@ -1344,7 +1358,7 @@ void CPlayer::StateChange()
 			m_bGlideOn = true;
 			break;
 		case War::War_Atk_Heavy_01:
-
+			m_fElementSpeed = 0.f;
 			m_bSound = false;
 			m_tCharInfo.fAtk = 1.f;
 			m_eKeyState = War::KEYSTATE_END;
@@ -3169,7 +3183,12 @@ void CPlayer::StateLinker(_float fDeltaTime)
 			}
 			else if (m_eKeyState == War::RBUTTON)
 			{
-				m_eCurAniState = War::War_Atk_Heavy_02;
+				if (m_bElement)
+				{
+					ElementAniSet();
+				}
+				else
+					m_eCurAniState = War::War_Atk_Heavy_02;
 
 			}
 		}

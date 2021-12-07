@@ -342,7 +342,7 @@ void CEffect::SetOption(void * pArg)
 
 		_float fSize = GetRandomFloat(4.f, 7.f);
 		m_pTransformCom->Set_Scale(fSize, fSize, fSize);
-		m_vColor = { 1.f,1.f,1.f,0.4f };
+		m_vColor = { 0.1f,0.8f,1.f,0.8f };
 
 
 		m_eShader = EFFECT::SHADER_BLACKOUT;
@@ -362,7 +362,7 @@ void CEffect::SetOption(void * pArg)
 		SetCenterQuarterUV();
 		_float fSize = GetRandomFloat(4.f, 7.f);
 		m_pTransformCom->Set_Scale(fSize, fSize, fSize);
-		m_vColor = { 1.f,1.f,1.f,0.4f };
+		m_vColor = { 0.1f,0.8f,1.f,0.8f };
 
 		m_eShader = EFFECT::SHADER_BLACKOUT;
 		m_iTextIdx = 1;
@@ -381,7 +381,7 @@ void CEffect::SetOption(void * pArg)
 		SetCenterQuarterUV();
 		_float fSize = GetRandomFloat(4.f, 7.f);
 		m_pTransformCom->Set_Scale(fSize, fSize, fSize);
-		m_vColor = { 1.f,1.f,1.f,0.4f };
+		m_vColor = { 0.1f,0.8f,1.f,0.8f };
 
 		m_eShader = EFFECT::SHADER_BLACKOUT;
 		m_iTextIdx = 2;
@@ -403,7 +403,7 @@ void CEffect::SetOption(void * pArg)
 		_float fSize = GetRandomFloat(4.f, 7.f);
 		m_pTransformCom->Set_Scale(fSize, fSize, fSize);
 		
-		m_vColor = { 1.f,1.f,1.f,0.4f };
+		m_vColor = { 0.1f,0.8f,1.f,0.8f };
 
 		m_iTextIdx = 3;
 		m_eShader = EFFECT::SHADER_BLACKOUT;
@@ -424,7 +424,7 @@ void CEffect::SetOption(void * pArg)
 
 		_float fSize = GetRandomFloat(4.f, 7.f);
 		m_pTransformCom->Set_Scale(fSize, fSize, fSize);
-		m_vColor = { 1.f,1.f,1.f,0.4f };
+		m_vColor = { 0.1f,0.8f,1.f,0.8f };
 
 		m_eShader = EFFECT::SHADER_BLACKOUT;
 		m_iTextIdx = 4;
@@ -445,7 +445,7 @@ void CEffect::SetOption(void * pArg)
 
 		_float fSize = GetRandomFloat(4.f, 7.f);
 		m_pTransformCom->Set_Scale(fSize, fSize, fSize);
-		m_vColor = { 1.f,1.f,1.f,0.4f };
+		m_vColor = { 0.1f,0.8f,1.f,0.8f };
 
 		m_eShader = EFFECT::SHADER_BLACKOUT;
 		m_iTextIdx = 5;
@@ -465,9 +465,9 @@ void CEffect::SetOption(void * pArg)
 
 		_float fSize = GetRandomFloat(3.f, 7.f);
 		m_pTransformCom->Set_Scale(fSize, fSize, fSize);
-		m_vColor = { 0.5f,0.5f,0.5f,0.1f };
+		m_vColor = { 0.5f,0.5f,0.5f,0.7f };
 		m_bBillbord = true;
-		m_fMoveSpeed = 20.f;
+		m_fMoveSpeed = 40.f;
 		m_eShader = EFFECT::SHADER_BLACKOUT;
 		m_iTextIdx = 6;
 		break;
@@ -505,10 +505,10 @@ void CEffect::SetOption(void * pArg)
 		m_wstrBuffer = L"Buffer_RcTex2x2";
 		SetCenterQuarterUV();
 		m_pTransformCom->Set_Scale(5.f, 5.f, 5.f);
-		m_vColor = { 0.1f,9.f,0.1f,0.8f };
+		m_vColor = { 0.1f,9.f,0.1f,0.5f };
 		m_iTextIdx = 9;
 		m_fFrameSpeed = 2.f;
-		m_eShader = EFFECT::SHADER_TEST;
+		m_eShader = EFFECT::SHADER_BLACKOUT;
 
 		//m_bLoop = true;
 		break;
@@ -911,7 +911,7 @@ void CEffect::UpdateEffect(_float fTimeDelta)
 		if (m_bMove)
 		{
 			D3DXVec3Normalize(&m_vDir, &m_vDir);
-			if (m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fMoveSpeed, 100.f, 0.f, &m_vDir, fTimeDelta))
+			if (m_pTransformCom->MoveStep(MOVETYPE_BREAK, &m_fMoveSpeed, 50.f, 0.f, &m_vDir, fTimeDelta))
 				EffectEnd();
 		}
 		_vec3 vScale = m_pTransformCom->Get_Scale();

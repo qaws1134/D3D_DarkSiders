@@ -142,6 +142,8 @@ void CManagement::ReleaseScene()
 	SaveLayer(L"Bullet_Player");
 	SaveLayer(L"Particle");
 	SaveLayer(L"Effect3D");
+	//SaveLayer(L"Orb");
+
 	//SaveLayer(L"War");
 
 

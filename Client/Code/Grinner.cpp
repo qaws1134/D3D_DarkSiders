@@ -655,7 +655,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Back" == ColKey)
@@ -664,7 +664,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Left" == ColKey)
@@ -673,7 +673,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Right" == ColKey)
@@ -682,7 +682,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 				}
@@ -694,7 +694,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Back" == iter.first)
@@ -703,7 +703,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Left" == iter.first)
@@ -712,7 +712,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Right" == iter.first)
@@ -721,7 +721,7 @@ void CGrinner::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 				}

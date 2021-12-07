@@ -278,7 +278,7 @@ HRESULT CGameMgr::InitObjPool()
 HRESULT CGameMgr::InitStageObjPool()
 {
 	InitItem();
-	//InitWaterBossOrb();
+	InitWaterBossOrb();
 	return S_OK;
 }
 

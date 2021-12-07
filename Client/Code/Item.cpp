@@ -137,7 +137,7 @@ void CItem::Render_Object(void)
 	m_pColliderCom->Render_Collider(COLTYPE(m_bCol), m_pTransformCom->Get_WorldMatrix());
 
 
-	pItem->BeginPass(m_iPassIdx);
+	pItem->BeginPass(1);
 
 	m_pBufferCom->Render_Buffer();
 
@@ -165,7 +165,7 @@ void CItem::SetOption(void * pArg)
 		m_bActive = true;
 		m_bMoveEnd = false;
 		m_fAngle = GetRandomFloat(0.f, 360.f);
-		m_fSpeed = GetRandomFloat(5.f, 10.f);
+		m_fSpeed = GetRandomFloat(4.f, 8.f);
 		m_fMoveSpeed = GetRandomFloat(0.05f, 0.15f);
 		m_fLifeSpeed = 0.f;
 
@@ -177,7 +177,7 @@ void CItem::SetOption(void * pArg)
 		m_bMoveEnd = false;
 		m_pTransformCom->Set_Scale(0.5f, 0.5f, 0.5f);
 		m_fAngle = GetRandomFloat(0.f, 360.f);
-		m_fSpeed = GetRandomFloat(5.f, 10.f);
+		m_fSpeed = GetRandomFloat(4.f, 8.f);
 		m_fMoveSpeed = GetRandomFloat(0.05f, 0.15f);
 		m_fLifeSpeed = 0.f;
 		break;

@@ -196,8 +196,8 @@ HRESULT CStartStage::Ready_LightInfo(void)
 
 	tLightInfo.Type = D3DLIGHT_DIRECTIONAL;
 	tLightInfo.Diffuse = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	tLightInfo.Specular = D3DXCOLOR(1.f, 1.f, 1.f, 1.f);
-	tLightInfo.Ambient = D3DXCOLOR(0.3f, 0.3f, 0.3f, 1.f);
+	tLightInfo.Specular = D3DXCOLOR(0.f, 0.f, 0.f, 1.f);
+	tLightInfo.Ambient = D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.f);
 	tLightInfo.Direction = _vec3(1.f, -1.f, 1.f);
 
 	FAILED_CHECK_RETURN(Ready_Light(m_pGraphicDev, &tLightInfo, 0), E_FAIL);

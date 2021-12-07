@@ -62,6 +62,8 @@ void CColMgr::Col_Body(COLCHECK eColCheck,map<const _tchar* ,CGameObject*> _Dst,
 				
 				//fSrcRadi -= 200.f;
 				//===========================밀어내기 ====================================
+				if (!iter_Dst->second->GetActive()|| !iter_Src->second->GetActive())
+					return;
 				if (pDstCalcul->Collision_Sphere(pDstCol->Get_Center(), &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
 				{
 					//_float fRadi = (*pDstCol->Get_Radius() - *pSrcCol->Get_Radius());
@@ -463,7 +465,9 @@ _bool CColMgr::ColCheckBullet(CGameObject * pSrcObj, wstring ColTag, CGameObject
 			if (pDstCalcul->Collision_Sphere(&vDstPos, &fDstRadi, pSrcCol->Get_Center(), &fSrcRadi, eMesh))
 			{
 				pSrcObj->SetColTarget(pDstColObj);
+				pSrcObj->SetCol(true);
 				iter_Src->second->SetCol(true);
+				pDstColObj->SetActive(false);
 				return true;
 			}
 		}

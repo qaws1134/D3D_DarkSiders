@@ -188,6 +188,11 @@ private:
 	_bool m_bTrail = false;
 	_vec3	m_vHitDir;
 
+	_bool m_bElement =false;
+	_float m_fElementTime = 0.5f;
+	_float m_fElementSpeed = 0.5f; 
+
+
 public:
 	static CPlayer*		Create(LPDIRECT3DDEVICE9 pGraphicDev);
 	static CPlayer*		Create(LPDIRECT3DDEVICE9 pGraphicDev, wstring ProtoMesh, _bool bColMode);

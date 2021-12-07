@@ -632,7 +632,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Back" == ColKey)
@@ -641,7 +641,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Left" == ColKey)
@@ -659,7 +659,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						 m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 				}
@@ -671,7 +671,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						 m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Back" == iter.first)
@@ -680,7 +680,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						 m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Left" == iter.first)
@@ -689,7 +689,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						 m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 					else if (L"Col_Right" == iter.first)
@@ -698,7 +698,7 @@ void CAngel::StateActor(_float fDeltaTime)
 						iter.second->SetCol(false);
 						m_fHitSpeed = 0.f;
 						m_tCharInfo.fDmg = 0.f;
-						 m_fHitTime = 0.3f;
+						m_fHitTime = 0.4f;
 						break;
 					}
 				}

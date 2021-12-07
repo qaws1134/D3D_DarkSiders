@@ -376,8 +376,12 @@ void CEffectMesh::UpdateEffect(const _float & fTimeDelta)
 					}
 					CTransform* pTrans = dynamic_cast<CTransform*>(pObj->Get_Component(L"Com_Transform", ID_DYNAMIC));
 					pTrans->Set_Rot(0.f, D3DXToRadian(fAngle + 90.f), 0.f);
-					pObj = CGameMgr::GetInstance()->GetPlayerBullet(BULLET::BULLET_SPAWNFADE_PLAYER);
-					pObj->SetPos(*vPos + (vDir*(_float)m_ClusteriCount), ID_DYNAMIC);
+
+					if (m_ClusteriCount % 4 == 0)
+					{
+						pObj = CGameMgr::GetInstance()->GetPlayerBullet(BULLET::BULLET_SPAWNFADE_PLAYER);
+						pObj->SetPos(*vPos + (vDir*(_float)m_ClusteriCount), ID_DYNAMIC);
+					}
 					m_ClusteriCount++;
 					m_fSpawnSpeed = 0.f;
 				}
